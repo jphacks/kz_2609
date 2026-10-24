@@ -7,8 +7,7 @@ export default function PrivacyPage() {
       <PageHeader title="プライバシーポリシー" backHref="/" />
       <h2 className="mt-2 font-bold">取得する情報</h2>
       <ul className="list-disc pl-5">
-        <li>登録したメールアドレス（パスワードは暗号化して保存し、運営者も見られません）</li>
-        <li>Googleでログインした場合は、Googleアカウントの名前とアイコン画像</li>
+        <li>Google アカウントのメールアドレス・名前・アイコン画像（ログインは Google アカウントで行います。パスワードはこのサービスでは受け取りません）</li>
         <li>投稿した写真・コメント・カテゴリ・滞在時間・投稿日時</li>
       </ul>
       <h2 className="mt-4 font-bold">位置情報と写真の情報</h2>
@@ -26,8 +25,6 @@ export default function PrivacyPage() {
       <p>
         行きたい場所リストは、ふだんはあなただけが見られます。共有URLを発行すると、そのURLを知っている人はログインなしでリスト名・スポット・拠点を見られます（編集はできません。あなたの名前やメールアドレスは表示しません）。共有はリストの画面からいつでも停止できます。
       </p>
-      <h2 className="mt-4 font-bold">メール</h2>
-      <p>登録時の確認メールは、運営チームの Gmail アカウントから送ります。登録の確認以外の目的でメールを送ることはありません。</p>
       <h2 className="mt-4 font-bold">外部サービス</h2>
       <p>
         地図の表示（OpenFreeMap）、場所の検索（OpenStreetMap Nominatim）、移動時間の計算（Google Routes

@@ -8,7 +8,6 @@ export function isSupabaseConfigured(): boolean {
 }
 
 // Googleログインのボタンを出すか（ADR-0021。Supabase に Google を設定したら true にする）
-export const GOOGLE_LOGIN_ENABLED = process.env.NEXT_PUBLIC_ENABLE_GOOGLE_LOGIN === "true";
 
 // 以下はサーバー専用
 export function serverEnv() {

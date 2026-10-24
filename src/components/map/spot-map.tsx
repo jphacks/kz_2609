@@ -379,16 +379,24 @@ export async function locateMe(): Promise<GeolocationPosition> {
   try {
     return await get({ enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 });
   } catch (e) {
-    if (e instanceof GeolocationPositionError && e.code === e.PERMISSION_DENIED) throw e;
+    if (geoErrorCode(e) === PERMISSION_DENIED) throw e;
     return get({ enableHighAccuracy: false, timeout: 15000, maximumAge: 600000 });
   }
 }
 
-// 現在地を取れなかった理由を、直し方と一緒に伝える
+// 位置情報のエラー番号（1：許可されていない、2：位置がわからない、3：時間切れ）。
+// GeolocationPositionError が定義されていないブラウザもあるため、instanceof ではなく code で見分ける
+const PERMISSION_DENIED = 1;
+export function geoErrorCode(e: unknown): number | null {
+  return typeof e === "object" && e !== null && "code" in e && typeof e.code === "number" ? e.code : null;
+}
+
+// 現在地を取れなかった理由を、直し方と一緒に伝える（末尾のエラー番号は問い合わせのときの手がかり）
 export function locateErrorMessage(e: unknown): string {
   if (e instanceof Error && e.message === "unsupported") return "このブラウザでは現在地を使えません。検索で指定してください";
-  if (e instanceof GeolocationPositionError && e.code === e.PERMISSION_DENIED) {
-    return "位置情報の利用が許可されていません。ブラウザのサイトの設定（アドレスバーの左のマーク）と、端末の位置情報サービスの設定で、このサイトに位置情報を許可してください。LINE などのアプリの中で開いている場合は、Safari や Chrome で開き直してください";
+  const code = geoErrorCode(e);
+  if (code === PERMISSION_DENIED) {
+    return "位置情報の利用が許可されていません。ブラウザのサイトの設定（アドレスバーの左のマーク）と、端末の位置情報サービスの設定（iPhone は「設定」→「プライバシーとセキュリティ」→「位置情報サービス」→「Safari Webサイト」）で許可してください。LINE などのアプリの中で開いている場合は、Safari や Chrome で開き直してください（エラー番号 1）";
   }
-  return "現在地を取得できませんでした。電波の届きやすい場所でもう一度押すか、検索で指定してください";
+  return `現在地を取得できませんでした。電波の届きやすい場所でもう一度押すか、検索で指定してください（エラー番号 ${code ?? "不明"}）`;
 }

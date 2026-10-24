@@ -1,6 +1,6 @@
 -- 初期データの写真を投稿に付ける（scripts/seed-photos.mjs sql で自動生成。直接編集しない）。
 -- 画像はアプリの public/seed/photos/ にあり、作者・ライセンスは src/lib/seed-photos.json と /credits に表示する。
--- kanazawa.sql・ishikawa.sql・cities.sql のあとに実行する。何度実行しても同じ写真は重複しない。
+-- kanazawa.sql・ishikawa.sql・cities.sql・regions.sql のあとに実行する。何度実行しても同じ写真は重複しない。
 
 -- 金沢21世紀美術館（4枚）
 insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)

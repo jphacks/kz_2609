@@ -18,7 +18,7 @@ import { fileURLToPath } from "node:url";
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const JSON_PATH = path.join(ROOT, "src/lib/seed-photos.json");
 const SQL_PATH = path.join(ROOT, "supabase/seed/photos.sql");
-const SEED_FILES = ["supabase/seed/kanazawa.sql", "supabase/seed/ishikawa.sql", "supabase/seed/cities.sql"];
+const SEED_FILES = ["supabase/seed/kanazawa.sql", "supabase/seed/ishikawa.sql", "supabase/seed/cities.sql", "supabase/seed/regions.sql"];
 const COMMONS_API = "https://commons.wikimedia.org/w/api.php";
 // Wikimedia の利用規約で、連絡先のわかる User-Agent が必要
 const USER_AGENT = "tabi-dokoikou-seed-photos/1.0 (https://github.com/jphacks/kz_2609)";
@@ -35,7 +35,7 @@ export function buildSql(photos) {
   const lines = [
     "-- 初期データの写真を投稿に付ける（scripts/seed-photos.mjs sql で自動生成。直接編集しない）。",
     "-- 画像はアプリの public/seed/photos/ にあり、作者・ライセンスは src/lib/seed-photos.json と /credits に表示する。",
-    "-- kanazawa.sql・ishikawa.sql・cities.sql のあとに実行する。何度実行しても同じ写真は重複しない。",
+    "-- kanazawa.sql・ishikawa.sql・cities.sql・regions.sql のあとに実行する。何度実行しても同じ写真は重複しない。",
     "",
   ];
   const bySpot = new Map();

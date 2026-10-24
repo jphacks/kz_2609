@@ -31,7 +31,7 @@ export type MapSpot = {
 
 type HeatPoint = { id: string; lat: number; lng: number; weight: number };
 type TileData = { mode: "heatmap"; points: HeatPoint[] } | { mode: "spots"; spots: MapSpot[] };
-type ClusterProps = { postCount: number; coverThumbUrl: string | null; category: Category; best: number };
+type ClusterProps = { postCount: number; coverThumbUrl: string | null; category: Category; best: number; name: string };
 type ClusterInfo = { cluster: true; cluster_id: number; point_count: number };
 
 export type MapViewInfo = { zoom: number; visibleSpots: number; loading: boolean; demo: boolean };
@@ -150,7 +150,9 @@ export function SpotMap({
                 coverUrl: p.coverThumbUrl,
                 category: p.category,
                 postCount: p.postCount,
-                label: `${p.point_count}か所・${p.postCount}件の投稿。タップして拡大`,
+                name: p.name,
+                others: p.point_count - 1,
+                label: `${p.name}ほか${p.point_count}か所・${p.postCount}件の投稿。タップして拡大`,
               });
               el.addEventListener("click", (e) => {
                 e.stopPropagation();
@@ -176,8 +178,15 @@ export function SpotMap({
                     label: s.name,
                     highlighted: hlOn,
                   })
-                : createStackMarker({ coverUrl: s.coverThumbUrl, category: s.category, postCount: s.postCount, label: s.name });
-              if (hlOn && !pin) el.style.outline = "3px solid #1f6f5c";
+                : createStackMarker({
+                    coverUrl: s.coverThumbUrl,
+                    category: s.category,
+                    postCount: s.postCount,
+                    name: s.name,
+                    others: 0,
+                    label: s.name,
+                    highlighted: hlOn,
+                  });
               el.addEventListener("click", (e) => {
                 e.stopPropagation();
                 onSelectRef.current(s);
@@ -197,7 +206,8 @@ export function SpotMap({
     }
     for (const [key, { at, build }] of next) {
       if (markers.current.has(key)) continue;
-      const marker = new Marker({ element: build(), anchor: key.includes(":pin") ? "bottom" : "center" }).setLngLat(at).addTo(map);
+      // ピンの先が地点を指すよう、写真ピン・写真の束とも下端で置く
+      const marker = new Marker({ element: build(), anchor: "bottom" }).setLngLat(at).addTo(map);
       markers.current.set(key, marker);
     }
 
@@ -219,6 +229,7 @@ export function SpotMap({
         coverThumbUrl: p.coverThumbUrl,
         category: p.category,
         best: p.coverThumbUrl ? p.postCount : -1,
+        name: p.name,
       }),
       // 束の表紙は、写真がある中で投稿数が最も多いスポットの写真
       reduce: (acc, p) => {
@@ -227,6 +238,7 @@ export function SpotMap({
           acc.best = p.best;
           acc.coverThumbUrl = p.coverThumbUrl;
           acc.category = p.category;
+          acc.name = p.name;
         }
       },
     });

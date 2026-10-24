@@ -11,26 +11,40 @@ const CATEGORY_ICON: Record<Category, IconNode> = {
 };
 
 const PRIMARY = "#1f6f5c";
-const SHADOW = "0 1px 4px rgba(0,0,0,0.18)";
 
 function icon(node: IconNode, size: number) {
   return createElement(node, { width: size, height: size, "stroke-width": 2, "aria-hidden": "true" });
 }
 
-function photoBox(url: string | null, category: Category, size: number, borderColor: string) {
+// 写真ピンの枠（リング）。人気度は色だけでなく「人気」「大人気」の文字でも示す（8.2）
+export type PinRing = "normal" | "popular" | "very_popular" | "highlight";
+
+const RING: Record<PinRing, { background: string; tip: string }> = {
+  normal: { background: "#ffffff", tip: "#ffffff" },
+  popular: { background: "#d9822b", tip: "#d9822b" },
+  very_popular: { background: "conic-gradient(from 200deg, #f59e0b, #e11d48, #c2410c, #f59e0b)", tip: "#e11d48" },
+  highlight: { background: PRIMARY, tip: PRIMARY },
+};
+
+const PIN_SIZE = 48;
+const RING_WIDTH = 3;
+const TIP_HEIGHT = 8;
+
+// 丸い写真（読み込みに失敗したらカテゴリのアイコン。F-1 の例外）
+function roundPhoto(url: string | null, category: Category, size: number) {
   const box = document.createElement("div");
   Object.assign(box.style, {
     width: `${size}px`,
     height: `${size}px`,
-    borderRadius: "10px",
-    border: `3px solid ${borderColor}`,
+    borderRadius: "9999px",
+    border: "2px solid #ffffff",
     background: "#ffffff",
     overflow: "hidden",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
     color: PRIMARY,
-    boxShadow: SHADOW,
+    boxSizing: "border-box",
   });
   const fallback = () => box.appendChild(icon(CATEGORY_ICON[category], size * 0.45));
   if (!url) {
@@ -41,8 +55,8 @@ function photoBox(url: string | null, category: Category, size: number, borderCo
   img.src = url;
   img.alt = "";
   img.loading = "lazy";
+  img.draggable = false;
   Object.assign(img.style, { width: "100%", height: "100%", objectFit: "cover" });
-  // 写真の読み込みに失敗したらカテゴリのアイコンにする（F-1 の例外）
   img.onerror = () => {
     img.remove();
     fallback();
@@ -51,22 +65,18 @@ function photoBox(url: string | null, category: Category, size: number, borderCo
   return box;
 }
 
-const BORDER: Record<Popularity, string> = {
-  normal: "#ffffff",
-  popular: "#d9822b",
-  very_popular: "#c2410c",
-};
-
-// 写真の束：投稿数に応じて重なり枚数（1〜3）とサイズ（48 / 64 / 80px）を3段階で変える
-export function stackTier(postCount: number) {
-  if (postCount >= 20) return { size: 80, layers: 3 };
-  if (postCount >= 5) return { size: 64, layers: 2 };
-  return { size: 48, layers: 1 };
-}
-
-export function createStackMarker(opts: { coverUrl: string | null; category: Category; postCount: number; label: string }) {
-  const { size, layers } = stackTier(opts.postCount);
-  const outer = size + (layers - 1) * 6;
+// しずく形のピンの中に丸い写真を入れ、下にスポット名を出す。
+// ピンの先（要素の下端）が地点を指すので、Marker は anchor: "bottom" で置く。名前は下にはみ出して表示する
+export function createPhotoPin(opts: {
+  coverUrl: string | null;
+  category: Category;
+  ring: PinRing;
+  name: string;
+  sub?: string;
+  label: string;
+}) {
+  const ring = RING[opts.ring];
+  const outer = PIN_SIZE + RING_WIDTH * 2;
   const root = document.createElement("button");
   root.type = "button";
   root.className = "map-marker";
@@ -74,54 +84,108 @@ export function createStackMarker(opts: { coverUrl: string | null; category: Cat
   Object.assign(root.style, {
     position: "relative",
     width: `${outer}px`,
-    height: `${outer}px`,
+    height: `${outer + TIP_HEIGHT - 2}px`,
     background: "transparent",
     border: "none",
     padding: "0",
+    filter: "drop-shadow(0 1px 3px rgba(0,0,0,0.35))",
   });
-  // 後ろの写真（重なりの厚み）
-  for (let i = layers - 1; i >= 1; i--) {
-    const back = document.createElement("div");
-    Object.assign(back.style, {
-      position: "absolute",
-      left: `${i * 6}px`,
-      top: `${i * 6}px`,
-      width: `${size}px`,
-      height: `${size}px`,
-      borderRadius: "10px",
-      border: "3px solid #ffffff",
-      background: i === 1 ? "#e4f1ed" : "#cfe5de",
-      boxShadow: SHADOW,
-    });
-    root.appendChild(back);
-  }
-  const front = photoBox(opts.coverUrl, opts.category, size, "#ffffff");
-  Object.assign(front.style, { position: "absolute", left: "0", top: "0" });
-  root.appendChild(front);
 
-  // 投稿数のバッジ（補足表示）
-  const badge = document.createElement("span");
-  badge.textContent = String(opts.postCount);
-  Object.assign(badge.style, {
+  const circle = document.createElement("div");
+  Object.assign(circle.style, {
     position: "absolute",
-    right: "-6px",
-    bottom: "-6px",
-    minWidth: "22px",
-    height: "22px",
-    padding: "0 6px",
-    borderRadius: "11px",
-    background: "#1c1c1a",
-    color: "#ffffff",
-    fontSize: "12px",
-    fontWeight: "600",
-    lineHeight: "22px",
-    textAlign: "center",
+    left: "0",
+    top: "0",
+    width: `${outer}px`,
+    height: `${outer}px`,
+    borderRadius: "9999px",
+    background: ring.background,
+    padding: `${RING_WIDTH}px`,
+    boxSizing: "border-box",
   });
-  root.appendChild(badge);
+  circle.appendChild(roundPhoto(opts.coverUrl, opts.category, PIN_SIZE));
+  root.appendChild(circle);
+
+  // ピンの先（下向きの三角）
+  const tip = document.createElement("div");
+  Object.assign(tip.style, {
+    position: "absolute",
+    left: `${outer / 2 - 7}px`,
+    top: `${outer - 3}px`,
+    width: "0",
+    height: "0",
+    borderLeft: "7px solid transparent",
+    borderRight: "7px solid transparent",
+    borderTop: `${TIP_HEIGHT + 1}px solid ${ring.tip}`,
+  });
+  root.appendChild(tip);
+
+  // スポット名（地図の上でも読めるよう白い縁取り）
+  const caption = document.createElement("div");
+  Object.assign(caption.style, {
+    position: "absolute",
+    top: "100%",
+    left: "50%",
+    transform: "translateX(-50%)",
+    marginTop: "2px",
+    width: "max-content",
+    maxWidth: "140px",
+    textAlign: "center",
+    color: "#1c1c1a",
+    fontSize: "12px",
+    fontWeight: "700",
+    lineHeight: "1.3",
+    textShadow: "0 0 3px #ffffff, 0 0 3px #ffffff, 0 0 3px #ffffff, 0 0 2px #ffffff",
+  });
+  const name = document.createElement("div");
+  name.textContent = opts.name;
+  Object.assign(name.style, { overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" });
+  caption.appendChild(name);
+  if (opts.ring === "popular" || opts.ring === "very_popular") {
+    const tag = document.createElement("div");
+    Object.assign(tag.style, {
+      display: "inline-flex",
+      alignItems: "center",
+      gap: "2px",
+      color: opts.ring === "very_popular" ? "#c2410c" : "#b45309",
+      fontSize: "11px",
+    });
+    if (opts.ring === "very_popular") tag.appendChild(icon(Flame, 12));
+    tag.appendChild(document.createTextNode(opts.ring === "very_popular" ? "大人気" : "人気"));
+    caption.appendChild(tag);
+  }
+  if (opts.sub) {
+    const sub = document.createElement("div");
+    sub.textContent = opts.sub;
+    Object.assign(sub.style, { fontSize: "11px", fontWeight: "600", color: "#4b4b47" });
+    caption.appendChild(sub);
+  }
+  root.appendChild(caption);
   return root;
 }
 
-// 写真ピン：代表写真（48px）。人気度で枠の色を変え、大人気は炎のアイコンと文字を添える
+// 写真の束：まとめたスポットのうち投稿数が最も多い場所の写真と名前に「+その他N件」を添える。
+// 人気度は1つのスポットの順位なので、束では表さない（リングは白。リストの強調だけ色を変える）
+export function createStackMarker(opts: {
+  coverUrl: string | null;
+  category: Category;
+  postCount: number;
+  name: string;
+  others: number;
+  label: string;
+  highlighted?: boolean;
+}) {
+  return createPhotoPin({
+    coverUrl: opts.coverUrl,
+    category: opts.category,
+    ring: opts.highlighted ? "highlight" : "normal",
+    name: opts.name,
+    sub: opts.others > 0 ? `+その他${opts.others}件` : undefined,
+    label: opts.label,
+  });
+}
+
+// 写真ピン：代表写真を丸く切り抜いてピンに入れる。人気度でリングの色を変え、人気・大人気は文字も添える（F-1-5）
 export function createPinMarker(opts: {
   coverUrl: string | null;
   category: Category;
@@ -129,40 +193,13 @@ export function createPinMarker(opts: {
   label: string;
   highlighted?: boolean;
 }) {
-  const root = document.createElement("button");
-  root.type = "button";
-  root.className = "map-marker";
-  root.setAttribute("aria-label", opts.label);
-  Object.assign(root.style, {
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    gap: "2px",
-    background: "transparent",
-    border: "none",
-    padding: "0",
+  return createPhotoPin({
+    coverUrl: opts.coverUrl,
+    category: opts.category,
+    ring: opts.highlighted ? "highlight" : opts.popularity,
+    name: opts.label,
+    label: opts.label,
   });
-  root.appendChild(photoBox(opts.coverUrl, opts.category, 48, opts.highlighted ? PRIMARY : BORDER[opts.popularity]));
-  if (opts.popularity !== "normal") {
-    const veryPopular = opts.popularity === "very_popular";
-    const tag = document.createElement("span");
-    Object.assign(tag.style, {
-      display: "inline-flex",
-      alignItems: "center",
-      gap: "2px",
-      padding: "1px 6px",
-      borderRadius: "9999px",
-      background: veryPopular ? "#c2410c" : "#d9822b",
-      color: "#ffffff",
-      fontSize: "11px",
-      fontWeight: "600",
-      whiteSpace: "nowrap",
-    });
-    if (veryPopular) tag.appendChild(icon(Flame, 12));
-    tag.appendChild(document.createTextNode(veryPopular ? "大人気" : "人気"));
-    root.appendChild(tag);
-  }
-  return root;
 }
 
 // リストの拠点（F-1-9・F-4-8）

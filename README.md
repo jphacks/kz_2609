@@ -13,7 +13,7 @@
 | --- | --- |
 | チーム | kz_2609　No More Planners（ノー モアー プランナーズ） |
 | テーマ | Travel × Tech |
-| 公開URL | <!-- TODO：本番URLを記入 --> 準備中 |
+| 公開URL | https://kz-2609.vercel.app/ |
 | デモ動画 | <!-- TODO：YouTube のURLを記入 --> 準備中 |
 
 ## 目次
@@ -28,7 +28,13 @@
 - [開発技術](#開発技術)
   - [活用した技術](#活用した技術)
   - [独自技術](#独自技術)
+- [機能一覧](#機能一覧)
+- [画面一覧](#画面一覧)
+- [初期データと写真](#初期データと写真)
 - [動かし方](#動かし方)
+  - [環境変数](#環境変数)
+  - [Supabase の準備](#supabase-の準備)
+- [API](#api)
 - [資料](#資料)
 - [構成](#構成)
 - [開発のルール](#開発のルール)
@@ -62,8 +68,8 @@
 
 ### 製品説明（具体的な製品の説明）
 
-1. **探す**：地図を開くと、日本全体から写真の束（しずく形のピンの中に代表写真、下に「名前 +その他N件」）が並び、近づくと1スポットずつの写真ピンに切り替わります。投稿は少ないのにいいねが多い場所は「隠れた名所」として目立たせます。
-2. **見る**：ピンを選ぶと、実際に行った人の写真・コメント・投稿が多い時間帯・滞在時間の目安がわかります。
+1. **探す**：地図を開くと、日本全体から写真の束（しずく形のピンの中に代表写真、下に「名前 +その他N件」）が並び、近づくと1スポットずつの写真ピンに切り替わります。投稿は少ないのにいいねが多い場所は「隠れた名所」として目立たせます。上の「ここで検索」からは、Google マップのような全画面の検索（履歴・現在地からの距離つきの候補・音声入力）が開き、「#自然界隈」「#グルメ界隈」のような**ハッシュタグ**でも探せます。
+2. **見る**：ピンを選ぶと、下から出るシートで写真・カテゴリ・投稿数・滞在時間の目安・住所がわかります。写真はタップすると全画面で大きく表示できます。詳細画面では、実際に行った人のコメントと、投稿が多い時間帯のグラフが見られます。
 3. **比べる**：気になった場所を「行きたい場所リスト」に集め、ホテルや駅からの距離で並べ替えたり、2〜3件を見比べたりできます。
 4. **共有する**：リストの共有URLを発行して LINE などで送ると、一緒に旅行する友達がログインなしで閲覧できます（編集はできません）。
 5. **回り方を作る**：リストから「経路を作成」を押すと、滞在時間・おすすめの時間帯・昼食休憩を考えた1日の回り方を最大3案作ります。
@@ -110,7 +116,8 @@
 - **地図を止めない。** 地図を動かしている間も区画ごとにデータを取りながらピンを描き続け、表示が途切れないようにしました。
 - **個人情報を守る。** 写真はブラウザで縮小し、位置情報などの EXIF をすべて消してからアップロードします。リストの共有URLは推測できない乱数で、いつでも停止できます。AI には会話とスポット名だけを送り、会話は保存しません。
 - **無料枠の中で運用する。** 外部サービスの利用量を数え、無料枠の80%に達したらその機能だけを自動で止めます。
-- **スマホの片手操作。** 44px 以上のタップ領域、Google マップに近い操作感のシートと検索にしました。
+- **スマホの片手操作。** 44px 以上のタップ領域、Google マップに近い操作感のシートと検索にしました。画面の左右の端を上下になぞるだけで地図を拡大・縮小できます。
+- **写真の権利を守る。** 初期データの写真は Wikimedia Commons の CC0・パブリックドメイン・CC BY・CC BY-SA だけを使い（NC・ND は使わない）、作者・ライセンス・出典を写真の下と `/credits` に表示しています。作者がわからない写真は使っていません。
 
 ## 開発技術
 
@@ -123,20 +130,21 @@
 - Gemini API（無料枠）：「AIと相談」で会話を回り方の条件に置き換える
 - OpenFreeMap：背景地図
 - OpenStreetMap Nominatim：スポット名から場所を検索
+- ブラウザの音声認識（Web Speech API）：検索の音声入力
 - Supabase（PostgreSQL・PostGIS・Auth・Storage・pg_cron）
-- 112スポットの初期データ（石川県32＝金沢市28・市外4、東京・京都・大阪 各10、北海道・宮城・神奈川・長野・静岡・奈良・兵庫・広島・福岡・沖縄 各5）と、Wikimedia Commons のクリエイティブ・コモンズ等の写真（作者・ライセンスは `/credits` と各写真の下に表示）
+- 112スポットの初期データと、Wikimedia Commons の写真369枚（詳しくは「[初期データと写真](#初期データと写真)」）
 
 #### フレームワーク・ライブラリ・モジュール
 
 - Next.js 16（App Router）、React 19、TypeScript、Tailwind CSS v4
 - MapLibre GL JS、Supercluster（写真の束のまとめ）
 - zod（入力チェック）、Lucide（アイコン）、heic2any（iPhone の写真の変換）
-- Vitest（経路計算・共有URL・隠れた名所のテスト）
+- Vitest（経路計算・共有URL・隠れた名所・ハッシュタグ・検索履歴・端の拡大縮小・写真のクレジットのテスト）
 - Vercel（公開）、GitHub Actions・Cloudflare R2（バックアップ）
 
 #### デバイス
 
-- スマートフォンのブラウザ（GPS・カメラロール・共有シート）
+- スマートフォンのブラウザ（GPS・カメラロール・共有シート・マイク）
 - PC のブラウザ
 
 ### 独自技術
@@ -148,11 +156,12 @@
 - **AIと相談**：AI には会話を条件（時刻の指定・順番の希望・除外・ペースなど）に置き換えることだけを任せ、回り方は自前の全通り計算で作ります。AI の返答はリスト内のスポットと決まった値に絞って検証します（[src/lib/plan-chat.ts](src/lib/plan-chat.ts)、[src/app/api/v1/plans/chat/route.ts](src/app/api/v1/plans/chat/route.ts)、commit [0f0fa7b](https://github.com/jphacks/kz_2609/commit/0f0fa7b)）。
 - **閲覧のみのリスト共有**：リストは本人しか見られないまま、推測できない32文字の合言葉を含むURLを受け取った人だけが閲覧できます。持ち主や経路プランは返さず、停止すると以前のURLは見られなくなります（[src/lib/share-token.ts](src/lib/share-token.ts)、[src/components/shared-list.tsx](src/components/shared-list.tsx)、commit [2fbe67c](https://github.com/jphacks/kz_2609/commit/2fbe67c)）。
 - **隠れた名所**：人気度が「通常」で、投稿は10件以下なのに投稿1件あたりのいいねが3以上の場所を、紫のリングと宝石のアイコンで表示します（[src/lib/hidden-gem.ts](src/lib/hidden-gem.ts)、commit [a83e4ae](https://github.com/jphacks/kz_2609/commit/a83e4ae)）。
+- **ハッシュタグ検索**：「#自然界隈」などの用意したタグ（カテゴリ・隠れた名所に対応）と、投稿のコメントに書いた「#夜景」などのタグでスポットを探せます。タグ専用の表は作らず、DB を変えずにコメントの文字列から探します（[src/lib/hashtags.ts](src/lib/hashtags.ts)、[src/app/api/v1/spots/search/route.ts](src/app/api/v1/spots/search/route.ts)）。
 - **写真が主役の地図の操作感**：しずく形のピンに丸い写真、Google マップのようなシートと全画面検索、写真の全画面表示、片手での拡大・縮小（commit [f978e73](https://github.com/jphacks/kz_2609/commit/f978e73)、[366be18](https://github.com/jphacks/kz_2609/commit/366be18)、[94927b7](https://github.com/jphacks/kz_2609/commit/94927b7)、[8b21abf](https://github.com/jphacks/kz_2609/commit/8b21abf)、[5dcf84e](https://github.com/jphacks/kz_2609/commit/5dcf84e)）。
 - **全国112スポットの初期データと写真**：Wikimedia Commons の写真を作者・ライセンス付きで取り込み、地図を写真で埋めました（commit [76842da](https://github.com/jphacks/kz_2609/commit/76842da)、[cf8deb7](https://github.com/jphacks/kz_2609/commit/cf8deb7)、[c9e0357](https://github.com/jphacks/kz_2609/commit/c9e0357)、[563e33f](https://github.com/jphacks/kz_2609/commit/563e33f)）。
 - **回り方の計算**：場所の選び方と訪問順を全通り調べ、時間内に回れる数が最も多い順番の中から観点の違う3案を選びます（[src/lib/planner/index.ts](src/lib/planner/index.ts)、テストは [planner.test.ts](src/lib/planner/planner.test.ts)）。
 - **区間ごとの移動手段の変更と再計算**：変えた区間だけ Google Routes API で取り直し、それ以降の時刻を画面で計算し直します（[src/components/plan-result.tsx](src/components/plan-result.tsx)、[src/lib/external/routing.ts](src/lib/external/routing.ts)）。
-- **ズームに応じて写真の束・写真ピンを切り替える地図**（[src/components/map/spot-map.tsx](src/components/map/spot-map.tsx)、[markers.ts](src/components/map/markers.ts)）。
+- **ズームに応じて写真の束・写真ピンを切り替える地図**：日本全体を見ているときから写真の束で表示します（ヒートマップは見た目と情報量の理由でやめました。ADR-0023）（[src/components/map/spot-map.tsx](src/components/map/spot-map.tsx)、[markers.ts](src/components/map/markers.ts)）。
 - **投稿から人気度・代表写真・滞在時間の中央値・時間帯の分布を集計する DB の関数**と、無料枠の80%で止める仕組み（[supabase/migrations/20261024000000_init.sql](supabase/migrations/20261024000000_init.sql)）。
 
 #### 事前に準備したもの
@@ -170,7 +179,7 @@ npm install
 npm run dev
 ```
 
-http://localhost:3000 を開きます。Supabase のキーがなくても、地図とスポット詳細は金沢のデモデータで確認できます。ログイン・投稿・リスト・経路作成には [セットアップ手順](docs/セットアップ手順.md) の設定が必要です。
+http://localhost:3000 を開きます。Supabase のキーがなくても、地図・検索・スポット詳細は金沢のデモデータで確認できます。ログイン・投稿・リスト・経路作成には [セットアップ手順](docs/セットアップ手順.md) の設定が必要です。
 
 | コマンド | 内容 |
 | --- | --- |
@@ -178,7 +187,104 @@ http://localhost:3000 を開きます。Supabase のキーがなくても、地�
 | `npm run build` | 本番ビルド |
 | `npm run typecheck` | 型チェック |
 | `npm run lint` | ESLint |
-| `npm test` | テスト（経路計算など） |
+| `npm test` | テスト（Vitest） |
+| `npm run seed:photos -- sql` | 初期データの写真の SQL を作り直す |
+
+### 環境変数
+
+`.env.example` をコピーして `.env.local` を作ります（`.env.local` は Git に含めません）。本番は Vercel の Environment Variables に同じ名前で設定します。
+
+| 名前 | 内容 |
+| --- | --- |
+| `NEXT_PUBLIC_SUPABASE_URL`・`NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase の接続先 |
+| `SUPABASE_SERVICE_ROLE_KEY` | サーバー専用。地図の区画の取得・共有リストの読み出し・集計に使う。**絶対に公開しない** |
+| `GOOGLE_ROUTES_API_KEY` | 移動時間の計算 |
+| `GEMINI_API_KEY`・`GEMINI_MODEL` | 「AIと相談」 |
+| `USE_MOCK_EXTERNAL_APIS` | `true` の間は Google Routes API を呼ばず概算にする（開発中は `true`） |
+| `NOMINATIM_USER_AGENT` | 場所検索の連絡先（利用規約で必要） |
+| `NEXT_PUBLIC_ENABLE_GOOGLE_LOGIN` | Google ログインを出すか |
+
+### Supabase の準備
+
+1. `supabase/migrations/` のマイグレーションを適用します（main に push すると自動で反映されます）。
+2. メンバーが一度ログインしてから、SQL Editor で初期データを `kanazawa.sql` → `ishikawa.sql` → `cities.sql` → `regions.sql` → `photos.sql` の順に実行します。何度実行しても重複しません。
+
+## API
+
+すべて `/api/v1` の下にあります。詳しくは [要件定義書の API 一覧](docs/要件定義書.md) を見てください。
+
+| メソッド | パス | 内容 | ログイン |
+| --- | --- | --- | --- |
+| GET | `/spots/tiles/{z}/{x}/{y}` | 地図の区画のスポット（z は 5 / 9 / 13） | 不要 |
+| GET | `/spots/search?q=` | スポット名・住所の検索。`#タグ` ならタグ検索 | 不要 |
+| GET | `/spots/{spotId}`・`/spots/{spotId}/posts` | スポット詳細・投稿一覧 | 不要 |
+| GET | `/spots/nearby`・`/places/search` | 近くのスポット・場所の検索（投稿の場所選び） | 不要 |
+| POST | `/uploads`・`/posts` | 写真のアップロード・投稿 | 必要 |
+| PATCH / DELETE | `/posts/{postId}` | 投稿の編集・削除 | 本人 |
+| POST / DELETE | `/posts/{postId}/like` | いいね | 必要 |
+| GET / POST | `/lists` | リスト一覧・作成 | 必要 |
+| GET / PATCH / DELETE | `/lists/{listId}` | リスト詳細・変更・削除 | 本人 |
+| POST / PATCH / DELETE | `/lists/{listId}/items`・`/items/{spotId}` | スポットの追加・必ず行きたい・削除 | 本人 |
+| POST / DELETE | `/lists/{listId}/share` | 共有URLの発行・停止 | 本人 |
+| GET | `/shared/{token}` | 共有リストの閲覧 | 不要 |
+| POST | `/plans/compute`・`/plans/legs`・`/plans/chat` | 回り方の計算・区間の取り直し・AIと相談 | 必要 |
+| GET / POST / DELETE | `/plans`・`/plans/{planId}` | 経路プランの保存・閲覧・削除 | 本人 |
+| GET | `/me`・`/me/posts`・`/system/status` | 自分の情報・投稿、停止中の機能 | — |
+
+## 機能一覧
+
+番号は [要件定義書](docs/要件定義書.md) の機能要件です。
+
+| 機能 | 内容 | 要件 |
+| --- | --- | --- |
+| 写真の地図 | ズーム13以下は写真の束、14以上は写真ピン（人気度で枠の色を変える）。移動中も区画ごとに取得して描画し続ける | F-1-1〜F-1-5 |
+| ボトムシート | ピンや検索結果を選ぶと、名前・写真・カテゴリ・投稿数・滞在の目安・住所と、「詳細を見る」「リストに追加」「ここに投稿」「共有」を出す | F-1-6 |
+| 絞り込み | カテゴリ（自然 / グルメ / 歴史・文化 / 写真映え / その他）と隠れた名所 | F-1-7・F-1-12 |
+| 現在地・リストの強調 | 現在地へ移動。選んだリストのスポットと拠点を地図で強調 | F-1-8・F-1-9 |
+| 端をなぞって拡大・縮小 | スマホで画面の左右の端を上下になぞる | F-1-10 |
+| 全画面の検索 | 履歴（端末に最大10件）、入力中の候補（距離・住所）、音声入力 | F-1-11 |
+| 隠れた名所 | 人気度が通常・投稿1〜10件・いいね5以上・投稿1件あたりのいいね3以上 | F-1-12 |
+| ハッシュタグ | 「#自然界隈」などの用意したタグと、投稿のコメントに書いたタグで検索。コメントのタグは押すと検索を開く | F-1-13 |
+| 投稿 | 写真（最大4枚・EXIF削除・ブラウザで縮小）、場所、カテゴリ、コメント（150文字）、滞在時間。編集・削除・いいね | F-2 |
+| スポット詳細 | 写真ギャラリー（タップで全画面）、人気度、投稿が多い時間帯のグラフ、投稿一覧 | F-3 |
+| 行きたい場所リスト | 作成・名前変更・削除、必ず行きたい、拠点からの距離、並べ替え、比較、合計滞在時間の目安 | F-4 |
+| リストの共有 | 推測できない共有URLを発行・停止。受け取った人はログインなしで閲覧だけできる | F-4-6 |
+| 回り方の作成 | おまかせ / 重視するものを選ぶ / AIと相談 の3つの作り方で最大3案。区間ごとの移動手段の変更、保存 | F-5 |
+| ログイン | メールアドレス＋パスワード（確認メールあり）、Google ログイン（設定時） | F-6 |
+| 運用 | 無料枠の80%で外部APIや投稿を自動停止、DB・写真の毎日のバックアップ | F-8 |
+
+## 画面一覧
+
+| 番号 | 画面 | URL |
+| --- | --- | --- |
+| S-01 | マップ（トップ） | `/`（`/?q=%23タグ` でタグ検索を開いた状態） |
+| S-02 | スポット詳細 | `/spots/[spotId]` |
+| S-04 / S-05 | 投稿の作成 / 編集 | `/posts/new`、`/posts/[postId]/edit` |
+| S-06 / S-07 | リスト一覧 / リスト詳細 | `/lists`、`/lists/[listId]` |
+| S-08 | スポットの比較 | `/lists/[listId]/compare` |
+| S-09〜S-11 | 回り方の作成（条件入力・AIと相談・案の比較） | `/lists/[listId]/plan` |
+| S-12 | 保存した経路プラン | `/plans/[planId]` |
+| S-13 | 共有リスト（閲覧のみ） | `/shared/[token]` |
+| S-14 / S-15 | ログイン / 初回プロフィール | `/login`、`/welcome` |
+| S-16 | マイページ | `/me` |
+| S-17 | 利用規約 / プライバシーポリシー / 写真のクレジット | `/terms`、`/privacy`、`/credits` |
+
+## 初期データと写真
+
+投稿がまだ少ない段階でも地図を使えるよう、14都道府県・112スポットの初期データを入れています（`spots.source = 'seed'`）。初期データの投稿は、デモ用にチームのアカウントで登録したものです。
+
+| ファイル | 地域 | スポット数 |
+| --- | --- | --- |
+| [supabase/seed/kanazawa.sql](supabase/seed/kanazawa.sql) | 石川県金沢市 | 28 |
+| [supabase/seed/ishikawa.sql](supabase/seed/ishikawa.sql) | 石川県（白米千枚田・千里浜なぎさドライブウェイ・那谷寺・鶴仙渓） | 4 |
+| [supabase/seed/cities.sql](supabase/seed/cities.sql) | 東京都・京都府・大阪府 | 各10 |
+| [supabase/seed/regions.sql](supabase/seed/regions.sql) | 北海道・宮城・神奈川・長野・静岡・奈良・兵庫・広島・福岡・沖縄 | 各5 |
+| [supabase/seed/photos.sql](supabase/seed/photos.sql) | 上の初期データの投稿に写真を付ける（自動生成） | — |
+
+- 写真は Wikimedia Commons の369枚（111スポット）です。ライセンスは CC0・パブリックドメイン・CC BY・CC BY-SA だけで、NC・ND は使いません。
+- 作者・ライセンス・出典は [src/lib/seed-photos.json](src/lib/seed-photos.json) に登録し、各写真の下と `/credits` に表示します。
+- 画像は長辺1280pxの本体と、被写体を自動で探して切り抜いた320pxの正方形サムネイルを `public/seed/photos/` に置いています。
+- 写真を追加・削除したら `npm run seed:photos -- sql` で `photos.sql` を作り直します。
 
 ## 資料
 
@@ -194,12 +300,14 @@ http://localhost:3000 を開きます。Supabase のキーがなくても、地�
 | 場所 | 内容 |
 | --- | --- |
 | `src/app/` | 画面と API（`src/app/api/v1/`） |
-| `src/components/` | 画面の部品。地図は `components/map/` |
+| `src/components/` | 画面の部品。地図・検索・シートは `components/map/` |
 | `src/lib/planner/` | 経路作成の計算（要件定義書 11章）。画面とサーバーで共通 |
-| `src/lib/external/` | 外部サービス（移動時間・場所検索）と無料枠の管理 |
+| `src/lib/external/` | 外部サービス（移動時間・場所検索・Gemini）と無料枠の管理 |
+| `src/lib/` | 隠れた名所・ハッシュタグ・検索履歴・共有の合言葉・写真のクレジットなど（テストは同じ場所の `*.test.ts`） |
 | `supabase/migrations/` | DB のテーブル・権限・集計・定期処理 |
 | `supabase/seed/` | テストユーザー（ローカル専用）と初期データ・写真の登録 |
-| `public/seed/photos/` | 初期データの写真（`npm run seed:photos -- fetch` で足りない写真を追加） |
+| `public/seed/photos/` | 初期データの写真（`npm run seed:photos -- fetch` で足りない写真を探せる。探した写真は必ず目で確認する） |
+| `scripts/` | 初期データの写真の管理（`seed-photos.mjs`） |
 | `.github/workflows/` | バックアップ・毎日の運用処理（Secrets が未登録の間は何もしない） |
 
 ## 開発のルール
@@ -208,6 +316,7 @@ http://localhost:3000 を開きます。Supabase のキーがなくても、地�
 - 片側だけに色の線を付けるカード（border-left のアクセント）は使わない（8.2）。
 - APIキーはサーバー側の環境変数だけに置き、リポジトリに入れない。
 - 開発中は `USE_MOCK_EXTERNAL_APIS=true` にして、外部APIの無料枠を使わない。
+- 初期データの写真は、商用利用できて作者のわかる Wikimedia Commons の写真だけを使い、クレジットを登録する。
 - Next.js 16 を使っているため、書き方は `node_modules/next/dist/docs/` を確認する（AGENTS.md）。
 
 ### コミットのルール

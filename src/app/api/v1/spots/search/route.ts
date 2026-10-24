@@ -3,7 +3,7 @@ import { ApiError, dbError, handle } from "@/lib/api";
 import { publicImageUrl } from "@/lib/storage";
 import { getServerSupabase } from "@/lib/supabase/server";
 
-// F-2-7：自前DBのスポット名検索（投稿・拠点の指定で使う。検索画面 F-3-6 はβ版）
+// F-2-7・F-1-11：自前DBのスポット名検索（地図の検索、投稿・拠点の指定で使う。検索画面 F-3-6 はβ版）
 export async function GET(request: NextRequest) {
   return handle(async () => {
     const q = (request.nextUrl.searchParams.get("q") ?? "").trim();
@@ -14,7 +14,7 @@ export async function GET(request: NextRequest) {
     const supabase = await getServerSupabase();
     const { data, error } = await supabase
       .from("spots")
-      .select("id,name,lat,lng,address,post_count,cover:post_images!spots_cover_image_fk(thumb_path)")
+      .select("id,name,lat,lng,address,category,post_count,like_count,popularity,cover:post_images!spots_cover_image_fk(thumb_path)")
       .or(`name.ilike.${pattern},address.ilike.${pattern}`)
       .order("post_count", { ascending: false })
       .limit(10);
@@ -28,7 +28,10 @@ export async function GET(request: NextRequest) {
           lat: s.lat,
           lng: s.lng,
           address: s.address,
+          category: s.category,
           postCount: s.post_count,
+          likeCount: s.like_count,
+          popularity: s.popularity,
           coverThumbUrl: publicImageUrl(cover?.thumb_path),
         };
       }),

@@ -29,14 +29,15 @@ export async function consumeQuota(key: QuotaKey, units: number): Promise<boolea
   return data === true;
 }
 
+// 停止中か。上限の設定を上げた場合は、記録済みの回数と今の上限で判定し直す（同じ期間内でも再開する）
 export async function isSuspended(key: QuotaKey): Promise<boolean> {
   const admin = getAdminSupabase();
   const { data } = await admin
     .from("api_usage")
-    .select("suspended_at")
+    .select("count,suspended_at")
     .eq("provider", key.provider)
     .eq("sku", key.sku)
     .eq("period", period(key.daily ?? false))
     .maybeSingle();
-  return Boolean(data?.suspended_at);
+  return Boolean(data?.suspended_at) && data!.count + 1 > Math.floor(key.limit * 0.8);
 }

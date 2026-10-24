@@ -10,23 +10,29 @@ export function isSupabaseConfigured(): boolean {
 // Googleログインのボタンを出すか（ADR-0021。Supabase に Google を設定したら true にする）
 export const GOOGLE_LOGIN_ENABLED = process.env.NEXT_PUBLIC_ENABLE_GOOGLE_LOGIN === "true";
 
+// 数値の環境変数。空欄（Vercel や .env.example で値を空にした場合）は既定値にする
+function numberEnv(value: string | undefined, fallback: number) {
+  const n = Number(value);
+  return value && Number.isFinite(n) && n > 0 ? n : fallback;
+}
+
 // 以下はサーバー専用
 export function serverEnv() {
   return {
     serviceRoleKey: process.env.SUPABASE_SERVICE_ROLE_KEY ?? "",
     googleRoutesApiKey: process.env.GOOGLE_ROUTES_API_KEY ?? "",
     // 「AIと相談」（F-5-5）。Gemini API の無料枠を使う
-    geminiApiKey: process.env.GEMINI_API_KEY ?? "",
+    geminiApiKey: (process.env.GEMINI_API_KEY ?? "").trim(),
     geminiModel: process.env.GEMINI_MODEL || "gemini-2.5-flash",
     // F-8-8：true の間は外部APIを呼ばず、直線距離からの概算を返す
     useMockExternalApis: (process.env.USE_MOCK_EXTERNAL_APIS ?? "true") === "true",
     nominatimUserAgent: process.env.NOMINATIM_USER_AGENT ?? "tabi-dokoikou (dev)",
     // 無料枠（14章。数値は各サービスの公式ページで確認して設定する）
     // Routes API Essentials（ADR-0019）。行列は組み合わせの件数、経路は回数で数える
-    googleRouteMatrixMonthlyFree: Number(process.env.GOOGLE_ROUTE_MATRIX_MONTHLY_FREE ?? "10000"),
-    googleRoutesMonthlyFree: Number(process.env.GOOGLE_ROUTES_MONTHLY_FREE ?? "10000"),
-    nominatimDailyLimit: Number(process.env.NOMINATIM_DAILY_LIMIT ?? "500"),
+    googleRouteMatrixMonthlyFree: numberEnv(process.env.GOOGLE_ROUTE_MATRIX_MONTHLY_FREE, 10000),
+    googleRoutesMonthlyFree: numberEnv(process.env.GOOGLE_ROUTES_MONTHLY_FREE, 10000),
+    nominatimDailyLimit: numberEnv(process.env.NOMINATIM_DAILY_LIMIT, 500),
     // Gemini の1日あたりの無料回数（モデルごとに違うので Google AI Studio で確認して設定する）
-    geminiDailyFree: Number(process.env.GEMINI_DAILY_FREE ?? "200"),
+    geminiDailyFree: numberEnv(process.env.GEMINI_DAILY_FREE, 200),
   };
 }

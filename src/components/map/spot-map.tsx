@@ -370,9 +370,25 @@ export function SpotMap({
   );
 }
 
-export function locateMe(): Promise<GeolocationPosition> {
-  return new Promise((resolve, reject) => {
-    if (!("geolocation" in navigator)) return reject(new Error("unsupported"));
-    navigator.geolocation.getCurrentPosition(resolve, reject, { enableHighAccuracy: true, timeout: 10000 });
-  });
+// 現在地を取る。まず精度の高い位置（1分以内に取った位置も使う）を試し、建物の中などで取れなければ
+// 精度の低い位置（10分以内に取った位置も使う）で取り直す。許可されていない場合は取り直さない
+export async function locateMe(): Promise<GeolocationPosition> {
+  if (!("geolocation" in navigator)) throw new Error("unsupported");
+  const get = (options: PositionOptions) =>
+    new Promise<GeolocationPosition>((resolve, reject) => navigator.geolocation.getCurrentPosition(resolve, reject, options));
+  try {
+    return await get({ enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 });
+  } catch (e) {
+    if (e instanceof GeolocationPositionError && e.code === e.PERMISSION_DENIED) throw e;
+    return get({ enableHighAccuracy: false, timeout: 15000, maximumAge: 600000 });
+  }
+}
+
+// 現在地を取れなかった理由を、直し方と一緒に伝える
+export function locateErrorMessage(e: unknown): string {
+  if (e instanceof Error && e.message === "unsupported") return "このブラウザでは現在地を使えません。検索で指定してください";
+  if (e instanceof GeolocationPositionError && e.code === e.PERMISSION_DENIED) {
+    return "位置情報の利用が許可されていません。ブラウザのサイトの設定（アドレスバーの左のマーク）と、端末の位置情報サービスの設定で、このサイトに位置情報を許可してください。LINE などのアプリの中で開いている場合は、Safari や Chrome で開き直してください";
+  }
+  return "現在地を取得できませんでした。電波の届きやすい場所でもう一度押すか、検索で指定してください";
 }

@@ -10,7 +10,7 @@ import { useApp } from "@/components/app-context";
 import { CATEGORY_ICONS } from "@/components/category";
 import { SearchScreen, demoSearch, type SearchHit } from "@/components/map/search-screen";
 import { SpotSheet } from "@/components/map/spot-sheet";
-import { locateMe, type MapSpot, type MapViewInfo } from "@/components/map/spot-map";
+import { locateErrorMessage, locateMe, type MapSpot, type MapViewInfo } from "@/components/map/spot-map";
 import { useCanVoice } from "@/components/map/voice-search";
 import { Chip, Notice } from "@/components/ui";
 import { api } from "@/lib/client-api";
@@ -90,8 +90,8 @@ export function MapScreen() {
       const pos = await locateMe();
       setMyPos({ lat: pos.coords.latitude, lng: pos.coords.longitude });
       setFlyTo({ lat: pos.coords.latitude, lng: pos.coords.longitude, zoom: 14, key: Date.now() });
-    } catch {
-      setError("現在地を取得できませんでした");
+    } catch (e) {
+      setError(locateErrorMessage(e));
     }
   };
 

@@ -5,7 +5,7 @@ import { useParams } from "next/navigation";
 import { useMemo, useState } from "react";
 import { useApp } from "@/components/app-context";
 import { CATEGORY_ICONS } from "@/components/category";
-import { locateMe } from "@/components/map/spot-map";
+import { locateErrorMessage, locateMe } from "@/components/map/spot-map";
 import { PlacePicker } from "@/components/place-picker";
 import { ChatConditionsList, PlanChat } from "@/components/plan-chat";
 import { PlanResult, type ComputeResponse, type PlanRequest } from "@/components/plan-result";
@@ -58,22 +58,31 @@ function PlaceField({
   emptyText,
   onChange,
   extra,
-  onError,
+  onLocating,
 }: {
   label: string;
   value: Place | null;
   emptyText: string;
   onChange: (p: Place | null) => void;
   extra?: { label: string; place: Place } | null;
-  onError: (message: string) => void;
+  // 現在地を取得している間は、経路の作成を押せないようにする
+  onLocating: (locating: boolean) => void;
 }) {
   const [picking, setPicking] = useState(false);
+  const [locating, setLocating] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const useCurrent = async () => {
+    setLocating(true);
+    onLocating(true);
+    setError(null);
     try {
       const pos = await locateMe();
       onChange({ label: "現在地", lat: pos.coords.latitude, lng: pos.coords.longitude });
-    } catch {
-      onError("現在地を取得できませんでした");
+    } catch (e) {
+      setError(locateErrorMessage(e));
+    } finally {
+      setLocating(false);
+      onLocating(false);
     }
   };
   return (
@@ -82,15 +91,20 @@ function PlaceField({
       <div className="flex items-center gap-2">
         <div className="flex min-h-11 min-w-0 flex-1 items-center gap-2 rounded-xl border border-border bg-surface px-3">
           <House size={16} strokeWidth={2} className="shrink-0" aria-hidden />
-          <span className="truncate text-sm">{value?.label ?? emptyText}</span>
+          <span className="truncate text-sm">{locating ? "現在地を取得中…" : (value?.label ?? emptyText)}</span>
         </div>
-        <Button variant="secondary" icon={LocateFixed} onClick={useCurrent}>
+        <Button variant="secondary" icon={LocateFixed} onClick={useCurrent} loading={locating}>
           現在地
         </Button>
         <Button variant="secondary" onClick={() => setPicking((v) => !v)}>
           検索
         </Button>
       </div>
+      {error && (
+        <Notice tone="error" className="mt-2">
+          {error}
+        </Notice>
+      )}
       {picking && (
         <div className="mt-2 flex flex-col gap-2">
           {extra && (
@@ -141,6 +155,8 @@ export function PlanBuilder() {
 
   const [computing, setComputing] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
+  const [locatingOrigin, setLocatingOrigin] = useState(false);
+  const [locatingDestination, setLocatingDestination] = useState(false);
   const [result, setResult] = useState<{ request: PlanRequest; response: ComputeResponse } | null>(null);
 
   const spotNames = useMemo(() => new Map((list?.spots ?? []).map((s) => [s.id, s.name])), [list]);
@@ -254,7 +270,7 @@ export function PlanBuilder() {
 
       <section className="mb-6 flex flex-col gap-4">
         <h2 className="font-bold">共通の条件</h2>
-        <PlaceField label="出発地" value={origin} emptyText="未設定" onChange={setOrigin} onError={setFormError} />
+        <PlaceField label="出発地" value={origin} emptyText="未設定" onChange={setOrigin} onLocating={setLocatingOrigin} />
         <div>
           <PlaceField
             label="到着地（任意）"
@@ -262,7 +278,7 @@ export function PlanBuilder() {
             emptyText="指定しない（最後のスポットで終わる）"
             onChange={setDestination}
             extra={origin ? { label: "出発地に戻る", place: origin } : null}
-            onError={setFormError}
+            onLocating={setLocatingDestination}
           />
           {destination && (
             <Button variant="ghost" className="mt-1" onClick={() => setDestination(null)}>
@@ -390,7 +406,9 @@ export function PlanBuilder() {
         className="w-full"
         onClick={compute}
         loading={computing}
-        disabled={selected.length === 0 || !origin || suspended?.[mode] || (method === "chat" && aiOff)}
+        disabled={
+          selected.length === 0 || !origin || locatingOrigin || locatingDestination || suspended?.[mode] || (method === "chat" && aiOff)
+        }
       >
         経路案を作る
       </Button>

@@ -3,7 +3,7 @@
 import { Check, LocateFixed, MapPin, Plus, Search } from "lucide-react";
 import { useState, type FormEvent } from "react";
 import { useApp } from "@/components/app-context";
-import { locateMe } from "@/components/map/spot-map";
+import { locateErrorMessage, locateMe } from "@/components/map/spot-map";
 import { Button, Chip, Notice, Spinner, cn, inputClass } from "@/components/ui";
 import { api, errorMessage } from "@/lib/client-api";
 import { SPOT_NAME_MAX } from "@/lib/constants";
@@ -90,7 +90,7 @@ export function PlacePicker({
       if (!r.canCreate) setError("位置の誤差が大きいため、候補から選んでください");
     } catch (e) {
       if (e instanceof GeolocationPositionError || (e instanceof Error && e.message === "unsupported")) {
-        setError("現在地を取得できませんでした。スポット名で検索してください");
+        setError(locateErrorMessage(e));
         setMode("search");
       } else {
         setError(errorMessage(e));

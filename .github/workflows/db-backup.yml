@@ -1,0 +1,66 @@
+# DBの日次バックアップ（ADR-0011・要件定義書 12章）
+# 毎日 3:00（日本時間）に pg_dump → 圧縮 → 暗号化 → Cloudflare R2 に保存する。
+# リポジトリが公開のため、Artifact には保存しない。30日より古いファイルは R2 のライフサイクル設定で削除する。
+# 必要な Secrets：SUPABASE_DB_URL, BACKUP_PASSPHRASE, R2_ACCOUNT_ID, R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY, R2_BUCKET
+# Secrets が登録されていない間は、何もせずに終わる。
+name: db-backup
+
+on:
+  schedule:
+    - cron: "0 18 * * *"
+  workflow_dispatch:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    outputs:
+      ready: ${{ steps.secrets.outputs.ready }}
+    steps:
+      - id: secrets
+        env:
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+          BACKUP_PASSPHRASE: ${{ secrets.BACKUP_PASSPHRASE }}
+          R2_BUCKET: ${{ secrets.R2_BUCKET }}
+        run: |
+          if [ -n "$SUPABASE_DB_URL" ] && [ -n "$BACKUP_PASSPHRASE" ] && [ -n "$R2_BUCKET" ]; then
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "Secrets が未登録のため、バックアップを省略します"
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+          fi
+
+  backup:
+    needs: check
+    if: needs.check.outputs.ready == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dump database
+        env:
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+        run: |
+          set -euo pipefail
+          FILE="db-$(TZ=Asia/Tokyo date +%Y%m%d-%H%M).dump"
+          docker run --rm -e DB_URL="$SUPABASE_DB_URL" postgres:17 \
+            sh -c 'pg_dump "$DB_URL" --format=custom --no-owner --no-privileges --schema=public --schema=auth --schema=storage' > "$FILE"
+          gzip "$FILE"
+          echo "FILE=$FILE.gz" >> "$GITHUB_ENV"
+
+      - name: Encrypt
+        env:
+          BACKUP_PASSPHRASE: ${{ secrets.BACKUP_PASSPHRASE }}
+        run: |
+          set -euo pipefail
+          gpg --batch --yes --pinentry-mode loopback --passphrase "$BACKUP_PASSPHRASE" --symmetric --cipher-algo AES256 "$FILE"
+          rm "$FILE"
+          echo "ENC=$FILE.gpg" >> "$GITHUB_ENV"
+
+      - name: Upload to Cloudflare R2
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: auto
+        run: |
+          set -euo pipefail
+          aws s3 cp "$ENC" "s3://${{ secrets.R2_BUCKET }}/db/$ENC" \
+            --endpoint-url "https://${{ secrets.R2_ACCOUNT_ID }}.r2.cloudflarestorage.com"
+          ls -l "$ENC"

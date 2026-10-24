@@ -3,6 +3,7 @@
 import {
   ArrowDown,
   ArrowUp,
+  Bus,
   Car,
   Clock,
   Coffee,
@@ -18,19 +19,70 @@ import { Badge, IconButton, cn } from "@/components/ui";
 import { TRAVEL_MODE_LABELS, type TravelMode } from "@/lib/constants";
 import { formatClock, UNREACHABLE_MIN } from "@/lib/planner";
 import type { Leg, PlanItem } from "@/lib/planner/types";
+import type { TransitStep } from "@/lib/transit/route";
 
 export const MODE_ICON: Record<TravelMode, LucideIcon> = { transit: TrainFront, walking: Footprints, driving: Car };
 const LEG_MODES: TravelMode[] = ["walking", "driving", "transit"];
 const STAY_OPTIONS = [15, 30, 45, 60, 90, 120, 180, 240];
 
+// 公共交通の区間の手順（ADR-0026）：徒歩 → 乗り場 → 乗車 → 降り場 → 徒歩。時刻は出発時刻から足した目安
+function TransitSteps({ steps, departMin }: { steps: TransitStep[]; departMin: number }) {
+  if (!steps.some((s) => s.kind === "ride")) {
+    return <p className="ml-4 pb-1 pl-12 text-xs text-muted">乗り物より歩いた方が早いため、徒歩で移動します</p>;
+  }
+  // 手順 i の始まる時刻（出発時刻に、それまでの手順の時間を足す）
+  const startOf = (i: number) =>
+    steps.slice(0, i).reduce((t, s) => t + (s.kind === "walk" ? s.min : s.waitMin + s.rideMin), departMin);
+  return (
+    <ol className="ml-4 flex flex-col gap-1.5 border-l border-dashed border-border pb-2 pl-5 text-sm" aria-label="乗り換えの手順">
+      {steps.map((s, i) => {
+        if (s.kind === "walk") {
+          return (
+            <li key={i} className="flex items-start gap-2 text-muted">
+              <span className="w-11 shrink-0 tabular-nums">{formatClock(startOf(i))}</span>
+              <Footprints size={16} strokeWidth={2} className="mt-0.5 shrink-0" aria-hidden />
+              <span>
+                徒歩 {s.min}分 → {s.to ?? "到着"}
+              </span>
+            </li>
+          );
+        }
+        // 乗る時刻（待ち時間のあと）
+        const board = startOf(i) + s.waitMin;
+        const Icon = s.vehicle === "bus" ? Bus : TrainFront;
+        return (
+          <li key={i} className="flex items-start gap-2">
+            <span className="w-11 shrink-0 font-medium tabular-nums">{formatClock(board)}</span>
+            <Icon size={16} strokeWidth={2} className="mt-0.5 shrink-0 text-primary" aria-hidden />
+            <span className="min-w-0">
+              <span className="font-medium">
+                {s.line}
+                {s.toward && `（${s.toward}方面）`}
+              </span>
+              <br />
+              {s.from} → {s.to}
+              <br />
+              <span className="text-xs text-muted">
+                待ち 約{s.waitMin}分・乗車 約{s.rideMin}分（{s.stops}つ先）
+              </span>
+            </span>
+          </li>
+        );
+      })}
+    </ol>
+  );
+}
+
 // 区間の行：移動手段と所要時間。編集中は移動手段を切り替えられ（F-5-10）、保存後は「ナビ開始」を出す（F-5-12）
 function LegRow({
   leg,
+  departMin,
   navUrl,
   onMode,
   busy,
 }: {
   leg: Leg;
+  departMin: number;
   navUrl?: string;
   onMode?: (mode: TravelMode) => void;
   busy?: boolean;
@@ -38,46 +90,53 @@ function LegRow({
   const Icon = MODE_ICON[leg.mode];
   const unreachable = leg.travelMin >= UNREACHABLE_MIN / 10;
   return (
-    <div className="ml-4 flex flex-wrap items-center gap-2 py-1 pl-6 text-sm text-muted">
-      <Icon size={16} strokeWidth={2} aria-hidden />
-      <span>
-        {TRAVEL_MODE_LABELS[leg.mode]} {unreachable ? "経路が見つかりません" : `約${leg.travelMin}分`}
-        {!unreachable && leg.estimated && "（目安）"}
-      </span>
-      {onMode && (
-        <span className="ml-auto inline-flex rounded-xl border border-border bg-surface p-0.5" role="group" aria-label="この区間の移動手段">
-          {LEG_MODES.map((m) => {
-            const MIcon = MODE_ICON[m];
-            return (
-              <button
-                key={m}
-                type="button"
-                aria-pressed={leg.mode === m}
-                disabled={busy}
-                onClick={() => m !== leg.mode && onMode(m)}
-                className={cn(
-                  "inline-flex min-h-9 items-center gap-1 rounded-lg px-2 text-xs",
-                  leg.mode === m ? "bg-primary-soft text-primary" : "text-muted",
-                )}
-              >
-                <MIcon size={14} strokeWidth={2} aria-hidden />
-                {TRAVEL_MODE_LABELS[m]}
-              </button>
-            );
-          })}
+    <div>
+      <div className="ml-4 flex flex-wrap items-center gap-2 py-1 pl-6 text-sm text-muted">
+        <Icon size={16} strokeWidth={2} aria-hidden />
+        <span>
+          {TRAVEL_MODE_LABELS[leg.mode]} {unreachable ? "経路が見つかりません" : `約${leg.travelMin}分`}
+          {!unreachable && leg.estimated && "（目安）"}
         </span>
-      )}
-      {navUrl && (
-        <a
-          href={navUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="ml-auto inline-flex min-h-11 items-center gap-1 rounded-xl border border-border bg-surface px-3 text-sm font-medium text-primary"
-        >
-          <Navigation size={16} strokeWidth={2} aria-hidden />
-          ナビ開始
-        </a>
-      )}
+        {onMode && (
+          <span
+            className="ml-auto inline-flex rounded-xl border border-border bg-surface p-0.5"
+            role="group"
+            aria-label="この区間の移動手段"
+          >
+            {LEG_MODES.map((m) => {
+              const MIcon = MODE_ICON[m];
+              return (
+                <button
+                  key={m}
+                  type="button"
+                  aria-pressed={leg.mode === m}
+                  disabled={busy}
+                  onClick={() => m !== leg.mode && onMode(m)}
+                  className={cn(
+                    "inline-flex min-h-9 items-center gap-1 rounded-lg px-2 text-xs",
+                    leg.mode === m ? "bg-primary-soft text-primary" : "text-muted",
+                  )}
+                >
+                  <MIcon size={14} strokeWidth={2} aria-hidden />
+                  {TRAVEL_MODE_LABELS[m]}
+                </button>
+              );
+            })}
+          </span>
+        )}
+        {navUrl && (
+          <a
+            href={navUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="ml-auto inline-flex min-h-11 items-center gap-1 rounded-xl border border-border bg-surface px-3 text-sm font-medium text-primary"
+          >
+            <Navigation size={16} strokeWidth={2} aria-hidden />
+            ナビ開始
+          </a>
+        )}
+      </div>
+      {leg.mode === "transit" && leg.steps && !unreachable && <TransitSteps steps={leg.steps} departMin={departMin} />}
     </div>
   );
 }
@@ -122,10 +181,11 @@ export function Timeline({
     };
   });
 
-  const legRow = (leg: Leg | null, i: number) =>
+  const legRow = (leg: Leg | null, i: number, departMin: number) =>
     leg && (
       <LegRow
         leg={leg}
+        departMin={departMin}
         navUrl={navLinks?.[i]}
         busy={legBusy}
         onMode={onLegMode ? (m) => onLegMode(i, m) : undefined}
@@ -143,7 +203,7 @@ export function Timeline({
                 <span className="w-12 font-bold tabular-nums">{formatClock(item.depart)}</span>
                 <span className="min-w-0 flex-1 truncate">{originLabel} を出発</span>
               </div>
-              {legRow(item.next, legIndex)}
+              {legRow(item.next, legIndex, item.depart)}
             </li>
           );
         }
@@ -221,7 +281,7 @@ export function Timeline({
                 </div>
               )}
             </div>
-            {legRow(item.next, legIndex)}
+            {legRow(item.next, legIndex, item.depart)}
           </li>
         );
       })}

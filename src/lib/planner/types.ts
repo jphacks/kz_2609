@@ -1,4 +1,5 @@
 import type { Category, Pace, Priority, TravelMode } from "@/lib/constants";
+import type { TransitStep } from "@/lib/transit/route";
 
 // 行列の添字：0 = 出発地、1..n = スポット、n+1 = 到着地（ある場合）
 export type TravelMatrix = {
@@ -35,7 +36,8 @@ export type PlanInput = {
   orderHints?: OrderHint[];
 };
 
-export type Leg = { mode: TravelMode; travelMin: number; distM: number; estimated: boolean };
+// steps：公共交通の区間の手順（徒歩 → 乗り場 → 乗車 → 降り場 → 徒歩。ADR-0026）。区間を取り直したあとに入る
+export type Leg = { mode: TravelMode; travelMin: number; distM: number; estimated: boolean; steps?: TransitStep[] };
 
 // 区間ごとに取り直した所要時間（F-5-10）。歩く距離も持つ
 export type LegOverride = Leg & { walkM: number };

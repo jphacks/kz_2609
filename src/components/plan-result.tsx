@@ -140,7 +140,7 @@ export function PlanResult({
     }
   };
 
-  // 公共交通の区間を、実際の出発時刻で取り直す
+  // 公共交通の区間の乗り換え（乗り場・路線）を計算し、乗り場までの徒歩を Google で取り直す（ADR-0026）
   const refineTransit = (c: PlanCandidate, base: LegOverrides) =>
     refetchLegs(
       c,
@@ -148,7 +148,7 @@ export function PlanResult({
       base,
     );
 
-  // 案を選んだら、公共交通の区間だけ実際の出発時刻で取り直す
+  // 案を選んだら、公共交通の区間だけ乗り換えの手順を計算する
   const choose = (c: PlanCandidate) => {
     const empty: LegOverrides = new Map();
     setOverrides(empty);
@@ -258,7 +258,7 @@ export function PlanResult({
             onLegMode={(k, mode) => void refetchLegs(current, [{ k, mode }], overrides)}
             legBusy={legBusy}
           />
-          {legBusy && <Spinner label="Google で所要時間を確認中" />}
+          {legBusy && <Spinner label="所要時間と乗り換えを確認中" />}
           {legNotes.map((note) => (
             <Notice key={note} tone="info" className="mt-2">
               {note}
@@ -273,7 +273,7 @@ export function PlanResult({
                 onClick={() => refineTransit(current, overrides)}
                 loading={legBusy}
               >
-                公共交通の時刻で計算し直す
+                公共交通の乗り換えを計算し直す
               </Button>
             )}
           </div>

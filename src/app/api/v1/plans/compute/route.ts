@@ -55,7 +55,7 @@ export async function POST(request: Request) {
       points.push({ key: pointKey(d.lat, d.lng), lat: d.lat, lng: d.lng });
     }
 
-    const matrix = await getTravelMatrix(points, body.mode, body.date, body.startTime);
+    const matrix = await getTravelMatrix(points, body.mode);
     const input: PlanInput = {
       spots,
       hasDestination: Boolean(body.destination),

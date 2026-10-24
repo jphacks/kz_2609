@@ -103,6 +103,7 @@ export function simulate(
     travelMin: Math.round(l.travelMin),
     distM: l.distM,
     estimated: l.estimated,
+    ...(l.steps ? { steps: l.steps } : {}),
   });
 
   const windows = new Map((input.timeWindows ?? []).map((w) => [w.spotId, w]));

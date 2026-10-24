@@ -77,7 +77,7 @@ export function PlanDetail() {
       </p>
       <p className="mb-3 text-sm text-muted">{plan.reason}</p>
       <Notice tone="info" className="mb-3">
-        所要時間は計画時点の Google マップの情報です。当日は「ナビ開始」から Googleマップで最新の経路を確認してください
+        所要時間は計画時点の Google マップの情報です。バス・電車の待ち時間と乗車時間は時刻表を使わない目安なので、当日は「ナビ開始」から Googleマップで最新の経路を確認してください
       </Notice>
       {plan.fullRoute && (
         <div className="mb-4 flex flex-col gap-1">

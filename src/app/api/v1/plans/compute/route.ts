@@ -24,13 +24,18 @@ export async function POST(request: Request) {
     if (selected.some((s) => !s || s.deleted)) {
       throw new ApiError("VALIDATION_ERROR", "リストにないスポット、または削除されたスポットが含まれています");
     }
-    const chosen = selected as NonNullable<(typeof selected)[number]>[];
-
-    // おまかせは「ふつう・興味なし・移動を少なく」（F-5-3）
+    // おまかせは「ふつう・興味なし・移動を少なく」（F-5-3）。時刻の指定などは AIと相談のときだけ使う（F-5-5）
     const prefs =
       body.method === "auto"
         ? { pace: "normal" as const, interests: [], priority: "fewer_moves" as const }
         : body.preferences;
+    const chat = body.method === "chat" ? body.preferences : null;
+
+    // AIと相談で「行かない」としたスポットは対象から外す
+    const excluded = new Set(chat?.exclude ?? []);
+    const chosen = (selected as NonNullable<(typeof selected)[number]>[]).filter((s) => !excluded.has(s.id));
+    if (chosen.length === 0) throw new ApiError("VALIDATION_ERROR", "すべてのスポットが除外されています。条件を見直してください");
+    const chosenIds = new Set(chosen.map((s) => s.id));
 
     const spots: PlanSpot[] = chosen.map((s) => ({
       id: s.id,
@@ -59,13 +64,21 @@ export async function POST(request: Request) {
       lunchBreak: body.lunchBreak,
       mode: body.mode,
       priority: prefs.priority,
+      timeWindows: (chat?.timeWindows ?? [])
+        .filter((w) => chosenIds.has(w.spotId))
+        .map((w) => ({ spotId: w.spotId, from: parseClock(w.from), to: parseClock(w.to) })),
+      orderHints: (chat?.orderHints ?? []).filter(
+        (h) => chosenIds.has(h.spotId) && (!h.relativeTo || chosenIds.has(h.relativeTo)),
+      ),
     };
     const result = computeCandidates(input, matrix);
     if (!result.ok) {
       throw new ApiError(
         "VALIDATION_ERROR",
         result.reason === "must_visit_overflow"
-          ? "時間内に回りきれません。終了時刻を延ばすか、スポットを減らしてください"
+          ? chat && (input.timeWindows?.length || input.orderHints?.length)
+            ? "時刻や順番の希望をすべて満たす回り方が見つかりません。希望を減らすか、終了時刻を延ばしてください"
+            : "時間内に回りきれません。終了時刻を延ばすか、スポットを減らしてください"
           : "スポットを選んでください",
       );
     }
@@ -76,6 +89,7 @@ export async function POST(request: Request) {
       input,
       matrix: { minutes: matrix.minutes, distances: matrix.distances, walk: matrix.walk, estimated: matrix.estimated },
       notes: matrix.notes,
+      excluded: [...excluded].filter((id) => byId.has(id)),
       spots: chosen.map((s) => ({
         id: s.id,
         name: s.name,

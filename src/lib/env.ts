@@ -15,6 +15,9 @@ export function serverEnv() {
   return {
     serviceRoleKey: process.env.SUPABASE_SERVICE_ROLE_KEY ?? "",
     googleRoutesApiKey: process.env.GOOGLE_ROUTES_API_KEY ?? "",
+    // 「AIと相談」（F-5-5）。Gemini API の無料枠を使う
+    geminiApiKey: process.env.GEMINI_API_KEY ?? "",
+    geminiModel: process.env.GEMINI_MODEL || "gemini-2.5-flash",
     // F-8-8：true の間は外部APIを呼ばず、直線距離からの概算を返す
     useMockExternalApis: (process.env.USE_MOCK_EXTERNAL_APIS ?? "true") === "true",
     nominatimUserAgent: process.env.NOMINATIM_USER_AGENT ?? "tabi-dokoikou (dev)",
@@ -23,5 +26,7 @@ export function serverEnv() {
     googleRouteMatrixMonthlyFree: Number(process.env.GOOGLE_ROUTE_MATRIX_MONTHLY_FREE ?? "10000"),
     googleRoutesMonthlyFree: Number(process.env.GOOGLE_ROUTES_MONTHLY_FREE ?? "10000"),
     nominatimDailyLimit: Number(process.env.NOMINATIM_DAILY_LIMIT ?? "500"),
+    // Gemini の1日あたりの無料回数（モデルごとに違うので Google AI Studio で確認して設定する）
+    geminiDailyFree: Number(process.env.GEMINI_DAILY_FREE ?? "200"),
   };
 }

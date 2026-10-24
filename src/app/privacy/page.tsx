@@ -25,6 +25,10 @@ export default function PrivacyPage() {
         地図の表示（OpenFreeMap）、場所の検索（OpenStreetMap Nominatim）、移動時間の計算（Google Routes
         API）に、スポットの位置情報を送ります。ユーザーを特定できる情報は送りません。
       </p>
+      <p className="mt-2">
+        経路作成の「AIと相談」を使うと、入力した会話の文章・リスト内のスポット名・日付や時間などの条件を、AIの外部サービス（Google
+        Gemini API）に送ります。ユーザー名やメールアドレスは送りません。会話の内容は保存しません。外部サービスの無料枠では、送った内容がサービス改善に使われる場合があるため、個人を特定できる情報は入力しないでください。
+      </p>
       <h2 className="mt-4 font-bold">初期データの写真</h2>
       <p>
         初期データのスポットの写真は Wikimedia Commons のクリエイティブ・コモンズ等の画像です。作者とライセンスは各写真の下と

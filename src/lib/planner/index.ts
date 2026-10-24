@@ -11,6 +11,7 @@ import type {
   CandidateKind,
   Leg,
   LegOverride,
+  OrderHint,
   PlanCandidate,
   PlanInput,
   PlanItem,
@@ -104,6 +105,9 @@ export function simulate(
     estimated: l.estimated,
   });
 
+  const windows = new Map((input.timeWindows ?? []).map((w) => [w.spotId, w]));
+  let windowMissed = false;
+
   const origin: PlanItem = { type: "origin", depart: t, next: null };
   items.push(origin);
   let lastWithNext: { next: Leg | null } = origin;
@@ -116,6 +120,10 @@ export function simulate(
     t += l.travelMin;
     travel += l.travelMin;
     walkM += l.walkM;
+    // 時刻の指定（AIと相談）：早く着いたら指定の時刻まで待つ。遅れたらこの順番は使えない
+    const w = windows.get(spot.id);
+    if (w && t < w.from) t = w.from;
+    if (w && t > w.to) windowMissed = true;
     const arrive = Math.round(t);
     const stay = stayOverride?.get(spot.id) ?? spot.stayMin;
     const g = timeGap(arrive, stay, spot.bestHours);
@@ -151,8 +159,27 @@ export function simulate(
     items,
     stats: { spotCount: order.length, totalTravelMin: Math.round(travel), walkM: Math.round(walkM), endAt, bestTimeHits: hits },
     timeGapTotal: gap,
-    feasible: Number.isFinite(t) && t <= input.endMin,
+    feasible: Number.isFinite(t) && t <= input.endMin && !windowMissed,
   };
+}
+
+// 行く順番の希望（AIと相談）を満たすか。順番に入っていないスポットの希望は問わない
+export function satisfiesOrderHints(orderIds: string[], hints: OrderHint[] | undefined): boolean {
+  if (!hints || hints.length === 0) return true;
+  const pos = new Map(orderIds.map((id, i) => [id, i]));
+  for (const h of hints) {
+    const i = pos.get(h.spotId);
+    if (i === undefined) continue;
+    if (h.position === "first" && i !== 0) return false;
+    if (h.position === "last" && i !== orderIds.length - 1) return false;
+    if ((h.position === "before" || h.position === "after") && h.relativeTo) {
+      const j = pos.get(h.relativeTo);
+      if (j === undefined) continue;
+      if (h.position === "before" && i > j) return false;
+      if (h.position === "after" && i < j) return false;
+    }
+  }
+  return true;
 }
 
 // 11.3：点数（小さいほどよい）
@@ -217,6 +244,7 @@ export function computeCandidates(input: PlanInput, matrix: TravelMatrix): Compu
   const consider = () => {
     if (order.length === 0) return;
     for (const m of mustIdx) if (!used[m]) return;
+    if (!satisfiesOrderHints(order.map((i) => input.spots[i - 1].id), input.orderHints)) return;
     const sim = simulate(input, matrix, order);
     if (!sim.feasible || order.length < maxCount) return;
     if (order.length > maxCount) {
@@ -237,7 +265,7 @@ export function computeCandidates(input: PlanInput, matrix: TravelMatrix): Compu
   // 途中で終了時刻を超えたら、それ以上スポットを足しても間に合わないので打ち切る
   const partialOk = () => {
     const sim = simulate({ ...input, hasDestination: false }, matrix, order);
-    return Number.isFinite(sim.stats.endAt) && sim.stats.endAt <= input.endMin;
+    return sim.feasible;
   };
 
   const dfs = () => {

@@ -1,12 +1,13 @@
 "use client";
 
-import { Coffee, House, ListChecks, LocateFixed, Route, Star, WandSparkles } from "lucide-react";
+import { CirclePause, Coffee, House, ListChecks, LocateFixed, MessageCircle, Route, Star, WandSparkles } from "lucide-react";
 import { useParams } from "next/navigation";
 import { useMemo, useState } from "react";
 import { useApp } from "@/components/app-context";
 import { CATEGORY_ICONS } from "@/components/category";
 import { locateMe } from "@/components/map/spot-map";
 import { PlacePicker } from "@/components/place-picker";
+import { ChatConditionsList, PlanChat } from "@/components/plan-chat";
 import { PlanResult, type ComputeResponse, type PlanRequest } from "@/components/plan-result";
 import { MODE_ICON } from "@/components/timeline";
 import { Badge, Button, Card, Chip, Field, Notice, PageHeader, Spinner, cn, inputClass } from "@/components/ui";
@@ -27,13 +28,19 @@ import {
   type Priority,
   type TravelMode,
 } from "@/lib/constants";
+import type { ChatConditions } from "@/lib/planner/types";
 
 type Place = { label: string; lat: number; lng: number };
 
 const METHODS = [
   { key: "auto", icon: WandSparkles, title: "おまかせ", desc: "追加の入力なし。移動の負担が少ない案を作ります" },
   { key: "preferences", icon: ListChecks, title: "重視するものを選ぶ", desc: "ペースや優先することを選んで作ります" },
+  { key: "chat", icon: MessageCircle, title: "AIと相談", desc: "時間帯や順番の希望を話して条件を決めます" },
 ] as const;
+
+type Method = (typeof METHODS)[number]["key"];
+type ChatExtras = Pick<ChatConditions, "timeWindows" | "orderHints" | "exclude">;
+const NO_EXTRAS: ChatExtras = { timeWindows: [], orderHints: [], exclude: [] };
 
 function today() {
   return new Date(Date.now() + 9 * 3600 * 1000).toISOString().slice(0, 10);
@@ -125,10 +132,12 @@ export function PlanBuilder() {
   const [endTime, setEndTime] = useState("18:00");
   const [mode, setMode] = useState<TravelMode>("transit");
   const [lunchBreak, setLunchBreak] = useState(true);
-  const [method, setMethod] = useState<"auto" | "preferences">("auto");
+  const [method, setMethod] = useState<Method>("auto");
   const [pace, setPace] = useState<Pace>("normal");
   const [interests, setInterests] = useState<Category[]>([]);
   const [priority, setPriority] = useState<Priority>("fewer_moves");
+  // AIと相談で読み取った「時刻の指定・順番の希望・除外」（F-5-5）
+  const [extras, setExtras] = useState<ChatExtras>(NO_EXTRAS);
 
   const [computing, setComputing] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
@@ -146,6 +155,14 @@ export function PlanBuilder() {
   const origin = originState ?? list.base ?? null;
   const suspended = status?.suspended;
   const full = selected.length >= MAX_PLAN_SPOTS;
+  const aiOff = Boolean(suspended?.ai);
+  const conditions: ChatConditions = { pace, interests, priority, ...extras };
+  const setConditions = (c: ChatConditions) => {
+    setPace(c.pace);
+    setInterests(c.interests);
+    setPriority(c.priority);
+    setExtras({ timeWindows: c.timeWindows, orderHints: c.orderHints, exclude: c.exclude });
+  };
 
   if (result) {
     return (
@@ -178,7 +195,7 @@ export function PlanBuilder() {
       mode,
       lunchBreak,
       method,
-      preferences: { pace, interests, priority },
+      preferences: { pace, interests, priority, ...(method === "chat" ? extras : NO_EXTRAS) },
     };
     try {
       const response = await api<ComputeResponse>("/plans/compute", { method: "POST", json: request });
@@ -282,28 +299,52 @@ export function PlanBuilder() {
 
       <section className="mb-6 flex flex-col gap-3">
         <h2 className="font-bold">作り方</h2>
-        <div className="grid gap-2 sm:grid-cols-2">
-          {METHODS.map(({ key, icon: Icon, title, desc }) => (
-            <button
-              key={key}
-              type="button"
-              aria-pressed={method === key}
-              onClick={() => setMethod(key)}
-              className={cn(
-                "flex items-start gap-3 rounded-xl border p-3 text-left",
-                method === key ? "border-primary bg-primary-soft" : "border-border bg-surface",
-              )}
-            >
-              <Icon size={20} strokeWidth={2} className="mt-0.5 text-primary" aria-hidden />
-              <span>
-                <span className="block font-medium">{title}</span>
-                <span className="text-xs text-muted">{desc}</span>
-              </span>
-            </button>
-          ))}
+        <div className="grid gap-2 sm:grid-cols-3">
+          {METHODS.map(({ key, icon: Icon, title, desc }) => {
+            // AIが停止中・未設定なら「AIと相談」だけ使えない（F-5 例外）
+            const off = key === "chat" && aiOff;
+            return (
+              <button
+                key={key}
+                type="button"
+                aria-pressed={method === key}
+                onClick={() => setMethod(key)}
+                disabled={off}
+                className={cn(
+                  "flex items-start gap-3 rounded-xl border p-3 text-left disabled:cursor-not-allowed disabled:opacity-60",
+                  method === key ? "border-primary bg-primary-soft" : "border-border bg-surface",
+                )}
+              >
+                <Icon size={20} strokeWidth={2} className="mt-0.5 text-primary" aria-hidden />
+                <span>
+                  <span className="block font-medium">{title}</span>
+                  <span className="text-xs text-muted">{desc}</span>
+                  {off && (
+                    <span className="mt-1 flex items-center gap-1 text-xs text-muted">
+                      <CirclePause size={14} strokeWidth={2} aria-hidden />
+                      停止中のため使えません
+                    </span>
+                  )}
+                </span>
+              </button>
+            );
+          })}
         </div>
-        {method === "preferences" && (
+        {method === "chat" && !aiOff && (
+          <PlanChat
+            listId={listId}
+            spots={active.filter((s) => selected.includes(s.id)).map((s) => ({ id: s.id, name: s.name }))}
+            common={{ date, startTime, endTime, mode }}
+            conditions={conditions}
+            onConditions={setConditions}
+            onSwitchToPreferences={() => setMethod("preferences")}
+          />
+        )}
+        {(method === "preferences" || method === "chat") && (
           <Card className="flex flex-col gap-4 p-4">
+            {method === "chat" && (
+              <p className="text-sm font-medium">AIが読み取った条件（作る前に確認・修正できます）</p>
+            )}
             <fieldset>
               <legend className="mb-1.5 text-sm font-medium">旅行のペース</legend>
               <div className="flex flex-wrap gap-2">
@@ -339,6 +380,7 @@ export function PlanBuilder() {
                 ))}
               </div>
             </fieldset>
+            {method === "chat" && <ChatConditionsList conditions={conditions} spotNames={spotNames} onChange={setConditions} />}
           </Card>
         )}
       </section>
@@ -348,7 +390,7 @@ export function PlanBuilder() {
         className="w-full"
         onClick={compute}
         loading={computing}
-        disabled={selected.length === 0 || !origin || suspended?.[mode]}
+        disabled={selected.length === 0 || !origin || suspended?.[mode] || (method === "chat" && aiOff)}
       >
         経路案を作る
       </Button>

@@ -20,8 +20,9 @@
 2. ピンを選ぶと、実際に行った人の写真・コメント・投稿が多い時間帯・滞在時間の目安が見られます。
 3. 気になったスポットを「行きたい場所リスト」に集め、拠点（ホテル・駅など）からの距離で並べ替えたり、2〜3件を比較したりできます。
 4. リストから「経路を作成」を押すと、滞在時間・おすすめの時間帯・昼食休憩を考えた1日の回り方を最大3案作ります。
-5. 選んだ案は区間ごとに移動手段（徒歩・車・公共交通）を変えられ、保存すると区間ごとの「ナビ開始」から Google マップの道案内を開けます。
-6. 旅行中は、写真とコメントをその場で投稿して、次の旅行者のための地図を育てます。
+5. 細かい希望があるときは「AIと相談」で「夕日は金沢港で見たい」「歩くのは少なめがいい」のように話すと、AIが条件（時刻の指定・順番・ペースなど）に置き換え、それを満たす回り方を作ります。
+6. 選んだ案は区間ごとに移動手段（徒歩・車・公共交通）を変えられ、保存すると区間ごとの「ナビ開始」から Google マップの道案内を開けます。
+7. 旅行中は、写真とコメントをその場で投稿して、次の旅行者のための地図を育てます。
 
 ### 特長
 
@@ -45,7 +46,6 @@
 
 ### 今後の展望
 
-- AIとの対話で経路を作る機能（β版で予定）
 - スポット検索画面、通報機能、リストの共有
 - 営業時間を考えた経路作成
 - 金沢以外の地域への展開
@@ -65,6 +65,7 @@
 
 - Google Routes API（Compute Route Matrix / Compute Routes の Essentials）：徒歩・車・公共交通の所要時間
 - Google マップ URL：当日の道案内（「ナビ開始」）
+- Gemini API（無料枠）：「AIと相談」で会話を経路の条件に置き換える
 - OpenFreeMap：背景地図
 - OpenStreetMap Nominatim：スポット名から場所を検索
 - Supabase（PostgreSQL・PostGIS・Auth・Storage・pg_cron）
@@ -88,6 +89,7 @@
 #### ハッカソンで開発した独自機能・技術
 
 - 経路案の計算：スポットの選び方と訪問順を全通り調べ、時間内に回れる数が最も多い順番の中から、観点の違う3案を選びます（[src/lib/planner/index.ts](src/lib/planner/index.ts)、テストは [planner.test.ts](src/lib/planner/planner.test.ts)）。
+- AIと相談：AIには会話を条件（時刻の指定・順番の希望・除外・ペースなど）に置き換えることだけを任せ、経路は自前の全探索で計算します。AIの返答はリスト内のスポットと決まった値だけに絞って検証し、絵文字も取り除きます（[src/lib/plan-chat.ts](src/lib/plan-chat.ts)、[src/app/api/v1/plans/chat/route.ts](src/app/api/v1/plans/chat/route.ts)）。
 - 区間ごとの移動手段の変更と再計算：区間だけ Google Routes API で取り直し、それ以降の時刻を画面で計算し直します（[src/components/plan-result.tsx](src/components/plan-result.tsx)、[src/lib/external/routing.ts](src/lib/external/routing.ts)）。
 - ズームに応じてヒートマップ・写真の束・写真ピンを切り替える地図（[src/components/map/spot-map.tsx](src/components/map/spot-map.tsx)、[markers.ts](src/components/map/markers.ts)）。
 - 投稿から人気度・代表写真・滞在時間の中央値・時間帯の分布を集計する DB の関数と、無料枠の80%で止める仕組み（[supabase/migrations/20261024000000_init.sql](supabase/migrations/20261024000000_init.sql)）。

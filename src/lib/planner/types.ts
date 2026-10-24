@@ -17,6 +17,10 @@ export type PlanSpot = {
   mustVisit: boolean;
 };
 
+// 「AIと相談」で読み取った細かい希望（F-5-5）。時刻は分（0:00 からの経過分）
+export type TimeWindow = { spotId: string; from: number; to: number };
+export type OrderHint = { spotId: string; position: "first" | "last" | "before" | "after"; relativeTo?: string };
+
 export type PlanInput = {
   spots: PlanSpot[];
   hasDestination: boolean;
@@ -25,6 +29,10 @@ export type PlanInput = {
   lunchBreak: boolean;
   mode: TravelMode;
   priority: Priority;
+  // スポットごとの到着時刻の範囲。早く着いたら開始まで待ち、遅れる順番は使わない
+  timeWindows?: TimeWindow[];
+  // 行く順番の希望。満たさない順番は使わない
+  orderHints?: OrderHint[];
 };
 
 export type Leg = { mode: TravelMode; travelMin: number; distM: number; estimated: boolean };
@@ -64,4 +72,11 @@ export type PlanPreferences = {
   pace: Pace;
   interests: Category[];
   priority: Priority;
+};
+
+// AIが会話から読み取る条件（POST /plans/chat の conditions。時刻は "HH:MM"）
+export type ChatConditions = PlanPreferences & {
+  timeWindows: { spotId: string; from: string; to: string }[];
+  orderHints: OrderHint[];
+  exclude: string[];
 };

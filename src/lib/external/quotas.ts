@@ -20,5 +20,7 @@ export function quotas() {
       limit: env.googleRoutesMonthlyFree,
     } satisfies QuotaKey,
     nominatim: { provider: "nominatim", sku: "search", daily: true, limit: env.nominatimDailyLimit } satisfies QuotaKey,
+    // Gemini API（AIと相談）。1回の会話ごとに数える
+    gemini: { provider: "gemini", sku: "generate_content", daily: true, limit: env.geminiDailyFree } satisfies QuotaKey,
   };
 }

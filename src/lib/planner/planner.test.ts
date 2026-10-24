@@ -1,5 +1,13 @@
 import { describe, expect, it } from "vitest";
-import { bestHoursFromHistogram, computeCandidates, computeStayMin, legKey, recomputeCandidate, simulate } from "@/lib/planner";
+import {
+  bestHoursFromHistogram,
+  computeCandidates,
+  computeStayMin,
+  legKey,
+  recomputeCandidate,
+  satisfiesOrderHints,
+  simulate,
+} from "@/lib/planner";
 import type { PlanInput, PlanSpot, TravelMatrix } from "@/lib/planner/types";
 
 // 一直線に並んだ地点（0 = 出発地、1..n = スポット）。隣どうしは step 分
@@ -152,5 +160,56 @@ describe("区間ごとの移動手段（F-5-10・ADR-0019）", () => {
     expect(first && first.type === "spot" && first.next?.travelMin).toBe(25);
     expect(second && second.type === "spot" && second.arrive).toBe(9 * 60 + 10 + 30 + 25);
     expect(sim.stats.totalTravelMin).toBe(base.stats.totalTravelMin + 15);
+  });
+});
+
+describe("AIと相談の条件（時刻の指定・順番の希望。F-5-5）", () => {
+  it("時刻の指定より早く着いたら待ち、指定の時間帯に着く順番を選ぶ", () => {
+    const spots = [spot("a", 30), spot("b", 30), spot("c", 30)];
+    // c は 16:00〜17:30 に着きたい
+    const res = computeCandidates(
+      input(spots, { timeWindows: [{ spotId: "c", from: 16 * 60, to: 17 * 60 + 30 }] }),
+      lineMatrix(3),
+    );
+    expect(res.ok).toBe(true);
+    if (!res.ok) return;
+    for (const c of res.candidates) {
+      const item = c.items.find((i) => i.type === "spot" && i.spotId === "c");
+      expect(item && item.type === "spot" && item.arrive >= 16 * 60 && item.arrive <= 17 * 60 + 30).toBe(true);
+    }
+  });
+
+  it("指定の時間帯に間に合わないスポットは外れる（必ず行きたいでなければ）", () => {
+    const spots = [spot("a", 30), spot("b", 30)];
+    // b は 9:05 までに着きたいが、出発地から 20 分かかる
+    const res = computeCandidates(input(spots, { timeWindows: [{ spotId: "b", from: 9 * 60, to: 9 * 60 + 5 }] }), lineMatrix(2));
+    expect(res.ok).toBe(true);
+    if (!res.ok) return;
+    expect(res.candidates[0].order).toEqual(["a"]);
+    expect(res.candidates[0].skipped.map((s) => s.spotId)).toEqual(["b"]);
+  });
+
+  it("順番の希望を満たす順番だけを使う", () => {
+    const spots = [spot("a", 30), spot("b", 30), spot("c", 30)];
+    const res = computeCandidates(
+      input(spots, {
+        orderHints: [
+          { spotId: "c", position: "first" },
+          { spotId: "a", position: "after", relativeTo: "b" },
+        ],
+      }),
+      lineMatrix(3),
+    );
+    expect(res.ok).toBe(true);
+    if (!res.ok) return;
+    for (const c of res.candidates) expect(c.order).toEqual(["c", "b", "a"]);
+  });
+
+  it("satisfiesOrderHints：順番に入っていないスポットの希望は問わない", () => {
+    expect(satisfiesOrderHints(["a", "b"], [{ spotId: "x", position: "first" }])).toBe(true);
+    expect(satisfiesOrderHints(["a", "b"], [{ spotId: "b", position: "last" }])).toBe(true);
+    expect(satisfiesOrderHints(["a", "b"], [{ spotId: "a", position: "last" }])).toBe(false);
+    expect(satisfiesOrderHints(["a", "b"], [{ spotId: "a", position: "before", relativeTo: "b" }])).toBe(true);
+    expect(satisfiesOrderHints(["b", "a"], [{ spotId: "a", position: "before", relativeTo: "b" }])).toBe(false);
   });
 });

@@ -7,7 +7,15 @@ import { isSupabaseConfigured } from "@/lib/env";
 
 export type Me = { id: string; displayName: string; avatarUrl: string | null; onboarded: boolean };
 export type SystemStatus = {
-  suspended: { transit: boolean; walking: boolean; driving: boolean; legs: boolean; placeSearch: boolean; posting: boolean };
+  suspended: {
+    transit: boolean;
+    walking: boolean;
+    driving: boolean;
+    legs: boolean;
+    placeSearch: boolean;
+    posting: boolean;
+    ai: boolean;
+  };
   mockExternalApis: boolean;
 };
 

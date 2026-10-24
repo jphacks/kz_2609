@@ -2112,3 +2112,1435 @@ from (
 ) p
 where p.idx = 3 % p.n and 3 / p.n < 4
   and not exists (select 1 from public.post_images where full_path = 'seed/photos/arashiyama-bamboo/04.jpg');
+
+-- 小樽運河（3枚）
+insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)
+select p.id, 'seed/photos/otaru-canal/01.jpg', 'seed/photos/otaru-canal/01_t.jpg', 1280, 853, (0 / p.n)::smallint
+from (
+  select po.id, row_number() over (order by po.created_at, po.id) - 1 as idx, count(*) over () as n
+  from public.posts po join public.spots sp on sp.id = po.spot_id
+  where sp.name = '小樽運河' and sp.source = 'seed'
+) p
+where p.idx = 0 % p.n and 0 / p.n < 4
+  and not exists (select 1 from public.post_images where full_path = 'seed/photos/otaru-canal/01.jpg');
+insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)
+select p.id, 'seed/photos/otaru-canal/02.jpg', 'seed/photos/otaru-canal/02_t.jpg', 1280, 827, (1 / p.n)::smallint
+from (
+  select po.id, row_number() over (order by po.created_at, po.id) - 1 as idx, count(*) over () as n
+  from public.posts po join public.spots sp on sp.id = po.spot_id
+  where sp.name = '小樽運河' and sp.source = 'seed'
+) p
+where p.idx = 1 % p.n and 1 / p.n < 4
+  and not exists (select 1 from public.post_images where full_path = 'seed/photos/otaru-canal/02.jpg');
+insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)
+select p.id, 'seed/photos/otaru-canal/03.jpg', 'seed/photos/otaru-canal/03_t.jpg', 853, 1280, (2 / p.n)::smallint
+from (
+  select po.id, row_number() over (order by po.created_at, po.id) - 1 as idx, count(*) over () as n
+  from public.posts po join public.spots sp on sp.id = po.spot_id
+  where sp.name = '小樽運河' and sp.source = 'seed'
+) p
+where p.idx = 2 % p.n and 2 / p.n < 4
+  and not exists (select 1 from public.post_images where full_path = 'seed/photos/otaru-canal/03.jpg');
+
+-- 函館山（3枚）
+insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)
+select p.id, 'seed/photos/mount-hakodate/01.jpg', 'seed/photos/mount-hakodate/01_t.jpg', 1280, 854, (0 / p.n)::smallint
+from (
+  select po.id, row_number() over (order by po.created_at, po.id) - 1 as idx, count(*) over () as n
+  from public.posts po join public.spots sp on sp.id = po.spot_id
+  where sp.name = '函館山' and sp.source = 'seed'
+) p
+where p.idx = 0 % p.n and 0 / p.n < 4
+  and not exists (select 1 from public.post_images where full_path = 'seed/photos/mount-hakodate/01.jpg');
+insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)
+select p.id, 'seed/photos/mount-hakodate/02.jpg', 'seed/photos/mount-hakodate/02_t.jpg', 1280, 853, (1 / p.n)::smallint
+from (
+  select po.id, row_number() over (order by po.created_at, po.id) - 1 as idx, count(*) over () as n
+  from public.posts po join public.spots sp on sp.id = po.spot_id
+  where sp.name = '函館山' and sp.source = 'seed'
+) p
+where p.idx = 1 % p.n and 1 / p.n < 4
+  and not exists (select 1 from public.post_images where full_path = 'seed/photos/mount-hakodate/02.jpg');
+insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)
+select p.id, 'seed/photos/mount-hakodate/03.jpg', 'seed/photos/mount-hakodate/03_t.jpg', 1280, 720, (2 / p.n)::smallint
+from (
+  select po.id, row_number() over (order by po.created_at, po.id) - 1 as idx, count(*) over () as n
+  from public.posts po join public.spots sp on sp.id = po.spot_id
+  where sp.name = '函館山' and sp.source = 'seed'
+) p
+where p.idx = 2 % p.n and 2 / p.n < 4
+  and not exists (select 1 from public.post_images where full_path = 'seed/photos/mount-hakodate/03.jpg');
+
+-- 札幌市時計台（2枚）
+insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)
+select p.id, 'seed/photos/sapporo-clock-tower/02.jpg', 'seed/photos/sapporo-clock-tower/02_t.jpg', 1280, 1092, (0 / p.n)::smallint
+from (
+  select po.id, row_number() over (order by po.created_at, po.id) - 1 as idx, count(*) over () as n
+  from public.posts po join public.spots sp on sp.id = po.spot_id
+  where sp.name = '札幌市時計台' and sp.source = 'seed'
+) p
+where p.idx = 0 % p.n and 0 / p.n < 4
+  and not exists (select 1 from public.post_images where full_path = 'seed/photos/sapporo-clock-tower/02.jpg');
+insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)
+select p.id, 'seed/photos/sapporo-clock-tower/03.jpg', 'seed/photos/sapporo-clock-tower/03_t.jpg', 960, 1280, (1 / p.n)::smallint
+from (
+  select po.id, row_number() over (order by po.created_at, po.id) - 1 as idx, count(*) over () as n
+  from public.posts po join public.spots sp on sp.id = po.spot_id
+  where sp.name = '札幌市時計台' and sp.source = 'seed'
+) p
+where p.idx = 1 % p.n and 1 / p.n < 4
+  and not exists (select 1 from public.post_images where full_path = 'seed/photos/sapporo-clock-tower/03.jpg');
+
+-- 旭山動物園（3枚）
+insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)
+select p.id, 'seed/photos/asahiyama-zoo/01.jpg', 'seed/photos/asahiyama-zoo/01_t.jpg', 1280, 960, (0 / p.n)::smallint
+from (
+  select po.id, row_number() over (order by po.created_at, po.id) - 1 as idx, count(*) over () as n
+  from public.posts po join public.spots sp on sp.id = po.spot_id
+  where sp.name = '旭山動物園' and sp.source = 'seed'
+) p
+where p.idx = 0 % p.n and 0 / p.n < 4
+  and not exists (select 1 from public.post_images where full_path = 'seed/photos/asahiyama-zoo/01.jpg');
+insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)
+select p.id, 'seed/photos/asahiyama-zoo/02.jpg', 'seed/photos/asahiyama-zoo/02_t.jpg', 1280, 853, (1 / p.n)::smallint
+from (
+  select po.id, row_number() over (order by po.created_at, po.id) - 1 as idx, count(*) over () as n
+  from public.posts po join public.spots sp on sp.id = po.spot_id
+  where sp.name = '旭山動物園' and sp.source = 'seed'
+) p
+where p.idx = 1 % p.n and 1 / p.n < 4
+  and not exists (select 1 from public.post_images where full_path = 'seed/photos/asahiyama-zoo/02.jpg');
+insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)
+select p.id, 'seed/photos/asahiyama-zoo/03.jpg', 'seed/photos/asahiyama-zoo/03_t.jpg', 851, 1280, (2 / p.n)::smallint
+from (
+  select po.id, row_number() over (order by po.created_at, po.id) - 1 as idx, count(*) over () as n
+  from public.posts po join public.spots sp on sp.id = po.spot_id
+  where sp.name = '旭山動物園' and sp.source = 'seed'
+) p
+where p.idx = 2 % p.n and 2 / p.n < 4
+  and not exists (select 1 from public.post_images where full_path = 'seed/photos/asahiyama-zoo/03.jpg');
+
+-- ファーム富田（3枚）
+insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)
+select p.id, 'seed/photos/farm-tomita/01.jpg', 'seed/photos/farm-tomita/01_t.jpg', 1280, 853, (0 / p.n)::smallint
+from (
+  select po.id, row_number() over (order by po.created_at, po.id) - 1 as idx, count(*) over () as n
+  from public.posts po join public.spots sp on sp.id = po.spot_id
+  where sp.name = 'ファーム富田' and sp.source = 'seed'
+) p
+where p.idx = 0 % p.n and 0 / p.n < 4
+  and not exists (select 1 from public.post_images where full_path = 'seed/photos/farm-tomita/01.jpg');
+insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)
+select p.id, 'seed/photos/farm-tomita/02.jpg', 'seed/photos/farm-tomita/02_t.jpg', 1280, 857, (1 / p.n)::smallint
+from (
+  select po.id, row_number() over (order by po.created_at, po.id) - 1 as idx, count(*) over () as n
+  from public.posts po join public.spots sp on sp.id = po.spot_id
+  where sp.name = 'ファーム富田' and sp.source = 'seed'
+) p
+where p.idx = 1 % p.n and 1 / p.n < 4
+  and not exists (select 1 from public.post_images where full_path = 'seed/photos/farm-tomita/02.jpg');
+insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)
+select p.id, 'seed/photos/farm-tomita/03.jpg', 'seed/photos/farm-tomita/03_t.jpg', 1280, 720, (2 / p.n)::smallint
+from (
+  select po.id, row_number() over (order by po.created_at, po.id) - 1 as idx, count(*) over () as n
+  from public.posts po join public.spots sp on sp.id = po.spot_id
+  where sp.name = 'ファーム富田' and sp.source = 'seed'
+) p
+where p.idx = 2 % p.n and 2 / p.n < 4
+  and not exists (select 1 from public.post_images where full_path = 'seed/photos/farm-tomita/03.jpg');
+
+-- 松島海岸（3枚）
+insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)
+select p.id, 'seed/photos/matsushima/01.jpg', 'seed/photos/matsushima/01_t.jpg', 1280, 960, (0 / p.n)::smallint
+from (
+  select po.id, row_number() over (order by po.created_at, po.id) - 1 as idx, count(*) over () as n
+  from public.posts po join public.spots sp on sp.id = po.spot_id
+  where sp.name = '松島海岸' and sp.source = 'seed'
+) p
+where p.idx = 0 % p.n and 0 / p.n < 4
+  and not exists (select 1 from public.post_images where full_path = 'seed/photos/matsushima/01.jpg');
+insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)
+select p.id, 'seed/photos/matsushima/02.jpg', 'seed/photos/matsushima/02_t.jpg', 1280, 546, (1 / p.n)::smallint
+from (
+  select po.id, row_number() over (order by po.created_at, po.id) - 1 as idx, count(*) over () as n
+  from public.posts po join public.spots sp on sp.id = po.spot_id
+  where sp.name = '松島海岸' and sp.source = 'seed'
+) p
+where p.idx = 1 % p.n and 1 / p.n < 4
+  and not exists (select 1 from public.post_images where full_path = 'seed/photos/matsushima/02.jpg');
+insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)
+select p.id, 'seed/photos/matsushima/03.jpg', 'seed/photos/matsushima/03_t.jpg', 1280, 853, (2 / p.n)::smallint
+from (
+  select po.id, row_number() over (order by po.created_at, po.id) - 1 as idx, count(*) over () as n
+  from public.posts po join public.spots sp on sp.id = po.spot_id
+  where sp.name = '松島海岸' and sp.source = 'seed'
+) p
+where p.idx = 2 % p.n and 2 / p.n < 4
+  and not exists (select 1 from public.post_images where full_path = 'seed/photos/matsushima/03.jpg');
+
+-- 仙台城跡（3枚）
+insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)
+select p.id, 'seed/photos/sendai-castle/01.jpg', 'seed/photos/sendai-castle/01_t.jpg', 1280, 853, (0 / p.n)::smallint
+from (
+  select po.id, row_number() over (order by po.created_at, po.id) - 1 as idx, count(*) over () as n
+  from public.posts po join public.spots sp on sp.id = po.spot_id
+  where sp.name = '仙台城跡' and sp.source = 'seed'
+) p
+where p.idx = 0 % p.n and 0 / p.n < 4
+  and not exists (select 1 from public.post_images where full_path = 'seed/photos/sendai-castle/01.jpg');
+insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)
+select p.id, 'seed/photos/sendai-castle/02.jpg', 'seed/photos/sendai-castle/02_t.jpg', 1280, 960, (1 / p.n)::smallint
+from (
+  select po.id, row_number() over (order by po.created_at, po.id) - 1 as idx, count(*) over () as n
+  from public.posts po join public.spots sp on sp.id = po.spot_id
+  where sp.name = '仙台城跡' and sp.source = 'seed'
+) p
+where p.idx = 1 % p.n and 1 / p.n < 4
+  and not exists (select 1 from public.post_images where full_path = 'seed/photos/sendai-castle/02.jpg');
+insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)
+select p.id, 'seed/photos/sendai-castle/03.jpg', 'seed/photos/sendai-castle/03_t.jpg', 1280, 720, (2 / p.n)::smallint
+from (
+  select po.id, row_number() over (order by po.created_at, po.id) - 1 as idx, count(*) over () as n
+  from public.posts po join public.spots sp on sp.id = po.spot_id
+  where sp.name = '仙台城跡' and sp.source = 'seed'
+) p
+where p.idx = 2 % p.n and 2 / p.n < 4
+  and not exists (select 1 from public.post_images where full_path = 'seed/photos/sendai-castle/03.jpg');
+
+-- 瑞鳳殿（3枚）
+insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)
+select p.id, 'seed/photos/zuihoden/01.jpg', 'seed/photos/zuihoden/01_t.jpg', 1280, 857, (0 / p.n)::smallint
+from (
+  select po.id, row_number() over (order by po.created_at, po.id) - 1 as idx, count(*) over () as n
+  from public.posts po join public.spots sp on sp.id = po.spot_id
+  where sp.name = '瑞鳳殿' and sp.source = 'seed'
+) p
+where p.idx = 0 % p.n and 0 / p.n < 4
+  and not exists (select 1 from public.post_images where full_path = 'seed/photos/zuihoden/01.jpg');
+insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)
+select p.id, 'seed/photos/zuihoden/02.jpg', 'seed/photos/zuihoden/02_t.jpg', 1280, 960, (1 / p.n)::smallint
+from (
+  select po.id, row_number() over (order by po.created_at, po.id) - 1 as idx, count(*) over () as n
+  from public.posts po join public.spots sp on sp.id = po.spot_id
+  where sp.name = '瑞鳳殿' and sp.source = 'seed'
+) p
+where p.idx = 1 % p.n and 1 / p.n < 4
+  and not exists (select 1 from public.post_images where full_path = 'seed/photos/zuihoden/02.jpg');
+insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)
+select p.id, 'seed/photos/zuihoden/03.jpg', 'seed/photos/zuihoden/03_t.jpg', 1280, 960, (2 / p.n)::smallint
+from (
+  select po.id, row_number() over (order by po.created_at, po.id) - 1 as idx, count(*) over () as n
+  from public.posts po join public.spots sp on sp.id = po.spot_id
+  where sp.name = '瑞鳳殿' and sp.source = 'seed'
+) p
+where p.idx = 2 % p.n and 2 / p.n < 4
+  and not exists (select 1 from public.post_images where full_path = 'seed/photos/zuihoden/03.jpg');
+
+-- 秋保大滝（3枚）
+insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)
+select p.id, 'seed/photos/akiu-otaki/01.jpg', 'seed/photos/akiu-otaki/01_t.jpg', 1280, 800, (0 / p.n)::smallint
+from (
+  select po.id, row_number() over (order by po.created_at, po.id) - 1 as idx, count(*) over () as n
+  from public.posts po join public.spots sp on sp.id = po.spot_id
+  where sp.name = '秋保大滝' and sp.source = 'seed'
+) p
+where p.idx = 0 % p.n and 0 / p.n < 4
+  and not exists (select 1 from public.post_images where full_path = 'seed/photos/akiu-otaki/01.jpg');
+insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)
+select p.id, 'seed/photos/akiu-otaki/02.jpg', 'seed/photos/akiu-otaki/02_t.jpg', 1280, 960, (1 / p.n)::smallint
+from (
+  select po.id, row_number() over (order by po.created_at, po.id) - 1 as idx, count(*) over () as n
+  from public.posts po join public.spots sp on sp.id = po.spot_id
+  where sp.name = '秋保大滝' and sp.source = 'seed'
+) p
+where p.idx = 1 % p.n and 1 / p.n < 4
+  and not exists (select 1 from public.post_images where full_path = 'seed/photos/akiu-otaki/02.jpg');
+insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)
+select p.id, 'seed/photos/akiu-otaki/03.jpg', 'seed/photos/akiu-otaki/03_t.jpg', 1280, 800, (2 / p.n)::smallint
+from (
+  select po.id, row_number() over (order by po.created_at, po.id) - 1 as idx, count(*) over () as n
+  from public.posts po join public.spots sp on sp.id = po.spot_id
+  where sp.name = '秋保大滝' and sp.source = 'seed'
+) p
+where p.idx = 2 % p.n and 2 / p.n < 4
+  and not exists (select 1 from public.post_images where full_path = 'seed/photos/akiu-otaki/03.jpg');
+
+-- 仙台朝市（3枚）
+insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)
+select p.id, 'seed/photos/sendai-asaichi/01.jpg', 'seed/photos/sendai-asaichi/01_t.jpg', 1280, 960, (0 / p.n)::smallint
+from (
+  select po.id, row_number() over (order by po.created_at, po.id) - 1 as idx, count(*) over () as n
+  from public.posts po join public.spots sp on sp.id = po.spot_id
+  where sp.name = '仙台朝市' and sp.source = 'seed'
+) p
+where p.idx = 0 % p.n and 0 / p.n < 4
+  and not exists (select 1 from public.post_images where full_path = 'seed/photos/sendai-asaichi/01.jpg');
+insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)
+select p.id, 'seed/photos/sendai-asaichi/02.jpg', 'seed/photos/sendai-asaichi/02_t.jpg', 1280, 960, (1 / p.n)::smallint
+from (
+  select po.id, row_number() over (order by po.created_at, po.id) - 1 as idx, count(*) over () as n
+  from public.posts po join public.spots sp on sp.id = po.spot_id
+  where sp.name = '仙台朝市' and sp.source = 'seed'
+) p
+where p.idx = 1 % p.n and 1 / p.n < 4
+  and not exists (select 1 from public.post_images where full_path = 'seed/photos/sendai-asaichi/02.jpg');
+insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)
+select p.id, 'seed/photos/sendai-asaichi/03.jpg', 'seed/photos/sendai-asaichi/03_t.jpg', 1280, 768, (2 / p.n)::smallint
+from (
+  select po.id, row_number() over (order by po.created_at, po.id) - 1 as idx, count(*) over () as n
+  from public.posts po join public.spots sp on sp.id = po.spot_id
+  where sp.name = '仙台朝市' and sp.source = 'seed'
+) p
+where p.idx = 2 % p.n and 2 / p.n < 4
+  and not exists (select 1 from public.post_images where full_path = 'seed/photos/sendai-asaichi/03.jpg');
+
+-- 鎌倉大仏（高徳院）（3枚）
+insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)
+select p.id, 'seed/photos/kamakura-daibutsu/01.jpg', 'seed/photos/kamakura-daibutsu/01_t.jpg', 960, 1280, (0 / p.n)::smallint
+from (
+  select po.id, row_number() over (order by po.created_at, po.id) - 1 as idx, count(*) over () as n
+  from public.posts po join public.spots sp on sp.id = po.spot_id
+  where sp.name = '鎌倉大仏（高徳院）' and sp.source = 'seed'
+) p
+where p.idx = 0 % p.n and 0 / p.n < 4
+  and not exists (select 1 from public.post_images where full_path = 'seed/photos/kamakura-daibutsu/01.jpg');
+insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)
+select p.id, 'seed/photos/kamakura-daibutsu/02.jpg', 'seed/photos/kamakura-daibutsu/02_t.jpg', 1280, 853, (1 / p.n)::smallint
+from (
+  select po.id, row_number() over (order by po.created_at, po.id) - 1 as idx, count(*) over () as n
+  from public.posts po join public.spots sp on sp.id = po.spot_id
+  where sp.name = '鎌倉大仏（高徳院）' and sp.source = 'seed'
+) p
+where p.idx = 1 % p.n and 1 / p.n < 4
+  and not exists (select 1 from public.post_images where full_path = 'seed/photos/kamakura-daibutsu/02.jpg');
+insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)
+select p.id, 'seed/photos/kamakura-daibutsu/03.jpg', 'seed/photos/kamakura-daibutsu/03_t.jpg', 1280, 960, (2 / p.n)::smallint
+from (
+  select po.id, row_number() over (order by po.created_at, po.id) - 1 as idx, count(*) over () as n
+  from public.posts po join public.spots sp on sp.id = po.spot_id
+  where sp.name = '鎌倉大仏（高徳院）' and sp.source = 'seed'
+) p
+where p.idx = 2 % p.n and 2 / p.n < 4
+  and not exists (select 1 from public.post_images where full_path = 'seed/photos/kamakura-daibutsu/03.jpg');
+
+-- 鶴岡八幡宮（3枚）
+insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)
+select p.id, 'seed/photos/tsurugaoka-hachimangu/01.jpg', 'seed/photos/tsurugaoka-hachimangu/01_t.jpg', 1280, 849, (0 / p.n)::smallint
+from (
+  select po.id, row_number() over (order by po.created_at, po.id) - 1 as idx, count(*) over () as n
+  from public.posts po join public.spots sp on sp.id = po.spot_id
+  where sp.name = '鶴岡八幡宮' and sp.source = 'seed'
+) p
+where p.idx = 0 % p.n and 0 / p.n < 4
+  and not exists (select 1 from public.post_images where full_path = 'seed/photos/tsurugaoka-hachimangu/01.jpg');
+insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)
+select p.id, 'seed/photos/tsurugaoka-hachimangu/02.jpg', 'seed/photos/tsurugaoka-hachimangu/02_t.jpg', 1280, 961, (1 / p.n)::smallint
+from (
+  select po.id, row_number() over (order by po.created_at, po.id) - 1 as idx, count(*) over () as n
+  from public.posts po join public.spots sp on sp.id = po.spot_id
+  where sp.name = '鶴岡八幡宮' and sp.source = 'seed'
+) p
+where p.idx = 1 % p.n and 1 / p.n < 4
+  and not exists (select 1 from public.post_images where full_path = 'seed/photos/tsurugaoka-hachimangu/02.jpg');
+insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)
+select p.id, 'seed/photos/tsurugaoka-hachimangu/03.jpg', 'seed/photos/tsurugaoka-hachimangu/03_t.jpg', 1280, 964, (2 / p.n)::smallint
+from (
+  select po.id, row_number() over (order by po.created_at, po.id) - 1 as idx, count(*) over () as n
+  from public.posts po join public.spots sp on sp.id = po.spot_id
+  where sp.name = '鶴岡八幡宮' and sp.source = 'seed'
+) p
+where p.idx = 2 % p.n and 2 / p.n < 4
+  and not exists (select 1 from public.post_images where full_path = 'seed/photos/tsurugaoka-hachimangu/03.jpg');
+
+-- 江の島（3枚）
+insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)
+select p.id, 'seed/photos/enoshima/01.jpg', 'seed/photos/enoshima/01_t.jpg', 1280, 964, (0 / p.n)::smallint
+from (
+  select po.id, row_number() over (order by po.created_at, po.id) - 1 as idx, count(*) over () as n
+  from public.posts po join public.spots sp on sp.id = po.spot_id
+  where sp.name = '江の島' and sp.source = 'seed'
+) p
+where p.idx = 0 % p.n and 0 / p.n < 4
+  and not exists (select 1 from public.post_images where full_path = 'seed/photos/enoshima/01.jpg');
+insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)
+select p.id, 'seed/photos/enoshima/02.jpg', 'seed/photos/enoshima/02_t.jpg', 964, 1280, (1 / p.n)::smallint
+from (
+  select po.id, row_number() over (order by po.created_at, po.id) - 1 as idx, count(*) over () as n
+  from public.posts po join public.spots sp on sp.id = po.spot_id
+  where sp.name = '江の島' and sp.source = 'seed'
+) p
+where p.idx = 1 % p.n and 1 / p.n < 4
+  and not exists (select 1 from public.post_images where full_path = 'seed/photos/enoshima/02.jpg');
+insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)
+select p.id, 'seed/photos/enoshima/03.jpg', 'seed/photos/enoshima/03_t.jpg', 1280, 964, (2 / p.n)::smallint
+from (
+  select po.id, row_number() over (order by po.created_at, po.id) - 1 as idx, count(*) over () as n
+  from public.posts po join public.spots sp on sp.id = po.spot_id
+  where sp.name = '江の島' and sp.source = 'seed'
+) p
+where p.idx = 2 % p.n and 2 / p.n < 4
+  and not exists (select 1 from public.post_images where full_path = 'seed/photos/enoshima/03.jpg');
+
+-- 箱根 大涌谷（3枚）
+insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)
+select p.id, 'seed/photos/owakudani/01.jpg', 'seed/photos/owakudani/01_t.jpg', 1280, 960, (0 / p.n)::smallint
+from (
+  select po.id, row_number() over (order by po.created_at, po.id) - 1 as idx, count(*) over () as n
+  from public.posts po join public.spots sp on sp.id = po.spot_id
+  where sp.name = '箱根 大涌谷' and sp.source = 'seed'
+) p
+where p.idx = 0 % p.n and 0 / p.n < 4
+  and not exists (select 1 from public.post_images where full_path = 'seed/photos/owakudani/01.jpg');
+insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)
+select p.id, 'seed/photos/owakudani/02.jpg', 'seed/photos/owakudani/02_t.jpg', 1280, 720, (1 / p.n)::smallint
+from (
+  select po.id, row_number() over (order by po.created_at, po.id) - 1 as idx, count(*) over () as n
+  from public.posts po join public.spots sp on sp.id = po.spot_id
+  where sp.name = '箱根 大涌谷' and sp.source = 'seed'
+) p
+where p.idx = 1 % p.n and 1 / p.n < 4
+  and not exists (select 1 from public.post_images where full_path = 'seed/photos/owakudani/02.jpg');
+insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)
+select p.id, 'seed/photos/owakudani/03.jpg', 'seed/photos/owakudani/03_t.jpg', 1280, 960, (2 / p.n)::smallint
+from (
+  select po.id, row_number() over (order by po.created_at, po.id) - 1 as idx, count(*) over () as n
+  from public.posts po join public.spots sp on sp.id = po.spot_id
+  where sp.name = '箱根 大涌谷' and sp.source = 'seed'
+) p
+where p.idx = 2 % p.n and 2 / p.n < 4
+  and not exists (select 1 from public.post_images where full_path = 'seed/photos/owakudani/03.jpg');
+
+-- 横浜中華街（3枚）
+insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)
+select p.id, 'seed/photos/yokohama-chinatown/01.jpg', 'seed/photos/yokohama-chinatown/01_t.jpg', 1280, 853, (0 / p.n)::smallint
+from (
+  select po.id, row_number() over (order by po.created_at, po.id) - 1 as idx, count(*) over () as n
+  from public.posts po join public.spots sp on sp.id = po.spot_id
+  where sp.name = '横浜中華街' and sp.source = 'seed'
+) p
+where p.idx = 0 % p.n and 0 / p.n < 4
+  and not exists (select 1 from public.post_images where full_path = 'seed/photos/yokohama-chinatown/01.jpg');
+insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)
+select p.id, 'seed/photos/yokohama-chinatown/02.jpg', 'seed/photos/yokohama-chinatown/02_t.jpg', 1280, 964, (1 / p.n)::smallint
+from (
+  select po.id, row_number() over (order by po.created_at, po.id) - 1 as idx, count(*) over () as n
+  from public.posts po join public.spots sp on sp.id = po.spot_id
+  where sp.name = '横浜中華街' and sp.source = 'seed'
+) p
+where p.idx = 1 % p.n and 1 / p.n < 4
+  and not exists (select 1 from public.post_images where full_path = 'seed/photos/yokohama-chinatown/02.jpg');
+insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)
+select p.id, 'seed/photos/yokohama-chinatown/03.jpg', 'seed/photos/yokohama-chinatown/03_t.jpg', 960, 1280, (2 / p.n)::smallint
+from (
+  select po.id, row_number() over (order by po.created_at, po.id) - 1 as idx, count(*) over () as n
+  from public.posts po join public.spots sp on sp.id = po.spot_id
+  where sp.name = '横浜中華街' and sp.source = 'seed'
+) p
+where p.idx = 2 % p.n and 2 / p.n < 4
+  and not exists (select 1 from public.post_images where full_path = 'seed/photos/yokohama-chinatown/03.jpg');
+
+-- 善光寺（2枚）
+insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)
+select p.id, 'seed/photos/zenkoji/02.jpg', 'seed/photos/zenkoji/02_t.jpg', 1280, 949, (0 / p.n)::smallint
+from (
+  select po.id, row_number() over (order by po.created_at, po.id) - 1 as idx, count(*) over () as n
+  from public.posts po join public.spots sp on sp.id = po.spot_id
+  where sp.name = '善光寺' and sp.source = 'seed'
+) p
+where p.idx = 0 % p.n and 0 / p.n < 4
+  and not exists (select 1 from public.post_images where full_path = 'seed/photos/zenkoji/02.jpg');
+insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)
+select p.id, 'seed/photos/zenkoji/03.jpg', 'seed/photos/zenkoji/03_t.jpg', 1280, 853, (1 / p.n)::smallint
+from (
+  select po.id, row_number() over (order by po.created_at, po.id) - 1 as idx, count(*) over () as n
+  from public.posts po join public.spots sp on sp.id = po.spot_id
+  where sp.name = '善光寺' and sp.source = 'seed'
+) p
+where p.idx = 1 % p.n and 1 / p.n < 4
+  and not exists (select 1 from public.post_images where full_path = 'seed/photos/zenkoji/03.jpg');
+
+-- 松本城（3枚）
+insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)
+select p.id, 'seed/photos/matsumoto-castle/01.jpg', 'seed/photos/matsumoto-castle/01_t.jpg', 1280, 960, (0 / p.n)::smallint
+from (
+  select po.id, row_number() over (order by po.created_at, po.id) - 1 as idx, count(*) over () as n
+  from public.posts po join public.spots sp on sp.id = po.spot_id
+  where sp.name = '松本城' and sp.source = 'seed'
+) p
+where p.idx = 0 % p.n and 0 / p.n < 4
+  and not exists (select 1 from public.post_images where full_path = 'seed/photos/matsumoto-castle/01.jpg');
+insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)
+select p.id, 'seed/photos/matsumoto-castle/02.jpg', 'seed/photos/matsumoto-castle/02_t.jpg', 1280, 889, (1 / p.n)::smallint
+from (
+  select po.id, row_number() over (order by po.created_at, po.id) - 1 as idx, count(*) over () as n
+  from public.posts po join public.spots sp on sp.id = po.spot_id
+  where sp.name = '松本城' and sp.source = 'seed'
+) p
+where p.idx = 1 % p.n and 1 / p.n < 4
+  and not exists (select 1 from public.post_images where full_path = 'seed/photos/matsumoto-castle/02.jpg');
+insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)
+select p.id, 'seed/photos/matsumoto-castle/03.jpg', 'seed/photos/matsumoto-castle/03_t.jpg', 1280, 960, (2 / p.n)::smallint
+from (
+  select po.id, row_number() over (order by po.created_at, po.id) - 1 as idx, count(*) over () as n
+  from public.posts po join public.spots sp on sp.id = po.spot_id
+  where sp.name = '松本城' and sp.source = 'seed'
+) p
+where p.idx = 2 % p.n and 2 / p.n < 4
+  and not exists (select 1 from public.post_images where full_path = 'seed/photos/matsumoto-castle/03.jpg');
+
+-- 上高地 河童橋（3枚）
+insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)
+select p.id, 'seed/photos/kamikochi-kappabashi/01.jpg', 'seed/photos/kamikochi-kappabashi/01_t.jpg', 1280, 853, (0 / p.n)::smallint
+from (
+  select po.id, row_number() over (order by po.created_at, po.id) - 1 as idx, count(*) over () as n
+  from public.posts po join public.spots sp on sp.id = po.spot_id
+  where sp.name = '上高地 河童橋' and sp.source = 'seed'
+) p
+where p.idx = 0 % p.n and 0 / p.n < 4
+  and not exists (select 1 from public.post_images where full_path = 'seed/photos/kamikochi-kappabashi/01.jpg');
+insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)
+select p.id, 'seed/photos/kamikochi-kappabashi/02.jpg', 'seed/photos/kamikochi-kappabashi/02_t.jpg', 1280, 853, (1 / p.n)::smallint
+from (
+  select po.id, row_number() over (order by po.created_at, po.id) - 1 as idx, count(*) over () as n
+  from public.posts po join public.spots sp on sp.id = po.spot_id
+  where sp.name = '上高地 河童橋' and sp.source = 'seed'
+) p
+where p.idx = 1 % p.n and 1 / p.n < 4
+  and not exists (select 1 from public.post_images where full_path = 'seed/photos/kamikochi-kappabashi/02.jpg');
+insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)
+select p.id, 'seed/photos/kamikochi-kappabashi/03.jpg', 'seed/photos/kamikochi-kappabashi/03_t.jpg', 1280, 960, (2 / p.n)::smallint
+from (
+  select po.id, row_number() over (order by po.created_at, po.id) - 1 as idx, count(*) over () as n
+  from public.posts po join public.spots sp on sp.id = po.spot_id
+  where sp.name = '上高地 河童橋' and sp.source = 'seed'
+) p
+where p.idx = 2 % p.n and 2 / p.n < 4
+  and not exists (select 1 from public.post_images where full_path = 'seed/photos/kamikochi-kappabashi/03.jpg');
+
+-- 地獄谷野猿公苑（3枚）
+insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)
+select p.id, 'seed/photos/jigokudani-monkey-park/01.jpg', 'seed/photos/jigokudani-monkey-park/01_t.jpg', 853, 1280, (0 / p.n)::smallint
+from (
+  select po.id, row_number() over (order by po.created_at, po.id) - 1 as idx, count(*) over () as n
+  from public.posts po join public.spots sp on sp.id = po.spot_id
+  where sp.name = '地獄谷野猿公苑' and sp.source = 'seed'
+) p
+where p.idx = 0 % p.n and 0 / p.n < 4
+  and not exists (select 1 from public.post_images where full_path = 'seed/photos/jigokudani-monkey-park/01.jpg');
+insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)
+select p.id, 'seed/photos/jigokudani-monkey-park/02.jpg', 'seed/photos/jigokudani-monkey-park/02_t.jpg', 960, 1280, (1 / p.n)::smallint
+from (
+  select po.id, row_number() over (order by po.created_at, po.id) - 1 as idx, count(*) over () as n
+  from public.posts po join public.spots sp on sp.id = po.spot_id
+  where sp.name = '地獄谷野猿公苑' and sp.source = 'seed'
+) p
+where p.idx = 1 % p.n and 1 / p.n < 4
+  and not exists (select 1 from public.post_images where full_path = 'seed/photos/jigokudani-monkey-park/02.jpg');
+insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)
+select p.id, 'seed/photos/jigokudani-monkey-park/03.jpg', 'seed/photos/jigokudani-monkey-park/03_t.jpg', 1280, 960, (2 / p.n)::smallint
+from (
+  select po.id, row_number() over (order by po.created_at, po.id) - 1 as idx, count(*) over () as n
+  from public.posts po join public.spots sp on sp.id = po.spot_id
+  where sp.name = '地獄谷野猿公苑' and sp.source = 'seed'
+) p
+where p.idx = 2 % p.n and 2 / p.n < 4
+  and not exists (select 1 from public.post_images where full_path = 'seed/photos/jigokudani-monkey-park/03.jpg');
+
+-- 旧軽井沢銀座（3枚）
+insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)
+select p.id, 'seed/photos/kyu-karuizawa-ginza/01.jpg', 'seed/photos/kyu-karuizawa-ginza/01_t.jpg', 1280, 857, (0 / p.n)::smallint
+from (
+  select po.id, row_number() over (order by po.created_at, po.id) - 1 as idx, count(*) over () as n
+  from public.posts po join public.spots sp on sp.id = po.spot_id
+  where sp.name = '旧軽井沢銀座' and sp.source = 'seed'
+) p
+where p.idx = 0 % p.n and 0 / p.n < 4
+  and not exists (select 1 from public.post_images where full_path = 'seed/photos/kyu-karuizawa-ginza/01.jpg');
+insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)
+select p.id, 'seed/photos/kyu-karuizawa-ginza/02.jpg', 'seed/photos/kyu-karuizawa-ginza/02_t.jpg', 1280, 857, (1 / p.n)::smallint
+from (
+  select po.id, row_number() over (order by po.created_at, po.id) - 1 as idx, count(*) over () as n
+  from public.posts po join public.spots sp on sp.id = po.spot_id
+  where sp.name = '旧軽井沢銀座' and sp.source = 'seed'
+) p
+where p.idx = 1 % p.n and 1 / p.n < 4
+  and not exists (select 1 from public.post_images where full_path = 'seed/photos/kyu-karuizawa-ginza/02.jpg');
+insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)
+select p.id, 'seed/photos/kyu-karuizawa-ginza/03.jpg', 'seed/photos/kyu-karuizawa-ginza/03_t.jpg', 857, 1280, (2 / p.n)::smallint
+from (
+  select po.id, row_number() over (order by po.created_at, po.id) - 1 as idx, count(*) over () as n
+  from public.posts po join public.spots sp on sp.id = po.spot_id
+  where sp.name = '旧軽井沢銀座' and sp.source = 'seed'
+) p
+where p.idx = 2 % p.n and 2 / p.n < 4
+  and not exists (select 1 from public.post_images where full_path = 'seed/photos/kyu-karuizawa-ginza/03.jpg');
+
+-- 三保の松原（3枚）
+insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)
+select p.id, 'seed/photos/miho-no-matsubara/01.jpg', 'seed/photos/miho-no-matsubara/01_t.jpg', 1280, 960, (0 / p.n)::smallint
+from (
+  select po.id, row_number() over (order by po.created_at, po.id) - 1 as idx, count(*) over () as n
+  from public.posts po join public.spots sp on sp.id = po.spot_id
+  where sp.name = '三保の松原' and sp.source = 'seed'
+) p
+where p.idx = 0 % p.n and 0 / p.n < 4
+  and not exists (select 1 from public.post_images where full_path = 'seed/photos/miho-no-matsubara/01.jpg');
+insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)
+select p.id, 'seed/photos/miho-no-matsubara/02.jpg', 'seed/photos/miho-no-matsubara/02_t.jpg', 1280, 853, (1 / p.n)::smallint
+from (
+  select po.id, row_number() over (order by po.created_at, po.id) - 1 as idx, count(*) over () as n
+  from public.posts po join public.spots sp on sp.id = po.spot_id
+  where sp.name = '三保の松原' and sp.source = 'seed'
+) p
+where p.idx = 1 % p.n and 1 / p.n < 4
+  and not exists (select 1 from public.post_images where full_path = 'seed/photos/miho-no-matsubara/02.jpg');
+insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)
+select p.id, 'seed/photos/miho-no-matsubara/03.jpg', 'seed/photos/miho-no-matsubara/03_t.jpg', 1280, 720, (2 / p.n)::smallint
+from (
+  select po.id, row_number() over (order by po.created_at, po.id) - 1 as idx, count(*) over () as n
+  from public.posts po join public.spots sp on sp.id = po.spot_id
+  where sp.name = '三保の松原' and sp.source = 'seed'
+) p
+where p.idx = 2 % p.n and 2 / p.n < 4
+  and not exists (select 1 from public.post_images where full_path = 'seed/photos/miho-no-matsubara/03.jpg');
+
+-- 白糸の滝（3枚）
+insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)
+select p.id, 'seed/photos/shiraito-falls/01.jpg', 'seed/photos/shiraito-falls/01_t.jpg', 1280, 960, (0 / p.n)::smallint
+from (
+  select po.id, row_number() over (order by po.created_at, po.id) - 1 as idx, count(*) over () as n
+  from public.posts po join public.spots sp on sp.id = po.spot_id
+  where sp.name = '白糸の滝' and sp.source = 'seed'
+) p
+where p.idx = 0 % p.n and 0 / p.n < 4
+  and not exists (select 1 from public.post_images where full_path = 'seed/photos/shiraito-falls/01.jpg');
+insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)
+select p.id, 'seed/photos/shiraito-falls/02.jpg', 'seed/photos/shiraito-falls/02_t.jpg', 1280, 933, (1 / p.n)::smallint
+from (
+  select po.id, row_number() over (order by po.created_at, po.id) - 1 as idx, count(*) over () as n
+  from public.posts po join public.spots sp on sp.id = po.spot_id
+  where sp.name = '白糸の滝' and sp.source = 'seed'
+) p
+where p.idx = 1 % p.n and 1 / p.n < 4
+  and not exists (select 1 from public.post_images where full_path = 'seed/photos/shiraito-falls/02.jpg');
+insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)
+select p.id, 'seed/photos/shiraito-falls/03.jpg', 'seed/photos/shiraito-falls/03_t.jpg', 1280, 960, (2 / p.n)::smallint
+from (
+  select po.id, row_number() over (order by po.created_at, po.id) - 1 as idx, count(*) over () as n
+  from public.posts po join public.spots sp on sp.id = po.spot_id
+  where sp.name = '白糸の滝' and sp.source = 'seed'
+) p
+where p.idx = 2 % p.n and 2 / p.n < 4
+  and not exists (select 1 from public.post_images where full_path = 'seed/photos/shiraito-falls/03.jpg');
+
+-- 久能山東照宮（3枚）
+insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)
+select p.id, 'seed/photos/kunozan-toshogu/01.jpg', 'seed/photos/kunozan-toshogu/01_t.jpg', 1280, 853, (0 / p.n)::smallint
+from (
+  select po.id, row_number() over (order by po.created_at, po.id) - 1 as idx, count(*) over () as n
+  from public.posts po join public.spots sp on sp.id = po.spot_id
+  where sp.name = '久能山東照宮' and sp.source = 'seed'
+) p
+where p.idx = 0 % p.n and 0 / p.n < 4
+  and not exists (select 1 from public.post_images where full_path = 'seed/photos/kunozan-toshogu/01.jpg');
+insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)
+select p.id, 'seed/photos/kunozan-toshogu/02.jpg', 'seed/photos/kunozan-toshogu/02_t.jpg', 1280, 720, (1 / p.n)::smallint
+from (
+  select po.id, row_number() over (order by po.created_at, po.id) - 1 as idx, count(*) over () as n
+  from public.posts po join public.spots sp on sp.id = po.spot_id
+  where sp.name = '久能山東照宮' and sp.source = 'seed'
+) p
+where p.idx = 1 % p.n and 1 / p.n < 4
+  and not exists (select 1 from public.post_images where full_path = 'seed/photos/kunozan-toshogu/02.jpg');
+insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)
+select p.id, 'seed/photos/kunozan-toshogu/03.jpg', 'seed/photos/kunozan-toshogu/03_t.jpg', 1280, 960, (2 / p.n)::smallint
+from (
+  select po.id, row_number() over (order by po.created_at, po.id) - 1 as idx, count(*) over () as n
+  from public.posts po join public.spots sp on sp.id = po.spot_id
+  where sp.name = '久能山東照宮' and sp.source = 'seed'
+) p
+where p.idx = 2 % p.n and 2 / p.n < 4
+  and not exists (select 1 from public.post_images where full_path = 'seed/photos/kunozan-toshogu/03.jpg');
+
+-- 修善寺温泉（3枚）
+insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)
+select p.id, 'seed/photos/shuzenji-onsen/01.jpg', 'seed/photos/shuzenji-onsen/01_t.jpg', 1280, 853, (0 / p.n)::smallint
+from (
+  select po.id, row_number() over (order by po.created_at, po.id) - 1 as idx, count(*) over () as n
+  from public.posts po join public.spots sp on sp.id = po.spot_id
+  where sp.name = '修善寺温泉' and sp.source = 'seed'
+) p
+where p.idx = 0 % p.n and 0 / p.n < 4
+  and not exists (select 1 from public.post_images where full_path = 'seed/photos/shuzenji-onsen/01.jpg');
+insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)
+select p.id, 'seed/photos/shuzenji-onsen/02.jpg', 'seed/photos/shuzenji-onsen/02_t.jpg', 1280, 960, (1 / p.n)::smallint
+from (
+  select po.id, row_number() over (order by po.created_at, po.id) - 1 as idx, count(*) over () as n
+  from public.posts po join public.spots sp on sp.id = po.spot_id
+  where sp.name = '修善寺温泉' and sp.source = 'seed'
+) p
+where p.idx = 1 % p.n and 1 / p.n < 4
+  and not exists (select 1 from public.post_images where full_path = 'seed/photos/shuzenji-onsen/02.jpg');
+insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)
+select p.id, 'seed/photos/shuzenji-onsen/03.jpg', 'seed/photos/shuzenji-onsen/03_t.jpg', 1280, 853, (2 / p.n)::smallint
+from (
+  select po.id, row_number() over (order by po.created_at, po.id) - 1 as idx, count(*) over () as n
+  from public.posts po join public.spots sp on sp.id = po.spot_id
+  where sp.name = '修善寺温泉' and sp.source = 'seed'
+) p
+where p.idx = 2 % p.n and 2 / p.n < 4
+  and not exists (select 1 from public.post_images where full_path = 'seed/photos/shuzenji-onsen/03.jpg');
+
+-- 大室山（3枚）
+insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)
+select p.id, 'seed/photos/mount-omuro/01.jpg', 'seed/photos/mount-omuro/01_t.jpg', 1280, 853, (0 / p.n)::smallint
+from (
+  select po.id, row_number() over (order by po.created_at, po.id) - 1 as idx, count(*) over () as n
+  from public.posts po join public.spots sp on sp.id = po.spot_id
+  where sp.name = '大室山' and sp.source = 'seed'
+) p
+where p.idx = 0 % p.n and 0 / p.n < 4
+  and not exists (select 1 from public.post_images where full_path = 'seed/photos/mount-omuro/01.jpg');
+insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)
+select p.id, 'seed/photos/mount-omuro/02.jpg', 'seed/photos/mount-omuro/02_t.jpg', 1280, 960, (1 / p.n)::smallint
+from (
+  select po.id, row_number() over (order by po.created_at, po.id) - 1 as idx, count(*) over () as n
+  from public.posts po join public.spots sp on sp.id = po.spot_id
+  where sp.name = '大室山' and sp.source = 'seed'
+) p
+where p.idx = 1 % p.n and 1 / p.n < 4
+  and not exists (select 1 from public.post_images where full_path = 'seed/photos/mount-omuro/02.jpg');
+insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)
+select p.id, 'seed/photos/mount-omuro/03.jpg', 'seed/photos/mount-omuro/03_t.jpg', 1280, 960, (2 / p.n)::smallint
+from (
+  select po.id, row_number() over (order by po.created_at, po.id) - 1 as idx, count(*) over () as n
+  from public.posts po join public.spots sp on sp.id = po.spot_id
+  where sp.name = '大室山' and sp.source = 'seed'
+) p
+where p.idx = 2 % p.n and 2 / p.n < 4
+  and not exists (select 1 from public.post_images where full_path = 'seed/photos/mount-omuro/03.jpg');
+
+-- 東大寺（3枚）
+insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)
+select p.id, 'seed/photos/todaiji/01.jpg', 'seed/photos/todaiji/01_t.jpg', 1280, 1024, (0 / p.n)::smallint
+from (
+  select po.id, row_number() over (order by po.created_at, po.id) - 1 as idx, count(*) over () as n
+  from public.posts po join public.spots sp on sp.id = po.spot_id
+  where sp.name = '東大寺' and sp.source = 'seed'
+) p
+where p.idx = 0 % p.n and 0 / p.n < 4
+  and not exists (select 1 from public.post_images where full_path = 'seed/photos/todaiji/01.jpg');
+insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)
+select p.id, 'seed/photos/todaiji/02.jpg', 'seed/photos/todaiji/02_t.jpg', 1280, 853, (1 / p.n)::smallint
+from (
+  select po.id, row_number() over (order by po.created_at, po.id) - 1 as idx, count(*) over () as n
+  from public.posts po join public.spots sp on sp.id = po.spot_id
+  where sp.name = '東大寺' and sp.source = 'seed'
+) p
+where p.idx = 1 % p.n and 1 / p.n < 4
+  and not exists (select 1 from public.post_images where full_path = 'seed/photos/todaiji/02.jpg');
+insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)
+select p.id, 'seed/photos/todaiji/03.jpg', 'seed/photos/todaiji/03_t.jpg', 1280, 960, (2 / p.n)::smallint
+from (
+  select po.id, row_number() over (order by po.created_at, po.id) - 1 as idx, count(*) over () as n
+  from public.posts po join public.spots sp on sp.id = po.spot_id
+  where sp.name = '東大寺' and sp.source = 'seed'
+) p
+where p.idx = 2 % p.n and 2 / p.n < 4
+  and not exists (select 1 from public.post_images where full_path = 'seed/photos/todaiji/03.jpg');
+
+-- 奈良公園（3枚）
+insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)
+select p.id, 'seed/photos/nara-park/01.jpg', 'seed/photos/nara-park/01_t.jpg', 1280, 960, (0 / p.n)::smallint
+from (
+  select po.id, row_number() over (order by po.created_at, po.id) - 1 as idx, count(*) over () as n
+  from public.posts po join public.spots sp on sp.id = po.spot_id
+  where sp.name = '奈良公園' and sp.source = 'seed'
+) p
+where p.idx = 0 % p.n and 0 / p.n < 4
+  and not exists (select 1 from public.post_images where full_path = 'seed/photos/nara-park/01.jpg');
+insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)
+select p.id, 'seed/photos/nara-park/02.jpg', 'seed/photos/nara-park/02_t.jpg', 960, 1280, (1 / p.n)::smallint
+from (
+  select po.id, row_number() over (order by po.created_at, po.id) - 1 as idx, count(*) over () as n
+  from public.posts po join public.spots sp on sp.id = po.spot_id
+  where sp.name = '奈良公園' and sp.source = 'seed'
+) p
+where p.idx = 1 % p.n and 1 / p.n < 4
+  and not exists (select 1 from public.post_images where full_path = 'seed/photos/nara-park/02.jpg');
+insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)
+select p.id, 'seed/photos/nara-park/03.jpg', 'seed/photos/nara-park/03_t.jpg', 1280, 853, (2 / p.n)::smallint
+from (
+  select po.id, row_number() over (order by po.created_at, po.id) - 1 as idx, count(*) over () as n
+  from public.posts po join public.spots sp on sp.id = po.spot_id
+  where sp.name = '奈良公園' and sp.source = 'seed'
+) p
+where p.idx = 2 % p.n and 2 / p.n < 4
+  and not exists (select 1 from public.post_images where full_path = 'seed/photos/nara-park/03.jpg');
+
+-- 春日大社（3枚）
+insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)
+select p.id, 'seed/photos/kasuga-taisha/01.jpg', 'seed/photos/kasuga-taisha/01_t.jpg', 1280, 960, (0 / p.n)::smallint
+from (
+  select po.id, row_number() over (order by po.created_at, po.id) - 1 as idx, count(*) over () as n
+  from public.posts po join public.spots sp on sp.id = po.spot_id
+  where sp.name = '春日大社' and sp.source = 'seed'
+) p
+where p.idx = 0 % p.n and 0 / p.n < 4
+  and not exists (select 1 from public.post_images where full_path = 'seed/photos/kasuga-taisha/01.jpg');
+insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)
+select p.id, 'seed/photos/kasuga-taisha/02.jpg', 'seed/photos/kasuga-taisha/02_t.jpg', 853, 1280, (1 / p.n)::smallint
+from (
+  select po.id, row_number() over (order by po.created_at, po.id) - 1 as idx, count(*) over () as n
+  from public.posts po join public.spots sp on sp.id = po.spot_id
+  where sp.name = '春日大社' and sp.source = 'seed'
+) p
+where p.idx = 1 % p.n and 1 / p.n < 4
+  and not exists (select 1 from public.post_images where full_path = 'seed/photos/kasuga-taisha/02.jpg');
+insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)
+select p.id, 'seed/photos/kasuga-taisha/03.jpg', 'seed/photos/kasuga-taisha/03_t.jpg', 853, 1280, (2 / p.n)::smallint
+from (
+  select po.id, row_number() over (order by po.created_at, po.id) - 1 as idx, count(*) over () as n
+  from public.posts po join public.spots sp on sp.id = po.spot_id
+  where sp.name = '春日大社' and sp.source = 'seed'
+) p
+where p.idx = 2 % p.n and 2 / p.n < 4
+  and not exists (select 1 from public.post_images where full_path = 'seed/photos/kasuga-taisha/03.jpg');
+
+-- 法隆寺（3枚）
+insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)
+select p.id, 'seed/photos/horyuji/01.jpg', 'seed/photos/horyuji/01_t.jpg', 1280, 852, (0 / p.n)::smallint
+from (
+  select po.id, row_number() over (order by po.created_at, po.id) - 1 as idx, count(*) over () as n
+  from public.posts po join public.spots sp on sp.id = po.spot_id
+  where sp.name = '法隆寺' and sp.source = 'seed'
+) p
+where p.idx = 0 % p.n and 0 / p.n < 4
+  and not exists (select 1 from public.post_images where full_path = 'seed/photos/horyuji/01.jpg');
+insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)
+select p.id, 'seed/photos/horyuji/02.jpg', 'seed/photos/horyuji/02_t.jpg', 1280, 853, (1 / p.n)::smallint
+from (
+  select po.id, row_number() over (order by po.created_at, po.id) - 1 as idx, count(*) over () as n
+  from public.posts po join public.spots sp on sp.id = po.spot_id
+  where sp.name = '法隆寺' and sp.source = 'seed'
+) p
+where p.idx = 1 % p.n and 1 / p.n < 4
+  and not exists (select 1 from public.post_images where full_path = 'seed/photos/horyuji/02.jpg');
+insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)
+select p.id, 'seed/photos/horyuji/03.jpg', 'seed/photos/horyuji/03_t.jpg', 1280, 852, (2 / p.n)::smallint
+from (
+  select po.id, row_number() over (order by po.created_at, po.id) - 1 as idx, count(*) over () as n
+  from public.posts po join public.spots sp on sp.id = po.spot_id
+  where sp.name = '法隆寺' and sp.source = 'seed'
+) p
+where p.idx = 2 % p.n and 2 / p.n < 4
+  and not exists (select 1 from public.post_images where full_path = 'seed/photos/horyuji/03.jpg');
+
+-- 吉野山（3枚）
+insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)
+select p.id, 'seed/photos/mount-yoshino/01.jpg', 'seed/photos/mount-yoshino/01_t.jpg', 1280, 720, (0 / p.n)::smallint
+from (
+  select po.id, row_number() over (order by po.created_at, po.id) - 1 as idx, count(*) over () as n
+  from public.posts po join public.spots sp on sp.id = po.spot_id
+  where sp.name = '吉野山' and sp.source = 'seed'
+) p
+where p.idx = 0 % p.n and 0 / p.n < 4
+  and not exists (select 1 from public.post_images where full_path = 'seed/photos/mount-yoshino/01.jpg');
+insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)
+select p.id, 'seed/photos/mount-yoshino/02.jpg', 'seed/photos/mount-yoshino/02_t.jpg', 1280, 183, (1 / p.n)::smallint
+from (
+  select po.id, row_number() over (order by po.created_at, po.id) - 1 as idx, count(*) over () as n
+  from public.posts po join public.spots sp on sp.id = po.spot_id
+  where sp.name = '吉野山' and sp.source = 'seed'
+) p
+where p.idx = 1 % p.n and 1 / p.n < 4
+  and not exists (select 1 from public.post_images where full_path = 'seed/photos/mount-yoshino/02.jpg');
+insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)
+select p.id, 'seed/photos/mount-yoshino/03.jpg', 'seed/photos/mount-yoshino/03_t.jpg', 1280, 960, (2 / p.n)::smallint
+from (
+  select po.id, row_number() over (order by po.created_at, po.id) - 1 as idx, count(*) over () as n
+  from public.posts po join public.spots sp on sp.id = po.spot_id
+  where sp.name = '吉野山' and sp.source = 'seed'
+) p
+where p.idx = 2 % p.n and 2 / p.n < 4
+  and not exists (select 1 from public.post_images where full_path = 'seed/photos/mount-yoshino/03.jpg');
+
+-- 姫路城（3枚）
+insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)
+select p.id, 'seed/photos/himeji-castle/01.jpg', 'seed/photos/himeji-castle/01_t.jpg', 1280, 955, (0 / p.n)::smallint
+from (
+  select po.id, row_number() over (order by po.created_at, po.id) - 1 as idx, count(*) over () as n
+  from public.posts po join public.spots sp on sp.id = po.spot_id
+  where sp.name = '姫路城' and sp.source = 'seed'
+) p
+where p.idx = 0 % p.n and 0 / p.n < 4
+  and not exists (select 1 from public.post_images where full_path = 'seed/photos/himeji-castle/01.jpg');
+insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)
+select p.id, 'seed/photos/himeji-castle/02.jpg', 'seed/photos/himeji-castle/02_t.jpg', 1280, 853, (1 / p.n)::smallint
+from (
+  select po.id, row_number() over (order by po.created_at, po.id) - 1 as idx, count(*) over () as n
+  from public.posts po join public.spots sp on sp.id = po.spot_id
+  where sp.name = '姫路城' and sp.source = 'seed'
+) p
+where p.idx = 1 % p.n and 1 / p.n < 4
+  and not exists (select 1 from public.post_images where full_path = 'seed/photos/himeji-castle/02.jpg');
+insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)
+select p.id, 'seed/photos/himeji-castle/03.jpg', 'seed/photos/himeji-castle/03_t.jpg', 1280, 853, (2 / p.n)::smallint
+from (
+  select po.id, row_number() over (order by po.created_at, po.id) - 1 as idx, count(*) over () as n
+  from public.posts po join public.spots sp on sp.id = po.spot_id
+  where sp.name = '姫路城' and sp.source = 'seed'
+) p
+where p.idx = 2 % p.n and 2 / p.n < 4
+  and not exists (select 1 from public.post_images where full_path = 'seed/photos/himeji-castle/03.jpg');
+
+-- 北野異人館街（3枚）
+insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)
+select p.id, 'seed/photos/kitano-ijinkan/01.jpg', 'seed/photos/kitano-ijinkan/01_t.jpg', 1280, 853, (0 / p.n)::smallint
+from (
+  select po.id, row_number() over (order by po.created_at, po.id) - 1 as idx, count(*) over () as n
+  from public.posts po join public.spots sp on sp.id = po.spot_id
+  where sp.name = '北野異人館街' and sp.source = 'seed'
+) p
+where p.idx = 0 % p.n and 0 / p.n < 4
+  and not exists (select 1 from public.post_images where full_path = 'seed/photos/kitano-ijinkan/01.jpg');
+insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)
+select p.id, 'seed/photos/kitano-ijinkan/02.jpg', 'seed/photos/kitano-ijinkan/02_t.jpg', 1280, 853, (1 / p.n)::smallint
+from (
+  select po.id, row_number() over (order by po.created_at, po.id) - 1 as idx, count(*) over () as n
+  from public.posts po join public.spots sp on sp.id = po.spot_id
+  where sp.name = '北野異人館街' and sp.source = 'seed'
+) p
+where p.idx = 1 % p.n and 1 / p.n < 4
+  and not exists (select 1 from public.post_images where full_path = 'seed/photos/kitano-ijinkan/02.jpg');
+insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)
+select p.id, 'seed/photos/kitano-ijinkan/03.jpg', 'seed/photos/kitano-ijinkan/03_t.jpg', 1280, 853, (2 / p.n)::smallint
+from (
+  select po.id, row_number() over (order by po.created_at, po.id) - 1 as idx, count(*) over () as n
+  from public.posts po join public.spots sp on sp.id = po.spot_id
+  where sp.name = '北野異人館街' and sp.source = 'seed'
+) p
+where p.idx = 2 % p.n and 2 / p.n < 4
+  and not exists (select 1 from public.post_images where full_path = 'seed/photos/kitano-ijinkan/03.jpg');
+
+-- 南京町（3枚）
+insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)
+select p.id, 'seed/photos/nankinmachi/01.jpg', 'seed/photos/nankinmachi/01_t.jpg', 1280, 853, (0 / p.n)::smallint
+from (
+  select po.id, row_number() over (order by po.created_at, po.id) - 1 as idx, count(*) over () as n
+  from public.posts po join public.spots sp on sp.id = po.spot_id
+  where sp.name = '南京町' and sp.source = 'seed'
+) p
+where p.idx = 0 % p.n and 0 / p.n < 4
+  and not exists (select 1 from public.post_images where full_path = 'seed/photos/nankinmachi/01.jpg');
+insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)
+select p.id, 'seed/photos/nankinmachi/02.jpg', 'seed/photos/nankinmachi/02_t.jpg', 1280, 1035, (1 / p.n)::smallint
+from (
+  select po.id, row_number() over (order by po.created_at, po.id) - 1 as idx, count(*) over () as n
+  from public.posts po join public.spots sp on sp.id = po.spot_id
+  where sp.name = '南京町' and sp.source = 'seed'
+) p
+where p.idx = 1 % p.n and 1 / p.n < 4
+  and not exists (select 1 from public.post_images where full_path = 'seed/photos/nankinmachi/02.jpg');
+insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)
+select p.id, 'seed/photos/nankinmachi/03.jpg', 'seed/photos/nankinmachi/03_t.jpg', 1280, 729, (2 / p.n)::smallint
+from (
+  select po.id, row_number() over (order by po.created_at, po.id) - 1 as idx, count(*) over () as n
+  from public.posts po join public.spots sp on sp.id = po.spot_id
+  where sp.name = '南京町' and sp.source = 'seed'
+) p
+where p.idx = 2 % p.n and 2 / p.n < 4
+  and not exists (select 1 from public.post_images where full_path = 'seed/photos/nankinmachi/03.jpg');
+
+-- 有馬温泉（3枚）
+insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)
+select p.id, 'seed/photos/arima-onsen/01.jpg', 'seed/photos/arima-onsen/01_t.jpg', 1280, 960, (0 / p.n)::smallint
+from (
+  select po.id, row_number() over (order by po.created_at, po.id) - 1 as idx, count(*) over () as n
+  from public.posts po join public.spots sp on sp.id = po.spot_id
+  where sp.name = '有馬温泉' and sp.source = 'seed'
+) p
+where p.idx = 0 % p.n and 0 / p.n < 4
+  and not exists (select 1 from public.post_images where full_path = 'seed/photos/arima-onsen/01.jpg');
+insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)
+select p.id, 'seed/photos/arima-onsen/02.jpg', 'seed/photos/arima-onsen/02_t.jpg', 1280, 853, (1 / p.n)::smallint
+from (
+  select po.id, row_number() over (order by po.created_at, po.id) - 1 as idx, count(*) over () as n
+  from public.posts po join public.spots sp on sp.id = po.spot_id
+  where sp.name = '有馬温泉' and sp.source = 'seed'
+) p
+where p.idx = 1 % p.n and 1 / p.n < 4
+  and not exists (select 1 from public.post_images where full_path = 'seed/photos/arima-onsen/02.jpg');
+insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)
+select p.id, 'seed/photos/arima-onsen/03.jpg', 'seed/photos/arima-onsen/03_t.jpg', 853, 1280, (2 / p.n)::smallint
+from (
+  select po.id, row_number() over (order by po.created_at, po.id) - 1 as idx, count(*) over () as n
+  from public.posts po join public.spots sp on sp.id = po.spot_id
+  where sp.name = '有馬温泉' and sp.source = 'seed'
+) p
+where p.idx = 2 % p.n and 2 / p.n < 4
+  and not exists (select 1 from public.post_images where full_path = 'seed/photos/arima-onsen/03.jpg');
+
+-- 竹田城跡（3枚）
+insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)
+select p.id, 'seed/photos/takeda-castle/01.jpg', 'seed/photos/takeda-castle/01_t.jpg', 1280, 851, (0 / p.n)::smallint
+from (
+  select po.id, row_number() over (order by po.created_at, po.id) - 1 as idx, count(*) over () as n
+  from public.posts po join public.spots sp on sp.id = po.spot_id
+  where sp.name = '竹田城跡' and sp.source = 'seed'
+) p
+where p.idx = 0 % p.n and 0 / p.n < 4
+  and not exists (select 1 from public.post_images where full_path = 'seed/photos/takeda-castle/01.jpg');
+insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)
+select p.id, 'seed/photos/takeda-castle/02.jpg', 'seed/photos/takeda-castle/02_t.jpg', 1280, 960, (1 / p.n)::smallint
+from (
+  select po.id, row_number() over (order by po.created_at, po.id) - 1 as idx, count(*) over () as n
+  from public.posts po join public.spots sp on sp.id = po.spot_id
+  where sp.name = '竹田城跡' and sp.source = 'seed'
+) p
+where p.idx = 1 % p.n and 1 / p.n < 4
+  and not exists (select 1 from public.post_images where full_path = 'seed/photos/takeda-castle/02.jpg');
+insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)
+select p.id, 'seed/photos/takeda-castle/03.jpg', 'seed/photos/takeda-castle/03_t.jpg', 1280, 960, (2 / p.n)::smallint
+from (
+  select po.id, row_number() over (order by po.created_at, po.id) - 1 as idx, count(*) over () as n
+  from public.posts po join public.spots sp on sp.id = po.spot_id
+  where sp.name = '竹田城跡' and sp.source = 'seed'
+) p
+where p.idx = 2 % p.n and 2 / p.n < 4
+  and not exists (select 1 from public.post_images where full_path = 'seed/photos/takeda-castle/03.jpg');
+
+-- 厳島神社（3枚）
+insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)
+select p.id, 'seed/photos/itsukushima-shrine/01.jpg', 'seed/photos/itsukushima-shrine/01_t.jpg', 1280, 975, (0 / p.n)::smallint
+from (
+  select po.id, row_number() over (order by po.created_at, po.id) - 1 as idx, count(*) over () as n
+  from public.posts po join public.spots sp on sp.id = po.spot_id
+  where sp.name = '厳島神社' and sp.source = 'seed'
+) p
+where p.idx = 0 % p.n and 0 / p.n < 4
+  and not exists (select 1 from public.post_images where full_path = 'seed/photos/itsukushima-shrine/01.jpg');
+insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)
+select p.id, 'seed/photos/itsukushima-shrine/02.jpg', 'seed/photos/itsukushima-shrine/02_t.jpg', 853, 1280, (1 / p.n)::smallint
+from (
+  select po.id, row_number() over (order by po.created_at, po.id) - 1 as idx, count(*) over () as n
+  from public.posts po join public.spots sp on sp.id = po.spot_id
+  where sp.name = '厳島神社' and sp.source = 'seed'
+) p
+where p.idx = 1 % p.n and 1 / p.n < 4
+  and not exists (select 1 from public.post_images where full_path = 'seed/photos/itsukushima-shrine/02.jpg');
+insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)
+select p.id, 'seed/photos/itsukushima-shrine/03.jpg', 'seed/photos/itsukushima-shrine/03_t.jpg', 1280, 854, (2 / p.n)::smallint
+from (
+  select po.id, row_number() over (order by po.created_at, po.id) - 1 as idx, count(*) over () as n
+  from public.posts po join public.spots sp on sp.id = po.spot_id
+  where sp.name = '厳島神社' and sp.source = 'seed'
+) p
+where p.idx = 2 % p.n and 2 / p.n < 4
+  and not exists (select 1 from public.post_images where full_path = 'seed/photos/itsukushima-shrine/03.jpg');
+
+-- 原爆ドーム（3枚）
+insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)
+select p.id, 'seed/photos/atomic-bomb-dome/01.jpg', 'seed/photos/atomic-bomb-dome/01_t.jpg', 1280, 853, (0 / p.n)::smallint
+from (
+  select po.id, row_number() over (order by po.created_at, po.id) - 1 as idx, count(*) over () as n
+  from public.posts po join public.spots sp on sp.id = po.spot_id
+  where sp.name = '原爆ドーム' and sp.source = 'seed'
+) p
+where p.idx = 0 % p.n and 0 / p.n < 4
+  and not exists (select 1 from public.post_images where full_path = 'seed/photos/atomic-bomb-dome/01.jpg');
+insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)
+select p.id, 'seed/photos/atomic-bomb-dome/02.jpg', 'seed/photos/atomic-bomb-dome/02_t.jpg', 1280, 855, (1 / p.n)::smallint
+from (
+  select po.id, row_number() over (order by po.created_at, po.id) - 1 as idx, count(*) over () as n
+  from public.posts po join public.spots sp on sp.id = po.spot_id
+  where sp.name = '原爆ドーム' and sp.source = 'seed'
+) p
+where p.idx = 1 % p.n and 1 / p.n < 4
+  and not exists (select 1 from public.post_images where full_path = 'seed/photos/atomic-bomb-dome/02.jpg');
+insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)
+select p.id, 'seed/photos/atomic-bomb-dome/03.jpg', 'seed/photos/atomic-bomb-dome/03_t.jpg', 1280, 849, (2 / p.n)::smallint
+from (
+  select po.id, row_number() over (order by po.created_at, po.id) - 1 as idx, count(*) over () as n
+  from public.posts po join public.spots sp on sp.id = po.spot_id
+  where sp.name = '原爆ドーム' and sp.source = 'seed'
+) p
+where p.idx = 2 % p.n and 2 / p.n < 4
+  and not exists (select 1 from public.post_images where full_path = 'seed/photos/atomic-bomb-dome/03.jpg');
+
+-- 弥山（3枚）
+insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)
+select p.id, 'seed/photos/mount-misen/01.jpg', 'seed/photos/mount-misen/01_t.jpg', 1280, 853, (0 / p.n)::smallint
+from (
+  select po.id, row_number() over (order by po.created_at, po.id) - 1 as idx, count(*) over () as n
+  from public.posts po join public.spots sp on sp.id = po.spot_id
+  where sp.name = '弥山' and sp.source = 'seed'
+) p
+where p.idx = 0 % p.n and 0 / p.n < 4
+  and not exists (select 1 from public.post_images where full_path = 'seed/photos/mount-misen/01.jpg');
+insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)
+select p.id, 'seed/photos/mount-misen/02.jpg', 'seed/photos/mount-misen/02_t.jpg', 1280, 853, (1 / p.n)::smallint
+from (
+  select po.id, row_number() over (order by po.created_at, po.id) - 1 as idx, count(*) over () as n
+  from public.posts po join public.spots sp on sp.id = po.spot_id
+  where sp.name = '弥山' and sp.source = 'seed'
+) p
+where p.idx = 1 % p.n and 1 / p.n < 4
+  and not exists (select 1 from public.post_images where full_path = 'seed/photos/mount-misen/02.jpg');
+insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)
+select p.id, 'seed/photos/mount-misen/03.jpg', 'seed/photos/mount-misen/03_t.jpg', 1280, 960, (2 / p.n)::smallint
+from (
+  select po.id, row_number() over (order by po.created_at, po.id) - 1 as idx, count(*) over () as n
+  from public.posts po join public.spots sp on sp.id = po.spot_id
+  where sp.name = '弥山' and sp.source = 'seed'
+) p
+where p.idx = 2 % p.n and 2 / p.n < 4
+  and not exists (select 1 from public.post_images where full_path = 'seed/photos/mount-misen/03.jpg');
+
+-- 千光寺（3枚）
+insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)
+select p.id, 'seed/photos/senkoji-onomichi/01.jpg', 'seed/photos/senkoji-onomichi/01_t.jpg', 857, 1280, (0 / p.n)::smallint
+from (
+  select po.id, row_number() over (order by po.created_at, po.id) - 1 as idx, count(*) over () as n
+  from public.posts po join public.spots sp on sp.id = po.spot_id
+  where sp.name = '千光寺' and sp.source = 'seed'
+) p
+where p.idx = 0 % p.n and 0 / p.n < 4
+  and not exists (select 1 from public.post_images where full_path = 'seed/photos/senkoji-onomichi/01.jpg');
+insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)
+select p.id, 'seed/photos/senkoji-onomichi/02.jpg', 'seed/photos/senkoji-onomichi/02_t.jpg', 1280, 960, (1 / p.n)::smallint
+from (
+  select po.id, row_number() over (order by po.created_at, po.id) - 1 as idx, count(*) over () as n
+  from public.posts po join public.spots sp on sp.id = po.spot_id
+  where sp.name = '千光寺' and sp.source = 'seed'
+) p
+where p.idx = 1 % p.n and 1 / p.n < 4
+  and not exists (select 1 from public.post_images where full_path = 'seed/photos/senkoji-onomichi/02.jpg');
+insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)
+select p.id, 'seed/photos/senkoji-onomichi/03.jpg', 'seed/photos/senkoji-onomichi/03_t.jpg', 1280, 850, (2 / p.n)::smallint
+from (
+  select po.id, row_number() over (order by po.created_at, po.id) - 1 as idx, count(*) over () as n
+  from public.posts po join public.spots sp on sp.id = po.spot_id
+  where sp.name = '千光寺' and sp.source = 'seed'
+) p
+where p.idx = 2 % p.n and 2 / p.n < 4
+  and not exists (select 1 from public.post_images where full_path = 'seed/photos/senkoji-onomichi/03.jpg');
+
+-- 縮景園（3枚）
+insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)
+select p.id, 'seed/photos/shukkeien/01.jpg', 'seed/photos/shukkeien/01_t.jpg', 1280, 850, (0 / p.n)::smallint
+from (
+  select po.id, row_number() over (order by po.created_at, po.id) - 1 as idx, count(*) over () as n
+  from public.posts po join public.spots sp on sp.id = po.spot_id
+  where sp.name = '縮景園' and sp.source = 'seed'
+) p
+where p.idx = 0 % p.n and 0 / p.n < 4
+  and not exists (select 1 from public.post_images where full_path = 'seed/photos/shukkeien/01.jpg');
+insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)
+select p.id, 'seed/photos/shukkeien/02.jpg', 'seed/photos/shukkeien/02_t.jpg', 1280, 853, (1 / p.n)::smallint
+from (
+  select po.id, row_number() over (order by po.created_at, po.id) - 1 as idx, count(*) over () as n
+  from public.posts po join public.spots sp on sp.id = po.spot_id
+  where sp.name = '縮景園' and sp.source = 'seed'
+) p
+where p.idx = 1 % p.n and 1 / p.n < 4
+  and not exists (select 1 from public.post_images where full_path = 'seed/photos/shukkeien/02.jpg');
+insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)
+select p.id, 'seed/photos/shukkeien/03.jpg', 'seed/photos/shukkeien/03_t.jpg', 1280, 736, (2 / p.n)::smallint
+from (
+  select po.id, row_number() over (order by po.created_at, po.id) - 1 as idx, count(*) over () as n
+  from public.posts po join public.spots sp on sp.id = po.spot_id
+  where sp.name = '縮景園' and sp.source = 'seed'
+) p
+where p.idx = 2 % p.n and 2 / p.n < 4
+  and not exists (select 1 from public.post_images where full_path = 'seed/photos/shukkeien/03.jpg');
+
+-- 太宰府天満宮（3枚）
+insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)
+select p.id, 'seed/photos/dazaifu-tenmangu/01.jpg', 'seed/photos/dazaifu-tenmangu/01_t.jpg', 1280, 852, (0 / p.n)::smallint
+from (
+  select po.id, row_number() over (order by po.created_at, po.id) - 1 as idx, count(*) over () as n
+  from public.posts po join public.spots sp on sp.id = po.spot_id
+  where sp.name = '太宰府天満宮' and sp.source = 'seed'
+) p
+where p.idx = 0 % p.n and 0 / p.n < 4
+  and not exists (select 1 from public.post_images where full_path = 'seed/photos/dazaifu-tenmangu/01.jpg');
+insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)
+select p.id, 'seed/photos/dazaifu-tenmangu/02.jpg', 'seed/photos/dazaifu-tenmangu/02_t.jpg', 1280, 960, (1 / p.n)::smallint
+from (
+  select po.id, row_number() over (order by po.created_at, po.id) - 1 as idx, count(*) over () as n
+  from public.posts po join public.spots sp on sp.id = po.spot_id
+  where sp.name = '太宰府天満宮' and sp.source = 'seed'
+) p
+where p.idx = 1 % p.n and 1 / p.n < 4
+  and not exists (select 1 from public.post_images where full_path = 'seed/photos/dazaifu-tenmangu/02.jpg');
+insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)
+select p.id, 'seed/photos/dazaifu-tenmangu/03.jpg', 'seed/photos/dazaifu-tenmangu/03_t.jpg', 1280, 960, (2 / p.n)::smallint
+from (
+  select po.id, row_number() over (order by po.created_at, po.id) - 1 as idx, count(*) over () as n
+  from public.posts po join public.spots sp on sp.id = po.spot_id
+  where sp.name = '太宰府天満宮' and sp.source = 'seed'
+) p
+where p.idx = 2 % p.n and 2 / p.n < 4
+  and not exists (select 1 from public.post_images where full_path = 'seed/photos/dazaifu-tenmangu/03.jpg');
+
+-- 中洲屋台（3枚）
+insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)
+select p.id, 'seed/photos/nakasu-yatai/01.jpg', 'seed/photos/nakasu-yatai/01_t.jpg', 1280, 960, (0 / p.n)::smallint
+from (
+  select po.id, row_number() over (order by po.created_at, po.id) - 1 as idx, count(*) over () as n
+  from public.posts po join public.spots sp on sp.id = po.spot_id
+  where sp.name = '中洲屋台' and sp.source = 'seed'
+) p
+where p.idx = 0 % p.n and 0 / p.n < 4
+  and not exists (select 1 from public.post_images where full_path = 'seed/photos/nakasu-yatai/01.jpg');
+insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)
+select p.id, 'seed/photos/nakasu-yatai/02.jpg', 'seed/photos/nakasu-yatai/02_t.jpg', 1280, 853, (1 / p.n)::smallint
+from (
+  select po.id, row_number() over (order by po.created_at, po.id) - 1 as idx, count(*) over () as n
+  from public.posts po join public.spots sp on sp.id = po.spot_id
+  where sp.name = '中洲屋台' and sp.source = 'seed'
+) p
+where p.idx = 1 % p.n and 1 / p.n < 4
+  and not exists (select 1 from public.post_images where full_path = 'seed/photos/nakasu-yatai/02.jpg');
+insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)
+select p.id, 'seed/photos/nakasu-yatai/03.jpg', 'seed/photos/nakasu-yatai/03_t.jpg', 960, 1280, (2 / p.n)::smallint
+from (
+  select po.id, row_number() over (order by po.created_at, po.id) - 1 as idx, count(*) over () as n
+  from public.posts po join public.spots sp on sp.id = po.spot_id
+  where sp.name = '中洲屋台' and sp.source = 'seed'
+) p
+where p.idx = 2 % p.n and 2 / p.n < 4
+  and not exists (select 1 from public.post_images where full_path = 'seed/photos/nakasu-yatai/03.jpg');
+
+-- 柳川川下り（3枚）
+insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)
+select p.id, 'seed/photos/yanagawa-kawakudari/01.jpg', 'seed/photos/yanagawa-kawakudari/01_t.jpg', 1280, 960, (0 / p.n)::smallint
+from (
+  select po.id, row_number() over (order by po.created_at, po.id) - 1 as idx, count(*) over () as n
+  from public.posts po join public.spots sp on sp.id = po.spot_id
+  where sp.name = '柳川川下り' and sp.source = 'seed'
+) p
+where p.idx = 0 % p.n and 0 / p.n < 4
+  and not exists (select 1 from public.post_images where full_path = 'seed/photos/yanagawa-kawakudari/01.jpg');
+insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)
+select p.id, 'seed/photos/yanagawa-kawakudari/02.jpg', 'seed/photos/yanagawa-kawakudari/02_t.jpg', 1280, 851, (1 / p.n)::smallint
+from (
+  select po.id, row_number() over (order by po.created_at, po.id) - 1 as idx, count(*) over () as n
+  from public.posts po join public.spots sp on sp.id = po.spot_id
+  where sp.name = '柳川川下り' and sp.source = 'seed'
+) p
+where p.idx = 1 % p.n and 1 / p.n < 4
+  and not exists (select 1 from public.post_images where full_path = 'seed/photos/yanagawa-kawakudari/02.jpg');
+insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)
+select p.id, 'seed/photos/yanagawa-kawakudari/03.jpg', 'seed/photos/yanagawa-kawakudari/03_t.jpg', 1280, 851, (2 / p.n)::smallint
+from (
+  select po.id, row_number() over (order by po.created_at, po.id) - 1 as idx, count(*) over () as n
+  from public.posts po join public.spots sp on sp.id = po.spot_id
+  where sp.name = '柳川川下り' and sp.source = 'seed'
+) p
+where p.idx = 2 % p.n and 2 / p.n < 4
+  and not exists (select 1 from public.post_images where full_path = 'seed/photos/yanagawa-kawakudari/03.jpg');
+
+-- 桜井二見ヶ浦（3枚）
+insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)
+select p.id, 'seed/photos/sakurai-futamigaura/01.jpg', 'seed/photos/sakurai-futamigaura/01_t.jpg', 1280, 687, (0 / p.n)::smallint
+from (
+  select po.id, row_number() over (order by po.created_at, po.id) - 1 as idx, count(*) over () as n
+  from public.posts po join public.spots sp on sp.id = po.spot_id
+  where sp.name = '桜井二見ヶ浦' and sp.source = 'seed'
+) p
+where p.idx = 0 % p.n and 0 / p.n < 4
+  and not exists (select 1 from public.post_images where full_path = 'seed/photos/sakurai-futamigaura/01.jpg');
+insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)
+select p.id, 'seed/photos/sakurai-futamigaura/02.jpg', 'seed/photos/sakurai-futamigaura/02_t.jpg', 1280, 960, (1 / p.n)::smallint
+from (
+  select po.id, row_number() over (order by po.created_at, po.id) - 1 as idx, count(*) over () as n
+  from public.posts po join public.spots sp on sp.id = po.spot_id
+  where sp.name = '桜井二見ヶ浦' and sp.source = 'seed'
+) p
+where p.idx = 1 % p.n and 1 / p.n < 4
+  and not exists (select 1 from public.post_images where full_path = 'seed/photos/sakurai-futamigaura/02.jpg');
+insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)
+select p.id, 'seed/photos/sakurai-futamigaura/03.jpg', 'seed/photos/sakurai-futamigaura/03_t.jpg', 1280, 960, (2 / p.n)::smallint
+from (
+  select po.id, row_number() over (order by po.created_at, po.id) - 1 as idx, count(*) over () as n
+  from public.posts po join public.spots sp on sp.id = po.spot_id
+  where sp.name = '桜井二見ヶ浦' and sp.source = 'seed'
+) p
+where p.idx = 2 % p.n and 2 / p.n < 4
+  and not exists (select 1 from public.post_images where full_path = 'seed/photos/sakurai-futamigaura/03.jpg');
+
+-- 大濠公園（3枚）
+insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)
+select p.id, 'seed/photos/ohori-park/01.jpg', 'seed/photos/ohori-park/01_t.jpg', 1280, 640, (0 / p.n)::smallint
+from (
+  select po.id, row_number() over (order by po.created_at, po.id) - 1 as idx, count(*) over () as n
+  from public.posts po join public.spots sp on sp.id = po.spot_id
+  where sp.name = '大濠公園' and sp.source = 'seed'
+) p
+where p.idx = 0 % p.n and 0 / p.n < 4
+  and not exists (select 1 from public.post_images where full_path = 'seed/photos/ohori-park/01.jpg');
+insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)
+select p.id, 'seed/photos/ohori-park/02.jpg', 'seed/photos/ohori-park/02_t.jpg', 1280, 960, (1 / p.n)::smallint
+from (
+  select po.id, row_number() over (order by po.created_at, po.id) - 1 as idx, count(*) over () as n
+  from public.posts po join public.spots sp on sp.id = po.spot_id
+  where sp.name = '大濠公園' and sp.source = 'seed'
+) p
+where p.idx = 1 % p.n and 1 / p.n < 4
+  and not exists (select 1 from public.post_images where full_path = 'seed/photos/ohori-park/02.jpg');
+insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)
+select p.id, 'seed/photos/ohori-park/03.jpg', 'seed/photos/ohori-park/03_t.jpg', 1280, 960, (2 / p.n)::smallint
+from (
+  select po.id, row_number() over (order by po.created_at, po.id) - 1 as idx, count(*) over () as n
+  from public.posts po join public.spots sp on sp.id = po.spot_id
+  where sp.name = '大濠公園' and sp.source = 'seed'
+) p
+where p.idx = 2 % p.n and 2 / p.n < 4
+  and not exists (select 1 from public.post_images where full_path = 'seed/photos/ohori-park/03.jpg');
+
+-- 首里城（3枚）
+insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)
+select p.id, 'seed/photos/shuri-castle/01.jpg', 'seed/photos/shuri-castle/01_t.jpg', 1280, 852, (0 / p.n)::smallint
+from (
+  select po.id, row_number() over (order by po.created_at, po.id) - 1 as idx, count(*) over () as n
+  from public.posts po join public.spots sp on sp.id = po.spot_id
+  where sp.name = '首里城' and sp.source = 'seed'
+) p
+where p.idx = 0 % p.n and 0 / p.n < 4
+  and not exists (select 1 from public.post_images where full_path = 'seed/photos/shuri-castle/01.jpg');
+insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)
+select p.id, 'seed/photos/shuri-castle/02.jpg', 'seed/photos/shuri-castle/02_t.jpg', 1280, 852, (1 / p.n)::smallint
+from (
+  select po.id, row_number() over (order by po.created_at, po.id) - 1 as idx, count(*) over () as n
+  from public.posts po join public.spots sp on sp.id = po.spot_id
+  where sp.name = '首里城' and sp.source = 'seed'
+) p
+where p.idx = 1 % p.n and 1 / p.n < 4
+  and not exists (select 1 from public.post_images where full_path = 'seed/photos/shuri-castle/02.jpg');
+insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)
+select p.id, 'seed/photos/shuri-castle/03.jpg', 'seed/photos/shuri-castle/03_t.jpg', 1280, 800, (2 / p.n)::smallint
+from (
+  select po.id, row_number() over (order by po.created_at, po.id) - 1 as idx, count(*) over () as n
+  from public.posts po join public.spots sp on sp.id = po.spot_id
+  where sp.name = '首里城' and sp.source = 'seed'
+) p
+where p.idx = 2 % p.n and 2 / p.n < 4
+  and not exists (select 1 from public.post_images where full_path = 'seed/photos/shuri-castle/03.jpg');
+
+-- 沖縄美ら海水族館（3枚）
+insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)
+select p.id, 'seed/photos/churaumi-aquarium/01.jpg', 'seed/photos/churaumi-aquarium/01_t.jpg', 1280, 854, (0 / p.n)::smallint
+from (
+  select po.id, row_number() over (order by po.created_at, po.id) - 1 as idx, count(*) over () as n
+  from public.posts po join public.spots sp on sp.id = po.spot_id
+  where sp.name = '沖縄美ら海水族館' and sp.source = 'seed'
+) p
+where p.idx = 0 % p.n and 0 / p.n < 4
+  and not exists (select 1 from public.post_images where full_path = 'seed/photos/churaumi-aquarium/01.jpg');
+insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)
+select p.id, 'seed/photos/churaumi-aquarium/02.jpg', 'seed/photos/churaumi-aquarium/02_t.jpg', 1280, 853, (1 / p.n)::smallint
+from (
+  select po.id, row_number() over (order by po.created_at, po.id) - 1 as idx, count(*) over () as n
+  from public.posts po join public.spots sp on sp.id = po.spot_id
+  where sp.name = '沖縄美ら海水族館' and sp.source = 'seed'
+) p
+where p.idx = 1 % p.n and 1 / p.n < 4
+  and not exists (select 1 from public.post_images where full_path = 'seed/photos/churaumi-aquarium/02.jpg');
+insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)
+select p.id, 'seed/photos/churaumi-aquarium/03.jpg', 'seed/photos/churaumi-aquarium/03_t.jpg', 1280, 960, (2 / p.n)::smallint
+from (
+  select po.id, row_number() over (order by po.created_at, po.id) - 1 as idx, count(*) over () as n
+  from public.posts po join public.spots sp on sp.id = po.spot_id
+  where sp.name = '沖縄美ら海水族館' and sp.source = 'seed'
+) p
+where p.idx = 2 % p.n and 2 / p.n < 4
+  and not exists (select 1 from public.post_images where full_path = 'seed/photos/churaumi-aquarium/03.jpg');
+
+-- 国際通り（3枚）
+insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)
+select p.id, 'seed/photos/kokusai-dori/01.jpg', 'seed/photos/kokusai-dori/01_t.jpg', 960, 1280, (0 / p.n)::smallint
+from (
+  select po.id, row_number() over (order by po.created_at, po.id) - 1 as idx, count(*) over () as n
+  from public.posts po join public.spots sp on sp.id = po.spot_id
+  where sp.name = '国際通り' and sp.source = 'seed'
+) p
+where p.idx = 0 % p.n and 0 / p.n < 4
+  and not exists (select 1 from public.post_images where full_path = 'seed/photos/kokusai-dori/01.jpg');
+insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)
+select p.id, 'seed/photos/kokusai-dori/02.jpg', 'seed/photos/kokusai-dori/02_t.jpg', 1280, 853, (1 / p.n)::smallint
+from (
+  select po.id, row_number() over (order by po.created_at, po.id) - 1 as idx, count(*) over () as n
+  from public.posts po join public.spots sp on sp.id = po.spot_id
+  where sp.name = '国際通り' and sp.source = 'seed'
+) p
+where p.idx = 1 % p.n and 1 / p.n < 4
+  and not exists (select 1 from public.post_images where full_path = 'seed/photos/kokusai-dori/02.jpg');
+insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)
+select p.id, 'seed/photos/kokusai-dori/03.jpg', 'seed/photos/kokusai-dori/03_t.jpg', 1280, 853, (2 / p.n)::smallint
+from (
+  select po.id, row_number() over (order by po.created_at, po.id) - 1 as idx, count(*) over () as n
+  from public.posts po join public.spots sp on sp.id = po.spot_id
+  where sp.name = '国際通り' and sp.source = 'seed'
+) p
+where p.idx = 2 % p.n and 2 / p.n < 4
+  and not exists (select 1 from public.post_images where full_path = 'seed/photos/kokusai-dori/03.jpg');
+
+-- 古宇利大橋（3枚）
+insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)
+select p.id, 'seed/photos/kouri-bridge/01.jpg', 'seed/photos/kouri-bridge/01_t.jpg', 1280, 720, (0 / p.n)::smallint
+from (
+  select po.id, row_number() over (order by po.created_at, po.id) - 1 as idx, count(*) over () as n
+  from public.posts po join public.spots sp on sp.id = po.spot_id
+  where sp.name = '古宇利大橋' and sp.source = 'seed'
+) p
+where p.idx = 0 % p.n and 0 / p.n < 4
+  and not exists (select 1 from public.post_images where full_path = 'seed/photos/kouri-bridge/01.jpg');
+insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)
+select p.id, 'seed/photos/kouri-bridge/02.jpg', 'seed/photos/kouri-bridge/02_t.jpg', 1280, 960, (1 / p.n)::smallint
+from (
+  select po.id, row_number() over (order by po.created_at, po.id) - 1 as idx, count(*) over () as n
+  from public.posts po join public.spots sp on sp.id = po.spot_id
+  where sp.name = '古宇利大橋' and sp.source = 'seed'
+) p
+where p.idx = 1 % p.n and 1 / p.n < 4
+  and not exists (select 1 from public.post_images where full_path = 'seed/photos/kouri-bridge/02.jpg');
+insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)
+select p.id, 'seed/photos/kouri-bridge/03.jpg', 'seed/photos/kouri-bridge/03_t.jpg', 1280, 960, (2 / p.n)::smallint
+from (
+  select po.id, row_number() over (order by po.created_at, po.id) - 1 as idx, count(*) over () as n
+  from public.posts po join public.spots sp on sp.id = po.spot_id
+  where sp.name = '古宇利大橋' and sp.source = 'seed'
+) p
+where p.idx = 2 % p.n and 2 / p.n < 4
+  and not exists (select 1 from public.post_images where full_path = 'seed/photos/kouri-bridge/03.jpg');
+
+-- 万座毛（3枚）
+insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)
+select p.id, 'seed/photos/manzamo/01.jpg', 'seed/photos/manzamo/01_t.jpg', 1280, 853, (0 / p.n)::smallint
+from (
+  select po.id, row_number() over (order by po.created_at, po.id) - 1 as idx, count(*) over () as n
+  from public.posts po join public.spots sp on sp.id = po.spot_id
+  where sp.name = '万座毛' and sp.source = 'seed'
+) p
+where p.idx = 0 % p.n and 0 / p.n < 4
+  and not exists (select 1 from public.post_images where full_path = 'seed/photos/manzamo/01.jpg');
+insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)
+select p.id, 'seed/photos/manzamo/02.jpg', 'seed/photos/manzamo/02_t.jpg', 960, 1280, (1 / p.n)::smallint
+from (
+  select po.id, row_number() over (order by po.created_at, po.id) - 1 as idx, count(*) over () as n
+  from public.posts po join public.spots sp on sp.id = po.spot_id
+  where sp.name = '万座毛' and sp.source = 'seed'
+) p
+where p.idx = 1 % p.n and 1 / p.n < 4
+  and not exists (select 1 from public.post_images where full_path = 'seed/photos/manzamo/02.jpg');
+insert into public.post_images (post_id, full_path, thumb_path, width, height, sort_order)
+select p.id, 'seed/photos/manzamo/03.jpg', 'seed/photos/manzamo/03_t.jpg', 1280, 960, (2 / p.n)::smallint
+from (
+  select po.id, row_number() over (order by po.created_at, po.id) - 1 as idx, count(*) over () as n
+  from public.posts po join public.spots sp on sp.id = po.spot_id
+  where sp.name = '万座毛' and sp.source = 'seed'
+) p
+where p.idx = 2 % p.n and 2 / p.n < 4
+  and not exists (select 1 from public.post_images where full_path = 'seed/photos/manzamo/03.jpg');

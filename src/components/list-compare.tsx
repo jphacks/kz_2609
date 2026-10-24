@@ -6,13 +6,13 @@ import type { ReactNode } from "react";
 import { CATEGORY_ICONS } from "@/components/category";
 import { Badge, EmptyState, PageHeader, Spinner } from "@/components/ui";
 import { formatMinutes, useList, type ListSpot } from "@/components/use-list";
-import { CATEGORY_LABELS, POPULARITY_LABELS } from "@/lib/constants";
+import { CATEGORY_LABELS, MAX_COMPARE_SPOTS, POPULARITY_LABELS } from "@/lib/constants";
 import { distanceM, formatDistance } from "@/lib/geo";
 
-// S-08 スポット比較（F-4-10）：2〜3件を横並びで比べる
+// S-08 スポット比較（F-4-10）：2〜8件を横並びで比べる。多いときは横にスクロールし、項目名の列は固定する
 export function ListCompare() {
   const { listId } = useParams<{ listId: string }>();
-  const ids = (useSearchParams().get("ids") ?? "").split(",").filter(Boolean).slice(0, 3);
+  const ids = (useSearchParams().get("ids") ?? "").split(",").filter(Boolean).slice(0, MAX_COMPARE_SPOTS);
   const { list, error } = useList(listId);
 
   if (error) return <EmptyState icon={Columns3} title={error} />;
@@ -39,13 +39,16 @@ export function ListCompare() {
     <div className="mx-auto w-full max-w-3xl px-4 pb-8">
       <PageHeader title="スポットを比較" backHref={`/lists/${listId}`} />
       {spots.length < 2 ? (
-        <EmptyState icon={Columns3} title="比較するスポットを2〜3件選んでください" />
+        <EmptyState icon={Columns3} title={`比較するスポットを2〜${MAX_COMPARE_SPOTS}件選んでください`} />
       ) : (
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[480px] table-fixed border-separate border-spacing-2 text-sm">
+          <table
+            className="w-full table-fixed border-separate border-spacing-2 text-sm"
+            style={{ minWidth: 96 + spots.length * 150 }}
+          >
             <thead>
               <tr>
-                <th className="w-24" />
+                <th className="sticky left-0 z-10 w-24 bg-background" />
                 {spots.map((s) => {
                   const Icon = CATEGORY_ICONS[s.category];
                   return (
@@ -67,7 +70,7 @@ export function ListCompare() {
             <tbody>
               {rows.map((r) => (
                 <tr key={r.label}>
-                  <th scope="row" className="text-left text-xs font-normal text-muted">
+                  <th scope="row" className="sticky left-0 z-10 bg-background text-left text-xs font-normal text-muted">
                     {r.label}
                   </th>
                   {spots.map((s) => (

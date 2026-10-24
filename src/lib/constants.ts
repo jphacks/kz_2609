@@ -89,6 +89,8 @@ export const PRIORITY_WEIGHTS: Record<Priority, { travel: number; timeGap: numbe
 
 // 経路作成の上限（ADR-0017）
 export const MAX_PLAN_SPOTS = 8;
+// スポット比較の上限（F-4-10）。経路を作れる数と同じにする
+export const MAX_COMPARE_SPOTS = MAX_PLAN_SPOTS;
 
 // 入力の上限（F-2・F-4）
 export const COMMENT_MAX = 150;

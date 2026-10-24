@@ -27,7 +27,7 @@ import { PlacePicker } from "@/components/place-picker";
 import { Badge, Button, Card, EmptyState, IconButton, Notice, PageHeader, Spinner, cn, inputClass } from "@/components/ui";
 import { formatMinutes, useList, type ListData, type ListSpot } from "@/components/use-list";
 import { api, errorMessage } from "@/lib/client-api";
-import { CATEGORIES, CATEGORY_LABELS, LIST_NAME_MAX, POPULARITY_LABELS } from "@/lib/constants";
+import { CATEGORIES, CATEGORY_LABELS, LIST_NAME_MAX, MAX_COMPARE_SPOTS, POPULARITY_LABELS } from "@/lib/constants";
 import { distanceM, formatDistance } from "@/lib/geo";
 
 type Sort = "distance" | "popular" | "category" | "added";
@@ -37,7 +37,6 @@ const SORT_LABELS: Record<Sort, string> = {
   category: "カテゴリ別",
   added: "追加順",
 };
-const MAX_COMPARE = 3;
 const DAY_MINUTES = 8 * 60;
 
 // 拠点（F-4-8）。距離の並べ替えと経路作成の出発地に使う
@@ -315,7 +314,7 @@ export function ListDetail() {
   };
 
   const toggleCompare = (id: string) =>
-    setCompare((c) => (c.includes(id) ? c.filter((x) => x !== id) : c.length >= MAX_COMPARE ? c : [...c, id]));
+    setCompare((c) => (c.includes(id) ? c.filter((x) => x !== id) : c.length >= MAX_COMPARE_SPOTS ? c : [...c, id]));
 
   return (
     <div className="mx-auto w-full max-w-2xl px-4 pb-8">
@@ -393,7 +392,7 @@ export function ListDetail() {
           )}
         >
           <Columns3 size={20} strokeWidth={2} aria-hidden />
-          比較（{compare.length}/{MAX_COMPARE}）
+          比較（{compare.length}/{MAX_COMPARE_SPOTS}）
         </Link>
       </div>
 
@@ -417,7 +416,7 @@ export function ListDetail() {
                 spot={spot}
                 distance={distance}
                 compared={compare.includes(spot.id)}
-                compareFull={compare.length >= MAX_COMPARE}
+                compareFull={compare.length >= MAX_COMPARE_SPOTS}
                 onCompare={() => toggleCompare(spot.id)}
                 onMust={() => toggleMust(spot)}
                 onRemove={() => removeSpot(spot)}

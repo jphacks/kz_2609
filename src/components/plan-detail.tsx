@@ -1,6 +1,6 @@
 "use client";
 
-import { Route, Trash2 } from "lucide-react";
+import { Map as MapIcon, Route, Trash2 } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { useApp } from "@/components/app-context";
@@ -23,9 +23,13 @@ type Plan = {
   spots: { id: string; name: string; lat: number; lng: number }[];
   params: { date: string; mode: TravelMode; origin: Pt; destination: Pt | null };
   navLinks: string[];
+  fullRoute: { url: string; stopCount: number } | null;
 };
 
-// S-12 経路プラン（保存済み）。各区間の「ナビ開始」で Googleマップを開く（F-5-12）
+// スマホのブラウザで開くと、Googleマップの立ち寄り先は3か所まで（アプリなら9か所まで）
+const MOBILE_BROWSER_WAYPOINTS = 3;
+
+// S-12 経路プラン（保存済み）。各区間の「ナビ開始」と全体の経路で Googleマップを開く（F-5-12・F-5-13）
 export function PlanDetail() {
   const { planId } = useParams<{ planId: string }>();
   const router = useRouter();
@@ -75,6 +79,26 @@ export function PlanDetail() {
       <Notice tone="info" className="mb-3">
         所要時間は計画時点の Google マップの情報です。当日は「ナビ開始」から Googleマップで最新の経路を確認してください
       </Notice>
+      {plan.fullRoute && (
+        <div className="mb-4 flex flex-col gap-1">
+          <a
+            href={plan.fullRoute.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-border bg-surface px-4 text-sm font-medium text-primary hover:bg-surface-muted"
+          >
+            <MapIcon size={20} strokeWidth={2} aria-hidden />
+            全体の経路を Googleマップで開く
+          </a>
+          <p className="text-xs text-muted">
+            {plan.params.mode === "transit"
+              ? "Googleマップは公共交通の経路に立ち寄り先を入れられないため、全体は徒歩の経路で開きます。バスや電車は各区間の「ナビ開始」で確認してください。"
+              : "訪問する順番どおりに、すべての場所を立ち寄り先として開きます。"}
+            {plan.fullRoute.stopCount - 2 > MOBILE_BROWSER_WAYPOINTS &&
+              "スマホでは Googleマップのアプリで開くと、すべての立ち寄り先が入ります。"}
+          </p>
+        </div>
+      )}
       <div className="grid gap-4 lg:grid-cols-2">
         <Timeline
           items={plan.items}

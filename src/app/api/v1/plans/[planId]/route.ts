@@ -16,6 +16,21 @@ function navUrl(from: Pt, to: Pt, mode: TravelMode) {
   return `https://www.google.com/maps/dir/?${params}`;
 }
 
+// F-5-13：出発地から到着地までを訪問順の立ち寄り先（waypoints）でつないだ1本の経路。
+// Googleマップは公共交通の経路に立ち寄り先を入れられないため、公共交通のプランは徒歩で開く
+function fullRouteUrl(stops: Pt[], mode: TravelMode) {
+  const at = (p: Pt) => `${p.lat},${p.lng}`;
+  const params = new URLSearchParams({
+    api: "1",
+    origin: at(stops[0]),
+    destination: at(stops[stops.length - 1]),
+    travelmode: mode === "transit" ? "walking" : mode,
+  });
+  const waypoints = stops.slice(1, -1).map(at);
+  if (waypoints.length > 0) params.set("waypoints", waypoints.join("|"));
+  return `https://www.google.com/maps/dir/?${params}`;
+}
+
 async function loadPlan(planId: string) {
   parseWith(z.string().uuid({ message: "経路プランが見つかりませんでした" }), planId);
   const { supabase } = await requireUser();
@@ -29,7 +44,7 @@ async function loadPlan(planId: string) {
   return { supabase, plan: data };
 }
 
-// F-5-11・F-5-12：保存済みプラン（各区間のナビ用URL付き）
+// F-5-11〜F-5-13：保存済みプラン（各区間と全体のナビ用URL付き）
 export async function GET(_req: Request, ctx: RouteContext<"/api/v1/plans/[planId]">) {
   return handle(async () => {
     const { planId } = await ctx.params;
@@ -58,6 +73,7 @@ export async function GET(_req: Request, ctx: RouteContext<"/api/v1/plans/[planI
       (item.type === "origin" || item.type === "spot") && item.next ? [item.next.mode] : [],
     );
     const navLinks = stops.slice(1).map((to, i) => navUrl(stops[i], to, legModes[i] ?? params.mode));
+    const fullRoute = stops.length >= 2 ? { url: fullRouteUrl(stops, params.mode), stopCount: stops.length } : null;
 
     const list = plan.wishlists as unknown as { name: string } | null;
     return Response.json({
@@ -73,6 +89,7 @@ export async function GET(_req: Request, ctx: RouteContext<"/api/v1/plans/[planI
       stats: result.stats,
       spots: result.spots,
       navLinks,
+      fullRoute,
       createdAt: plan.created_at,
     });
   });

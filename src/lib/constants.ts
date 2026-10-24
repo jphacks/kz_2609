@@ -101,6 +101,7 @@ export const MAX_SOURCE_IMAGE_BYTES = 10 * 1024 * 1024;
 export const MAX_UPLOAD_BYTES = 2 * 1024 * 1024;
 
 // ログイン（F-6-1）。Supabase の「Minimum password length」と同じ値にする
+export const PASSWORD_MIN = 6; // ADR-0022
 
 // GPS（F-2-6）
 export const NEARBY_RADIUS_M = 100;

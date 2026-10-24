@@ -1,26 +1,76 @@
 @import "tailwindcss";
 
+/* デザイントークン（8.3。ライトモードのみ。メインカラーは仮） */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #f7f7f5;
+  --surface: #ffffff;
+  --surface-muted: #f1f1ee;
+  --foreground: #1c1c1a;
+  --muted: #64645f;
+  --border: #e3e3df;
+  --primary: #1f6f5c;
+  --primary-foreground: #ffffff;
+  --primary-soft: #e4f1ed;
+  --danger: #b42318;
+  --danger-soft: #fdecea;
+  --warning: #8a5a00;
+  --warning-soft: #fff4dc;
+  --popular: #d9822b;
+  --very-popular: #c2410c;
 }
 
 @theme inline {
   --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-surface-muted: var(--surface-muted);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-muted: var(--muted);
+  --color-border: var(--border);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary-soft: var(--primary-soft);
+  --color-danger: var(--danger);
+  --color-danger-soft: var(--danger-soft);
+  --color-warning: var(--warning);
+  --color-warning-soft: var(--warning-soft);
+  --color-popular: var(--popular);
+  --color-very-popular: var(--very-popular);
+  --font-sans: "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Noto Sans JP", "Yu Gothic UI", "Meiryo", sans-serif;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
+html,
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
+  font-size: 16px;
+}
+
+/* 入力欄は16px以上（スマホで拡大されないように。8.3） */
+input,
+select,
+textarea {
+  font-size: 16px;
+}
+
+/* 地図のマーカー（F-1-3：切り替え時は0.3秒で透明度を変える） */
+@keyframes marker-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.map-marker {
+  animation: marker-in 0.3s ease-out;
+  cursor: pointer;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  scrollbar-width: none;
 }

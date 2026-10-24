@@ -3,6 +3,7 @@
 import { Camera, Gem, LocateFixed, Mic, Search, X } from "lucide-react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { useAddToList } from "@/components/add-to-list";
 import { useApp } from "@/components/app-context";
@@ -34,7 +35,9 @@ export function MapScreen() {
   const [selected, setSelected] = useState<MapSpot | null>(null);
   const [info, setInfo] = useState<MapViewInfo>({ zoom: 5, visibleSpots: 0, loading: true, demo: false });
   const [flyTo, setFlyTo] = useState<{ lat: number; lng: number; zoom: number; key: number } | null>(null);
-  const [searching, setSearching] = useState<"text" | "voice" | null>(null);
+  // F-1-13：投稿のタグ（/?q=%23夜景）から開いたときは、その検索を開いた状態で始める
+  const initialQuery = useSearchParams().get("q") ?? "";
+  const [searching, setSearching] = useState<"text" | "voice" | null>(initialQuery ? "text" : null);
   const [picked, setPicked] = useState<string | null>(null);
   const [myPos, setMyPos] = useState<LatLng | null>(null);
   const canVoice = useCanVoice();
@@ -255,6 +258,7 @@ export function MapScreen() {
           configured={configured}
           myPos={myPos}
           initialVoice={searching === "voice"}
+          initialQuery={initialQuery}
           onPick={pickHit}
           onPickHistory={pickHistory}
           onClose={() => setSearching(null)}

@@ -10,6 +10,7 @@ import { useApp } from "@/components/app-context";
 import { CATEGORY_ICONS } from "@/components/category";
 import { Badge, Button, Card, EmptyState, Notice, PageHeader, Spinner, cn } from "@/components/ui";
 import { api, errorMessage } from "@/lib/client-api";
+import { splitHashtags } from "@/lib/hashtags";
 import { isHiddenGem } from "@/lib/hidden-gem";
 import { CATEGORY_LABELS, POPULARITY_LABELS, STAY_LABELS, type Category, type Popularity, type StayDuration } from "@/lib/constants";
 
@@ -125,7 +126,20 @@ function PostCard({ post, onLike }: { post: Post; onLike: () => void }) {
           <span className="text-xs text-muted">{new Date(post.createdAt).toLocaleDateString("ja-JP")}</span>
           {post.stayDuration && <Badge icon={Clock}>{STAY_LABELS[post.stayDuration]}</Badge>}
         </div>
-        {post.comment && <p className="mt-1 whitespace-pre-wrap text-sm">{post.comment}</p>}
+        {post.comment && (
+          <p className="mt-1 whitespace-pre-wrap text-sm">
+            {/* F-1-13：コメントの「#タグ」は押すとそのタグの検索を開く */}
+            {splitHashtags(post.comment).map((part, i) =>
+              part.tag ? (
+                <Link key={i} href={`/?q=${encodeURIComponent(`#${part.tag}`)}`} className="text-primary hover:underline">
+                  {part.text}
+                </Link>
+              ) : (
+                <span key={i}>{part.text}</span>
+              ),
+            )}
+          </p>
+        )}
         <div className="mt-2 flex items-center gap-2">
           <button
             type="button"

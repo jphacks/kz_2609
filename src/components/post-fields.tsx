@@ -45,7 +45,7 @@ export function PostFields({
           value={comment}
           onChange={(e) => onChange({ comment: e.target.value })}
           rows={4}
-          placeholder="おすすめの時間帯や見どころなど"
+          placeholder="おすすめの時間帯や見どころなど。#夜景 #自然界隈 のようにタグも付けられます"
           className={cn(inputClass, "py-2")}
           aria-describedby="comment-count"
         />

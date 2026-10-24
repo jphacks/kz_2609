@@ -1,0 +1,9 @@
+# Vercel CLI でアップロードしないもの（.gitignore の代わりにこちらが使われる）
+node_modules
+.next
+.git
+.vercel
+.env*
+!.env.example
+/public/maplibre/
+*.tsbuildinfo

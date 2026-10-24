@@ -1,15 +1,17 @@
 import { ExternalLink } from "lucide-react";
 import { PageHeader } from "@/components/ui";
 import { SEED_PHOTOS } from "@/lib/photo-credits";
+import { TRANSIT_SOURCE } from "@/lib/transit/network";
 
-export const metadata = { title: "写真のクレジット" };
+export const metadata = { title: "写真とデータのクレジット" };
 
-// 初期データの写真の作者・ライセンス一覧（CC BY / CC BY-SA の表示条件。src/lib/photo-credits.ts）
+// 初期データの写真の作者・ライセンス一覧（CC BY / CC BY-SA の表示条件。src/lib/photo-credits.ts）と、
+// 公共交通の経路計算に使う国土数値情報の出典（CC BY 4.0。ADR-0026）
 export default function CreditsPage() {
   const spots = [...new Set(SEED_PHOTOS.map((p) => p.spot))];
   return (
     <div className="mx-auto w-full max-w-2xl px-4 pb-8 text-sm leading-7">
-      <PageHeader title="写真のクレジット" backHref="/" />
+      <PageHeader title="写真とデータのクレジット" backHref="/" />
       <p>
         初期データのスポットの写真は、Wikimedia Commons でクリエイティブ・コモンズ・ライセンスなどにより公開されている画像を、縮小して使っています。各写真の作者・ライセンス・出典は次のとおりです。
       </p>
@@ -36,6 +38,27 @@ export default function CreditsPage() {
           </ul>
         </section>
       ))}
+      <section className="mt-6">
+        <h2 className="font-bold">公共交通のデータ</h2>
+        <p className="mt-1">
+          経路作成の公共交通（バス停・駅の位置と路線）には、次のデータ（クリエイティブ・コモンズ 表示 4.0）を使っています。
+        </p>
+        <p className="mt-1">{TRANSIT_SOURCE}</p>
+        <ul className="mt-1 flex flex-col gap-1">
+          {[
+            ["国土数値情報 バス停留所データ", "https://nlftp.mlit.go.jp/ksj/gml/datalist/KsjTmplt-P11-2022.html"],
+            ["国土数値情報 鉄道データ", "https://nlftp.mlit.go.jp/ksj/gml/datalist/KsjTmplt-N02-2024.html"],
+          ].map(([label, href]) => (
+            <li key={href}>
+              <a href={href} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-0.5 underline">
+                {label}
+                <ExternalLink size={12} strokeWidth={2} aria-hidden />
+                <span className="sr-only">（新しいタブで開く）</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </section>
     </div>
   );
 }

@@ -1,0 +1,913 @@
+{
+ "source": "国土数値情報（バス停留所データ 2022年、鉄道データ 2024年）（国土交通省）を加工して作成。周遊バスの停まる順番は2026年4月の路線",
+ "stops": [
+  {
+   "id": "bus:金沢駅東口",
+   "name": "金沢駅東口",
+   "kind": "bus",
+   "lat": 36.57754,
+   "lng": 136.64967
+  },
+  {
+   "id": "bus:武蔵ヶ辻・近江町市場（金澤表参道口）",
+   "name": "武蔵ヶ辻・近江町市場（金澤表参道口）",
+   "kind": "bus",
+   "lat": 36.5721,
+   "lng": 136.65594
+  },
+  {
+   "id": "bus:瓢箪町",
+   "name": "瓢箪町",
+   "kind": "bus",
+   "lat": 36.57691,
+   "lng": 136.66084
+  },
+  {
+   "id": "bus:森山一丁目",
+   "name": "森山一丁目",
+   "kind": "bus",
+   "lat": 36.5758,
+   "lng": 136.66555
+  },
+  {
+   "id": "bus:橋場町（ひがし・主計町茶屋街）",
+   "name": "橋場町（ひがし・主計町茶屋街）",
+   "kind": "bus",
+   "lat": 36.57234,
+   "lng": 136.66462
+  },
+  {
+   "id": "bus:橋場町（金城樓前）",
+   "name": "橋場町（金城樓前）",
+   "kind": "bus",
+   "lat": 36.57033,
+   "lng": 136.66402
+  },
+  {
+   "id": "bus:兼六園下・金沢城（石川門向い）",
+   "name": "兼六園下・金沢城（石川門向い）",
+   "kind": "bus",
+   "lat": 36.56522,
+   "lng": 136.66227
+  },
+  {
+   "id": "bus:広坂・21世紀美術館（しいのき迎賓館向い）",
+   "name": "広坂・21世紀美術館（しいのき迎賓館向い）",
+   "kind": "bus",
+   "lat": 36.56161,
+   "lng": 136.65943
+  },
+  {
+   "id": "bus:香林坊（旧日銀前）",
+   "name": "香林坊（旧日銀前）",
+   "kind": "bus",
+   "lat": 36.56294,
+   "lng": 136.65366
+  },
+  {
+   "id": "bus:南町・尾山神社",
+   "name": "南町・尾山神社",
+   "kind": "bus",
+   "lat": 36.56793,
+   "lng": 136.65418
+  },
+  {
+   "id": "bus:武蔵ヶ辻・近江町市場（エムザ黒門小路前）",
+   "name": "武蔵ヶ辻・近江町市場（エムザ黒門小路前）",
+   "kind": "bus",
+   "lat": 36.5721,
+   "lng": 136.65594
+  },
+  {
+   "id": "bus:武蔵ヶ辻・近江町市場（いちば館前）",
+   "name": "武蔵ヶ辻・近江町市場（いちば館前）",
+   "kind": "bus",
+   "lat": 36.5721,
+   "lng": 136.65594
+  },
+  {
+   "id": "bus:香林坊（アトリオ前）",
+   "name": "香林坊（アトリオ前）",
+   "kind": "bus",
+   "lat": 36.56367,
+   "lng": 136.65368
+  },
+  {
+   "id": "bus:片町（パシオン前）",
+   "name": "片町（パシオン前）",
+   "kind": "bus",
+   "lat": 36.55969,
+   "lng": 136.65207
+  },
+  {
+   "id": "bus:広小路（寺町寺院群・にし茶屋街）",
+   "name": "広小路（寺町寺院群・にし茶屋街）",
+   "kind": "bus",
+   "lat": 36.55625,
+   "lng": 136.65009
+  },
+  {
+   "id": "bus:桜橋",
+   "name": "桜橋",
+   "kind": "bus",
+   "lat": 36.55402,
+   "lng": 136.65615
+  },
+  {
+   "id": "bus:本多町（金沢歌劇座前）",
+   "name": "本多町（金沢歌劇座前）",
+   "kind": "bus",
+   "lat": 36.55845,
+   "lng": 136.6592
+  },
+  {
+   "id": "bus:広坂・21世紀美術館（石浦神社向い）",
+   "name": "広坂・21世紀美術館（石浦神社向い）",
+   "kind": "bus",
+   "lat": 36.56161,
+   "lng": 136.65943
+  },
+  {
+   "id": "bus:兼六園下・金沢城（白鳥路前）",
+   "name": "兼六園下・金沢城（白鳥路前）",
+   "kind": "bus",
+   "lat": 36.5654,
+   "lng": 136.66255
+  },
+  {
+   "id": "bus:橋場町（金城樓向い）",
+   "name": "橋場町（金城樓向い）",
+   "kind": "bus",
+   "lat": 36.57033,
+   "lng": 136.66402
+  },
+  {
+   "id": "bus:武蔵ヶ辻・近江町市場（近江町ふれあい館駐車場口）",
+   "name": "武蔵ヶ辻・近江町市場（近江町ふれあい館駐車場口）",
+   "kind": "bus",
+   "lat": 36.5721,
+   "lng": 136.65594
+  },
+  {
+   "id": "rail:ir-ishikawa:倶利伽羅",
+   "name": "倶利伽羅駅",
+   "kind": "rail",
+   "lat": 36.67248,
+   "lng": 136.79161
+  },
+  {
+   "id": "rail:ir-ishikawa:津幡",
+   "name": "津幡駅",
+   "kind": "rail",
+   "lat": 36.65692,
+   "lng": 136.72993
+  },
+  {
+   "id": "rail:ir-ishikawa:森本",
+   "name": "森本駅",
+   "kind": "rail",
+   "lat": 36.61226,
+   "lng": 136.68964
+  },
+  {
+   "id": "rail:ir-ishikawa:東金沢",
+   "name": "東金沢駅",
+   "kind": "rail",
+   "lat": 36.59389,
+   "lng": 136.67009
+  },
+  {
+   "id": "rail:ir-ishikawa:金沢",
+   "name": "金沢駅",
+   "kind": "rail",
+   "lat": 36.57826,
+   "lng": 136.64774
+  },
+  {
+   "id": "rail:ir-ishikawa:西金沢",
+   "name": "西金沢駅",
+   "kind": "rail",
+   "lat": 36.55315,
+   "lng": 136.62121
+  },
+  {
+   "id": "rail:ir-ishikawa:野々市",
+   "name": "野々市駅",
+   "kind": "rail",
+   "lat": 36.54268,
+   "lng": 136.60004
+  },
+  {
+   "id": "rail:ir-ishikawa:松任",
+   "name": "松任駅",
+   "kind": "rail",
+   "lat": 36.52616,
+   "lng": 136.56473
+  },
+  {
+   "id": "rail:ir-ishikawa:西松任",
+   "name": "西松任駅",
+   "kind": "rail",
+   "lat": 36.51788,
+   "lng": 136.54919
+  },
+  {
+   "id": "rail:ir-ishikawa:加賀笠間",
+   "name": "加賀笠間駅",
+   "kind": "rail",
+   "lat": 36.50365,
+   "lng": 136.52846
+  },
+  {
+   "id": "rail:ir-ishikawa:美川",
+   "name": "美川駅",
+   "kind": "rail",
+   "lat": 36.48622,
+   "lng": 136.49104
+  },
+  {
+   "id": "rail:ir-ishikawa:小舞子",
+   "name": "小舞子駅",
+   "kind": "rail",
+   "lat": 36.4773,
+   "lng": 136.47554
+  },
+  {
+   "id": "rail:ir-ishikawa:能美根上",
+   "name": "能美根上駅",
+   "kind": "rail",
+   "lat": 36.45175,
+   "lng": 136.45958
+  },
+  {
+   "id": "rail:ir-ishikawa:明峰",
+   "name": "明峰駅",
+   "kind": "rail",
+   "lat": 36.42588,
+   "lng": 136.46318
+  },
+  {
+   "id": "rail:ir-ishikawa:小松",
+   "name": "小松駅",
+   "kind": "rail",
+   "lat": 36.40144,
+   "lng": 136.45288
+  },
+  {
+   "id": "rail:ir-ishikawa:粟津",
+   "name": "粟津駅",
+   "kind": "rail",
+   "lat": 36.35468,
+   "lng": 136.42379
+  },
+  {
+   "id": "rail:ir-ishikawa:動橋",
+   "name": "動橋駅",
+   "kind": "rail",
+   "lat": 36.3289,
+   "lng": 136.38394
+  },
+  {
+   "id": "rail:ir-ishikawa:加賀温泉",
+   "name": "加賀温泉駅",
+   "kind": "rail",
+   "lat": 36.32023,
+   "lng": 136.34881
+  },
+  {
+   "id": "rail:ir-ishikawa:大聖寺",
+   "name": "大聖寺駅",
+   "kind": "rail",
+   "lat": 36.2996,
+   "lng": 136.31313
+  },
+  {
+   "id": "rail:hokutetsu-ishikawa:鶴来",
+   "name": "鶴来駅",
+   "kind": "rail",
+   "lat": 36.45188,
+   "lng": 136.62403
+  },
+  {
+   "id": "rail:hokutetsu-ishikawa:日御子",
+   "name": "日御子駅",
+   "kind": "rail",
+   "lat": 36.46495,
+   "lng": 136.61492
+  },
+  {
+   "id": "rail:hokutetsu-ishikawa:小柳",
+   "name": "小柳駅",
+   "kind": "rail",
+   "lat": 36.47103,
+   "lng": 136.61144
+  },
+  {
+   "id": "rail:hokutetsu-ishikawa:井口",
+   "name": "井口駅",
+   "kind": "rail",
+   "lat": 36.47664,
+   "lng": 136.61236
+  },
+  {
+   "id": "rail:hokutetsu-ishikawa:道法寺",
+   "name": "道法寺駅",
+   "kind": "rail",
+   "lat": 36.48456,
+   "lng": 136.61359
+  },
+  {
+   "id": "rail:hokutetsu-ishikawa:曽谷",
+   "name": "曽谷駅",
+   "kind": "rail",
+   "lat": 36.49001,
+   "lng": 136.61445
+  },
+  {
+   "id": "rail:hokutetsu-ishikawa:陽羽里",
+   "name": "陽羽里駅",
+   "kind": "rail",
+   "lat": 36.49362,
+   "lng": 136.61499
+  },
+  {
+   "id": "rail:hokutetsu-ishikawa:四十万",
+   "name": "四十万駅",
+   "kind": "rail",
+   "lat": 36.49917,
+   "lng": 136.61578
+  },
+  {
+   "id": "rail:hokutetsu-ishikawa:乙丸",
+   "name": "乙丸駅",
+   "kind": "rail",
+   "lat": 36.51185,
+   "lng": 136.61765
+  },
+  {
+   "id": "rail:hokutetsu-ishikawa:額住宅前",
+   "name": "額住宅前駅",
+   "kind": "rail",
+   "lat": 36.51859,
+   "lng": 136.61886
+  },
+  {
+   "id": "rail:hokutetsu-ishikawa:馬替",
+   "name": "馬替駅",
+   "kind": "rail",
+   "lat": 36.52247,
+   "lng": 136.62039
+  },
+  {
+   "id": "rail:hokutetsu-ishikawa:野々市工大前",
+   "name": "野々市工大前駅",
+   "kind": "rail",
+   "lat": 36.53274,
+   "lng": 136.62177
+  },
+  {
+   "id": "rail:hokutetsu-ishikawa:野々市",
+   "name": "野々市駅",
+   "kind": "rail",
+   "lat": 36.53594,
+   "lng": 136.6208
+  },
+  {
+   "id": "rail:hokutetsu-ishikawa:押野",
+   "name": "押野駅",
+   "kind": "rail",
+   "lat": 36.54234,
+   "lng": 136.62204
+  },
+  {
+   "id": "rail:hokutetsu-ishikawa:新西金沢",
+   "name": "新西金沢駅",
+   "kind": "rail",
+   "lat": 36.55309,
+   "lng": 136.62237
+  },
+  {
+   "id": "rail:hokutetsu-ishikawa:西泉",
+   "name": "西泉駅",
+   "kind": "rail",
+   "lat": 36.55339,
+   "lng": 136.63335
+  },
+  {
+   "id": "rail:hokutetsu-ishikawa:野町",
+   "name": "野町駅",
+   "kind": "rail",
+   "lat": 36.55347,
+   "lng": 136.64397
+  },
+  {
+   "id": "rail:hokutetsu-asanogawa:北鉄金沢",
+   "name": "北鉄金沢駅",
+   "kind": "rail",
+   "lat": 36.57907,
+   "lng": 136.65025
+  },
+  {
+   "id": "rail:hokutetsu-asanogawa:七ツ屋",
+   "name": "七ツ屋駅",
+   "kind": "rail",
+   "lat": 36.58382,
+   "lng": 136.65148
+  },
+  {
+   "id": "rail:hokutetsu-asanogawa:上諸江",
+   "name": "上諸江駅",
+   "kind": "rail",
+   "lat": 36.59087,
+   "lng": 136.64908
+  },
+  {
+   "id": "rail:hokutetsu-asanogawa:磯部",
+   "name": "磯部駅",
+   "kind": "rail",
+   "lat": 36.59632,
+   "lng": 136.64853
+  },
+  {
+   "id": "rail:hokutetsu-asanogawa:割出",
+   "name": "割出駅",
+   "kind": "rail",
+   "lat": 36.60257,
+   "lng": 136.64847
+  },
+  {
+   "id": "rail:hokutetsu-asanogawa:三口",
+   "name": "三口駅",
+   "kind": "rail",
+   "lat": 36.60606,
+   "lng": 136.64774
+  },
+  {
+   "id": "rail:hokutetsu-asanogawa:三ツ屋",
+   "name": "三ツ屋駅",
+   "kind": "rail",
+   "lat": 36.61132,
+   "lng": 136.64546
+  },
+  {
+   "id": "rail:hokutetsu-asanogawa:大河端",
+   "name": "大河端駅",
+   "kind": "rail",
+   "lat": 36.61655,
+   "lng": 136.64316
+  },
+  {
+   "id": "rail:hokutetsu-asanogawa:北間",
+   "name": "北間駅",
+   "kind": "rail",
+   "lat": 36.62258,
+   "lng": 136.64106
+  },
+  {
+   "id": "rail:hokutetsu-asanogawa:蚊爪",
+   "name": "蚊爪駅",
+   "kind": "rail",
+   "lat": 36.62488,
+   "lng": 136.64291
+  },
+  {
+   "id": "rail:hokutetsu-asanogawa:粟ヶ崎",
+   "name": "粟ヶ崎駅",
+   "kind": "rail",
+   "lat": 36.63009,
+   "lng": 136.63873
+  },
+  {
+   "id": "rail:hokutetsu-asanogawa:内灘",
+   "name": "内灘駅",
+   "kind": "rail",
+   "lat": 36.63325,
+   "lng": 136.63419
+  },
+  {
+   "id": "rail:jr-nanao:和倉温泉",
+   "name": "和倉温泉駅",
+   "kind": "rail",
+   "lat": 37.07471,
+   "lng": 136.92579
+  },
+  {
+   "id": "rail:jr-nanao:七尾",
+   "name": "七尾駅",
+   "kind": "rail",
+   "lat": 37.04134,
+   "lng": 136.9648
+  },
+  {
+   "id": "rail:jr-nanao:徳田",
+   "name": "徳田駅",
+   "kind": "rail",
+   "lat": 37.00698,
+   "lng": 136.92974
+  },
+  {
+   "id": "rail:jr-nanao:能登二宮",
+   "name": "能登二宮駅",
+   "kind": "rail",
+   "lat": 36.98469,
+   "lng": 136.91719
+  },
+  {
+   "id": "rail:jr-nanao:良川",
+   "name": "良川駅",
+   "kind": "rail",
+   "lat": 36.97646,
+   "lng": 136.89407
+  },
+  {
+   "id": "rail:jr-nanao:能登部",
+   "name": "能登部駅",
+   "kind": "rail",
+   "lat": 36.96052,
+   "lng": 136.86863
+  },
+  {
+   "id": "rail:jr-nanao:金丸",
+   "name": "金丸駅",
+   "kind": "rail",
+   "lat": 36.94326,
+   "lng": 136.8351
+  },
+  {
+   "id": "rail:jr-nanao:千路",
+   "name": "千路駅",
+   "kind": "rail",
+   "lat": 36.928,
+   "lng": 136.80078
+  },
+  {
+   "id": "rail:jr-nanao:羽咋",
+   "name": "羽咋駅",
+   "kind": "rail",
+   "lat": 36.8962,
+   "lng": 136.78346
+  },
+  {
+   "id": "rail:jr-nanao:南羽咋",
+   "name": "南羽咋駅",
+   "kind": "rail",
+   "lat": 36.87038,
+   "lng": 136.77468
+  },
+  {
+   "id": "rail:jr-nanao:敷浪",
+   "name": "敷浪駅",
+   "kind": "rail",
+   "lat": 36.84769,
+   "lng": 136.77341
+  },
+  {
+   "id": "rail:jr-nanao:宝達",
+   "name": "宝達駅",
+   "kind": "rail",
+   "lat": 36.8192,
+   "lng": 136.76224
+  },
+  {
+   "id": "rail:jr-nanao:免田",
+   "name": "免田駅",
+   "kind": "rail",
+   "lat": 36.79523,
+   "lng": 136.74723
+  },
+  {
+   "id": "rail:jr-nanao:高松",
+   "name": "高松駅",
+   "kind": "rail",
+   "lat": 36.76782,
+   "lng": 136.72862
+  },
+  {
+   "id": "rail:jr-nanao:横山",
+   "name": "横山駅",
+   "kind": "rail",
+   "lat": 36.74684,
+   "lng": 136.71634
+  },
+  {
+   "id": "rail:jr-nanao:宇野気",
+   "name": "宇野気駅",
+   "kind": "rail",
+   "lat": 36.72189,
+   "lng": 136.70255
+  },
+  {
+   "id": "rail:jr-nanao:能瀬",
+   "name": "能瀬駅",
+   "kind": "rail",
+   "lat": 36.6935,
+   "lng": 136.71971
+  },
+  {
+   "id": "rail:jr-nanao:本津幡",
+   "name": "本津幡駅",
+   "kind": "rail",
+   "lat": 36.6765,
+   "lng": 136.73272
+  },
+  {
+   "id": "rail:jr-nanao:中津幡",
+   "name": "中津幡駅",
+   "kind": "rail",
+   "lat": 36.67152,
+   "lng": 136.74039
+  },
+  {
+   "id": "rail:jr-nanao:津幡",
+   "name": "津幡駅",
+   "kind": "rail",
+   "lat": 36.65692,
+   "lng": 136.72993
+  },
+  {
+   "id": "rail:noto:穴水",
+   "name": "穴水駅",
+   "kind": "rail",
+   "lat": 37.22735,
+   "lng": 136.90536
+  },
+  {
+   "id": "rail:noto:能登鹿島",
+   "name": "能登鹿島駅",
+   "kind": "rail",
+   "lat": 37.17932,
+   "lng": 136.89745
+  },
+  {
+   "id": "rail:noto:西岸",
+   "name": "西岸駅",
+   "kind": "rail",
+   "lat": 37.14739,
+   "lng": 136.87379
+  },
+  {
+   "id": "rail:noto:能登中島",
+   "name": "能登中島駅",
+   "kind": "rail",
+   "lat": 37.10892,
+   "lng": 136.85339
+  },
+  {
+   "id": "rail:noto:笠師保",
+   "name": "笠師保駅",
+   "kind": "rail",
+   "lat": 37.08004,
+   "lng": 136.8579
+  },
+  {
+   "id": "rail:noto:田鶴浜",
+   "name": "田鶴浜駅",
+   "kind": "rail",
+   "lat": 37.06582,
+   "lng": 136.89222
+  },
+  {
+   "id": "rail:noto:和倉温泉",
+   "name": "和倉温泉駅",
+   "kind": "rail",
+   "lat": 37.07471,
+   "lng": 136.92579
+  },
+  {
+   "id": "rail:noto:七尾",
+   "name": "七尾駅",
+   "kind": "rail",
+   "lat": 37.04134,
+   "lng": 136.9648
+  },
+  {
+   "id": "rail:hokuriku-shinkansen:富山",
+   "name": "富山駅",
+   "kind": "rail",
+   "lat": 36.7021,
+   "lng": 137.21172
+  },
+  {
+   "id": "rail:hokuriku-shinkansen:新高岡",
+   "name": "新高岡駅",
+   "kind": "rail",
+   "lat": 36.72706,
+   "lng": 137.01015
+  },
+  {
+   "id": "rail:hokuriku-shinkansen:金沢",
+   "name": "金沢駅",
+   "kind": "rail",
+   "lat": 36.57665,
+   "lng": 136.64708
+  },
+  {
+   "id": "rail:hokuriku-shinkansen:小松",
+   "name": "小松駅",
+   "kind": "rail",
+   "lat": 36.40092,
+   "lng": 136.45304
+  },
+  {
+   "id": "rail:hokuriku-shinkansen:加賀温泉",
+   "name": "加賀温泉駅",
+   "kind": "rail",
+   "lat": 36.31985,
+   "lng": 136.34916
+  },
+  {
+   "id": "rail:hokuriku-shinkansen:芦原温泉",
+   "name": "芦原温泉駅",
+   "kind": "rail",
+   "lat": 36.21403,
+   "lng": 136.23534
+  },
+  {
+   "id": "rail:hokuriku-shinkansen:福井",
+   "name": "福井駅",
+   "kind": "rail",
+   "lat": 36.06041,
+   "lng": 136.22251
+  }
+ ],
+ "lines": [
+  {
+   "id": "kanazawa-loop-right",
+   "name": "城下まち金沢周遊バス 右回り",
+   "kind": "bus",
+   "stopIds": [
+    "bus:金沢駅東口",
+    "bus:武蔵ヶ辻・近江町市場（金澤表参道口）",
+    "bus:瓢箪町",
+    "bus:森山一丁目",
+    "bus:橋場町（ひがし・主計町茶屋街）",
+    "bus:橋場町（金城樓前）",
+    "bus:兼六園下・金沢城（石川門向い）",
+    "bus:広坂・21世紀美術館（しいのき迎賓館向い）",
+    "bus:香林坊（旧日銀前）",
+    "bus:南町・尾山神社",
+    "bus:武蔵ヶ辻・近江町市場（エムザ黒門小路前）",
+    "bus:金沢駅東口"
+   ],
+   "bidirectional": false
+  },
+  {
+   "id": "kanazawa-loop-left",
+   "name": "城下まち金沢周遊バス 左回り",
+   "kind": "bus",
+   "stopIds": [
+    "bus:金沢駅東口",
+    "bus:武蔵ヶ辻・近江町市場（いちば館前）",
+    "bus:南町・尾山神社",
+    "bus:香林坊（アトリオ前）",
+    "bus:片町（パシオン前）",
+    "bus:広小路（寺町寺院群・にし茶屋街）",
+    "bus:桜橋",
+    "bus:本多町（金沢歌劇座前）",
+    "bus:広坂・21世紀美術館（石浦神社向い）",
+    "bus:兼六園下・金沢城（白鳥路前）",
+    "bus:橋場町（金城樓向い）",
+    "bus:武蔵ヶ辻・近江町市場（近江町ふれあい館駐車場口）",
+    "bus:金沢駅東口"
+   ],
+   "bidirectional": false
+  },
+  {
+   "id": "ir-ishikawa",
+   "name": "IRいしかわ鉄道線",
+   "kind": "rail",
+   "railKind": "local",
+   "stopIds": [
+    "rail:ir-ishikawa:倶利伽羅",
+    "rail:ir-ishikawa:津幡",
+    "rail:ir-ishikawa:森本",
+    "rail:ir-ishikawa:東金沢",
+    "rail:ir-ishikawa:金沢",
+    "rail:ir-ishikawa:西金沢",
+    "rail:ir-ishikawa:野々市",
+    "rail:ir-ishikawa:松任",
+    "rail:ir-ishikawa:西松任",
+    "rail:ir-ishikawa:加賀笠間",
+    "rail:ir-ishikawa:美川",
+    "rail:ir-ishikawa:小舞子",
+    "rail:ir-ishikawa:能美根上",
+    "rail:ir-ishikawa:明峰",
+    "rail:ir-ishikawa:小松",
+    "rail:ir-ishikawa:粟津",
+    "rail:ir-ishikawa:動橋",
+    "rail:ir-ishikawa:加賀温泉",
+    "rail:ir-ishikawa:大聖寺"
+   ],
+   "bidirectional": true
+  },
+  {
+   "id": "hokutetsu-ishikawa",
+   "name": "北陸鉄道 石川線",
+   "kind": "rail",
+   "railKind": "private",
+   "stopIds": [
+    "rail:hokutetsu-ishikawa:鶴来",
+    "rail:hokutetsu-ishikawa:日御子",
+    "rail:hokutetsu-ishikawa:小柳",
+    "rail:hokutetsu-ishikawa:井口",
+    "rail:hokutetsu-ishikawa:道法寺",
+    "rail:hokutetsu-ishikawa:曽谷",
+    "rail:hokutetsu-ishikawa:陽羽里",
+    "rail:hokutetsu-ishikawa:四十万",
+    "rail:hokutetsu-ishikawa:乙丸",
+    "rail:hokutetsu-ishikawa:額住宅前",
+    "rail:hokutetsu-ishikawa:馬替",
+    "rail:hokutetsu-ishikawa:野々市工大前",
+    "rail:hokutetsu-ishikawa:野々市",
+    "rail:hokutetsu-ishikawa:押野",
+    "rail:hokutetsu-ishikawa:新西金沢",
+    "rail:hokutetsu-ishikawa:西泉",
+    "rail:hokutetsu-ishikawa:野町"
+   ],
+   "bidirectional": true
+  },
+  {
+   "id": "hokutetsu-asanogawa",
+   "name": "北陸鉄道 浅野川線",
+   "kind": "rail",
+   "railKind": "private",
+   "stopIds": [
+    "rail:hokutetsu-asanogawa:北鉄金沢",
+    "rail:hokutetsu-asanogawa:七ツ屋",
+    "rail:hokutetsu-asanogawa:上諸江",
+    "rail:hokutetsu-asanogawa:磯部",
+    "rail:hokutetsu-asanogawa:割出",
+    "rail:hokutetsu-asanogawa:三口",
+    "rail:hokutetsu-asanogawa:三ツ屋",
+    "rail:hokutetsu-asanogawa:大河端",
+    "rail:hokutetsu-asanogawa:北間",
+    "rail:hokutetsu-asanogawa:蚊爪",
+    "rail:hokutetsu-asanogawa:粟ヶ崎",
+    "rail:hokutetsu-asanogawa:内灘"
+   ],
+   "bidirectional": true
+  },
+  {
+   "id": "jr-nanao",
+   "name": "JR七尾線",
+   "kind": "rail",
+   "railKind": "local",
+   "stopIds": [
+    "rail:jr-nanao:和倉温泉",
+    "rail:jr-nanao:七尾",
+    "rail:jr-nanao:徳田",
+    "rail:jr-nanao:能登二宮",
+    "rail:jr-nanao:良川",
+    "rail:jr-nanao:能登部",
+    "rail:jr-nanao:金丸",
+    "rail:jr-nanao:千路",
+    "rail:jr-nanao:羽咋",
+    "rail:jr-nanao:南羽咋",
+    "rail:jr-nanao:敷浪",
+    "rail:jr-nanao:宝達",
+    "rail:jr-nanao:免田",
+    "rail:jr-nanao:高松",
+    "rail:jr-nanao:横山",
+    "rail:jr-nanao:宇野気",
+    "rail:jr-nanao:能瀬",
+    "rail:jr-nanao:本津幡",
+    "rail:jr-nanao:中津幡",
+    "rail:jr-nanao:津幡"
+   ],
+   "bidirectional": true
+  },
+  {
+   "id": "noto",
+   "name": "のと鉄道 七尾線",
+   "kind": "rail",
+   "railKind": "local",
+   "stopIds": [
+    "rail:noto:穴水",
+    "rail:noto:能登鹿島",
+    "rail:noto:西岸",
+    "rail:noto:能登中島",
+    "rail:noto:笠師保",
+    "rail:noto:田鶴浜",
+    "rail:noto:和倉温泉",
+    "rail:noto:七尾"
+   ],
+   "bidirectional": true
+  },
+  {
+   "id": "hokuriku-shinkansen",
+   "name": "北陸新幹線",
+   "kind": "rail",
+   "railKind": "shinkansen",
+   "stopIds": [
+    "rail:hokuriku-shinkansen:富山",
+    "rail:hokuriku-shinkansen:新高岡",
+    "rail:hokuriku-shinkansen:金沢",
+    "rail:hokuriku-shinkansen:小松",
+    "rail:hokuriku-shinkansen:加賀温泉",
+    "rail:hokuriku-shinkansen:芦原温泉",
+    "rail:hokuriku-shinkansen:福井"
+   ],
+   "bidirectional": true
+  }
+ ]
+}

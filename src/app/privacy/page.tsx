@@ -41,7 +41,7 @@ export default function PrivacyPage() {
       <p>
         初期データのスポットの写真は Wikimedia Commons のクリエイティブ・コモンズ等の画像です。作者とライセンスは各写真の下と
         <a href="/credits" className="underline">
-          写真のクレジット
+          写真とデータのクレジット
         </a>
         に記載しています。
       </p>

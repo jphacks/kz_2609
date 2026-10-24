@@ -7,7 +7,7 @@ import { useApp } from "@/components/app-context";
 import { Button, Card, Field, Notice, PageHeader, Spinner, inputClass } from "@/components/ui";
 import { api, errorMessage } from "@/lib/client-api";
 
-// S-14 初回プロフィール設定（F-6-2）。Google の名前を初期値にして、表示名を確認してもらう
+// S-14 初回プロフィール設定（F-6-2）。初期値（メールアドレスの@より前、Googleなら名前）から表示名を決めてもらう
 export function Welcome() {
   const { me, refreshMe } = useApp();
   const router = useRouter();

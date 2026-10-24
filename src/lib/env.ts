@@ -7,8 +7,8 @@ export function isSupabaseConfigured(): boolean {
   return SUPABASE_URL !== "" && SUPABASE_ANON_KEY !== "";
 }
 
-// 開発用ログイン（ローカルのテストユーザー用）。本番では false のままにする
-export const DEV_LOGIN_ENABLED = process.env.NEXT_PUBLIC_ENABLE_DEV_LOGIN === "true";
+// Googleログインのボタンを出すか（ADR-0021。Supabase に Google を設定したら true にする）
+export const GOOGLE_LOGIN_ENABLED = process.env.NEXT_PUBLIC_ENABLE_GOOGLE_LOGIN === "true";
 
 // 以下はサーバー専用
 export function serverEnv() {

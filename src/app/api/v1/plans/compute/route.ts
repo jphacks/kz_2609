@@ -17,6 +17,10 @@ export async function POST(request: Request) {
     const startMin = parseClock(body.startTime);
     const endMin = parseClock(body.endTime);
     if (endMin <= startMin) throw new ApiError("VALIDATION_ERROR", "終了時刻は開始時刻より後にしてください");
+    const lunch = { from: parseClock(body.lunchFrom), until: parseClock(body.lunchUntil), min: body.lunchMin };
+    if (body.lunchBreak && lunch.until <= lunch.from) {
+      throw new ApiError("VALIDATION_ERROR", "昼食の時間帯は、終わりを始まりより後にしてください");
+    }
 
     const list = await loadList(supabase, body.listId);
     const byId = new Map(list.spots.map((s) => [s.id, s]));
@@ -62,6 +66,7 @@ export async function POST(request: Request) {
       startMin,
       endMin,
       lunchBreak: body.lunchBreak,
+      lunch,
       mode: body.mode,
       priority: prefs.priority,
       timeWindows: (chat?.timeWindows ?? [])

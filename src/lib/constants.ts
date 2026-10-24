@@ -87,6 +87,10 @@ export const PRIORITY_WEIGHTS: Record<Priority, { travel: number; timeGap: numbe
   less_walking: { travel: 0.7, timeGap: 0.3, walkKm: 20, spots: 30 },
 };
 
+// 昼食休憩（F-5-2）。時間帯と長さは経路作成の条件で選べる。初期値は 11:30〜13:30 に60分
+export const LUNCH_DEFAULT = { from: "11:30", until: "13:30", min: 60 } as const;
+export const LUNCH_DURATIONS = [30, 45, 60, 90] as const;
+
 // 経路作成の上限（ADR-0017）
 export const MAX_PLAN_SPOTS = 8;
 // スポット比較の上限（F-4-10）。経路を作れる数と同じにする

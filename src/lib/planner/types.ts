@@ -28,6 +28,8 @@ export type PlanInput = {
   startMin: number;
   endMin: number;
   lunchBreak: boolean;
+  // 昼食休憩の時間帯（0:00 からの分）と長さ。省略時は 11:30〜13:30 に60分
+  lunch?: { from: number; until: number; min: number };
   mode: TravelMode;
   priority: Priority;
   // スポットごとの到着時刻の範囲。早く着いたら開始まで待ち、遅れる順番は使わない

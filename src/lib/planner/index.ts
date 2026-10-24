@@ -87,6 +87,7 @@ export function simulate(
   let gap = 0;
   let hits = 0;
   let lunchTaken = !input.lunchBreak;
+  const lunch = input.lunch ?? { from: LUNCH_FROM, until: LUNCH_UNTIL, min: LUNCH_MIN };
   let prev = 0;
 
   // 区間の移動手段・所要時間。上書きがあればそちらを使う
@@ -137,11 +138,11 @@ export function simulate(
     lastWithNext = item;
     prev = idx;
 
-    // 昼食休憩：11:30 以降の最初の空き時間に60分（11.2-6）
+    // 昼食休憩：選んだ時間帯（初期値 11:30〜13:30）の開始以降の最初の空き時間に、選んだ長さ（初期値60分）（11.2-6）
     const hasNext = k < order.length - 1;
-    if (!lunchTaken && t >= LUNCH_FROM && (hasNext || t <= LUNCH_UNTIL)) {
-      items.push({ type: "lunch", arrive: Math.round(t), stayMin: LUNCH_MIN, depart: Math.round(t + LUNCH_MIN) });
-      t += LUNCH_MIN;
+    if (!lunchTaken && t >= lunch.from && (hasNext || t <= lunch.until)) {
+      items.push({ type: "lunch", arrive: Math.round(t), stayMin: lunch.min, depart: Math.round(t + lunch.min) });
+      t += lunch.min;
       lunchTaken = true;
     }
   }

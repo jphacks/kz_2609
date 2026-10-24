@@ -16,6 +16,8 @@ import { api, errorMessage } from "@/lib/client-api";
 import {
   CATEGORIES,
   CATEGORY_LABELS,
+  LUNCH_DEFAULT,
+  LUNCH_DURATIONS,
   MAX_PLAN_SPOTS,
   PACES,
   PACE_LABELS,
@@ -146,6 +148,9 @@ export function PlanBuilder() {
   const [endTime, setEndTime] = useState("18:00");
   const [mode, setMode] = useState<TravelMode>("transit");
   const [lunchBreak, setLunchBreak] = useState(true);
+  const [lunchFrom, setLunchFrom] = useState<string>(LUNCH_DEFAULT.from);
+  const [lunchUntil, setLunchUntil] = useState<string>(LUNCH_DEFAULT.until);
+  const [lunchMin, setLunchMin] = useState<number>(LUNCH_DEFAULT.min);
   const [method, setMethod] = useState<Method>("auto");
   const [pace, setPace] = useState<Pace>("normal");
   const [interests, setInterests] = useState<Category[]>([]);
@@ -210,6 +215,9 @@ export function PlanBuilder() {
       endTime,
       mode,
       lunchBreak,
+      lunchFrom,
+      lunchUntil,
+      lunchMin,
       method,
       preferences: { pace, interests, priority, ...(method === "chat" ? extras : NO_EXTRAS) },
     };
@@ -308,9 +316,35 @@ export function PlanBuilder() {
             ))}
           </div>
         </fieldset>
-        <Chip icon={Coffee} selected={lunchBreak} onClick={() => setLunchBreak((v) => !v)} className="self-start">
-          昼食休憩を入れる（11:30〜13:30に60分）
-        </Chip>
+        <div className="flex flex-col gap-2">
+          <Chip icon={Coffee} selected={lunchBreak} onClick={() => setLunchBreak((v) => !v)} className="self-start">
+            昼食休憩を入れる
+          </Chip>
+          {lunchBreak && (
+            <div className="grid grid-cols-3 gap-2">
+              <Field label="昼食の時間帯（から）">
+                <input type="time" value={lunchFrom} onChange={(e) => setLunchFrom(e.target.value)} className={inputClass} />
+              </Field>
+              <Field label="（まで）">
+                <input type="time" value={lunchUntil} onChange={(e) => setLunchUntil(e.target.value)} className={inputClass} />
+              </Field>
+              <Field label="長さ">
+                <select value={lunchMin} onChange={(e) => setLunchMin(Number(e.target.value))} className={inputClass}>
+                  {LUNCH_DURATIONS.map((m) => (
+                    <option key={m} value={m}>
+                      {m}分
+                    </option>
+                  ))}
+                </select>
+              </Field>
+            </div>
+          )}
+          {lunchBreak && (
+            <p className="text-xs text-muted">
+              {lunchFrom}以降で最初に空いた時間に{lunchMin}分入れます。最後のスポットのあとは{lunchUntil}までに空いたときだけ入れます。
+            </p>
+          )}
+        </div>
       </section>
 
       <section className="mb-6 flex flex-col gap-3">

@@ -4,6 +4,8 @@ import {
   CATEGORIES,
   COMMENT_MAX,
   LIST_NAME_MAX,
+  LUNCH_DEFAULT,
+  LUNCH_DURATIONS,
   MAX_IMAGES,
   MAX_PLAN_SPOTS,
   MAX_UPLOAD_BYTES,
@@ -134,6 +136,14 @@ export const computePlanSchema = z.object({
   endTime: clock,
   mode: z.enum(TRAVEL_MODES),
   lunchBreak: z.boolean(),
+  // 昼食休憩の時間帯と長さ（F-5-2。v0.28）。古い画面から送られた場合は初期値
+  lunchFrom: clock.default(LUNCH_DEFAULT.from),
+  lunchUntil: clock.default(LUNCH_DEFAULT.until),
+  lunchMin: z
+    .number()
+    .int()
+    .refine((m) => (LUNCH_DURATIONS as readonly number[]).includes(m), { message: "昼食の長さを選び直してください" })
+    .default(LUNCH_DEFAULT.min),
   method: z.enum(["auto", "preferences", "chat"], { message: "この作り方は現在利用できません" }),
   preferences: chatConditionsSchema,
 });

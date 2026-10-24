@@ -4,6 +4,7 @@ import { CATEGORY_DEFAULT_STAY_MIN, type Category } from "@/lib/constants";
 import { DEMO_SPOTS, demoHistogram, demoPopularity } from "@/lib/demo";
 import { isSupabaseConfigured } from "@/lib/env";
 import { bestHoursFromHistogram } from "@/lib/planner";
+import { photoCredit, seedPhotosOf } from "@/lib/photo-credits";
 import { publicImageUrl } from "@/lib/storage";
 import { getServerSupabase } from "@/lib/supabase/server";
 
@@ -19,9 +20,9 @@ function demoSpot(spotId: string) {
     name: s.name,
     lat: s.lat,
     lng: s.lng,
-    address: "石川県金沢市",
+    address: `石川県${s.city}`,
     prefecture: "石川県",
-    city: "金沢市",
+    city: s.city,
     category: s.category,
     postCount: s.postCount,
     likeCount: 0,
@@ -30,7 +31,14 @@ function demoSpot(spotId: string) {
     stayIsDefault: false,
     hourHistogram: hist,
     bestHours: bestHoursFromHistogram(hist),
-    images: [],
+    images: seedPhotosOf(s.name).map((p) => ({
+      id: p.full,
+      url: `/${p.full}`,
+      thumbUrl: `/${p.thumb}`,
+      width: p.width,
+      height: p.height,
+      credit: photoCredit(p.full),
+    })),
     demo: true,
   });
 }
@@ -88,6 +96,7 @@ export async function GET(_req: Request, ctx: RouteContext<"/api/v1/spots/[spotI
         thumbUrl: publicImageUrl(i.thumb_path),
         width: i.width,
         height: i.height,
+        credit: photoCredit(i.full_path),
       })),
     });
   });

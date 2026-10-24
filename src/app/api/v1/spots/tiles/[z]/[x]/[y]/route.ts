@@ -2,6 +2,7 @@ import type { NextRequest } from "next/server";
 import { ApiError, dbError, handle } from "@/lib/api";
 import { CATEGORIES } from "@/lib/constants";
 import { DEMO_SPOTS, demoPopularity } from "@/lib/demo";
+import { seedPhotosOf } from "@/lib/photo-credits";
 import { isSupabaseConfigured } from "@/lib/env";
 import { tileToBBox } from "@/lib/geo";
 import { publicImageUrl } from "@/lib/storage";
@@ -44,7 +45,7 @@ function demoResponse(z: number, x: number, y: number) {
       postCount: s.postCount,
       likeCount: 0,
       popularity: demoPopularity(s),
-      coverThumbUrl: null,
+      coverThumbUrl: seedPhotosOf(s.name)[0] ? `/${seedPhotosOf(s.name)[0].thumb}` : null,
     })),
   });
 }

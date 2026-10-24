@@ -1,6 +1,6 @@
 "use client";
 
-import { BookmarkPlus, Camera, Clock, Flame, Heart, MapPin, Pencil } from "lucide-react";
+import { BookmarkPlus, Camera, Clock, ExternalLink, Flame, Heart, MapPin, Pencil } from "lucide-react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
@@ -11,7 +11,22 @@ import { Badge, Button, Card, EmptyState, Notice, PageHeader, Spinner, cn } from
 import { api, errorMessage } from "@/lib/client-api";
 import { CATEGORY_LABELS, POPULARITY_LABELS, STAY_LABELS, type Category, type Popularity, type StayDuration } from "@/lib/constants";
 
-type Image = { id: string; url: string | null; thumbUrl: string | null; width: number; height: number };
+type Credit = { artist: string; license: string; page: string; label: string };
+type Image = { id: string; url: string | null; thumbUrl: string | null; width: number; height: number; credit?: Credit | null };
+
+// CC BY / CC BY-SA の写真は、作者名・ライセンス・出典を写真の近くに表示する（src/lib/photo-credits.ts）
+function PhotoCredit({ credit, className }: { credit: Credit; className?: string }) {
+  return (
+    <figcaption className={cn("text-xs text-muted", className)}>
+      写真：{credit.artist}（{credit.license}）
+      <a href={credit.page} target="_blank" rel="noopener noreferrer" className="ml-1 inline-flex items-center gap-0.5 underline">
+        出典
+        <ExternalLink size={12} strokeWidth={2} aria-hidden />
+        <span className="sr-only">（Wikimedia Commons を新しいタブで開く）</span>
+      </a>
+    </figcaption>
+  );
+}
 type Spot = {
   id: string;
   name: string;
@@ -90,8 +105,11 @@ function PostCard({ post, onLike }: { post: Post; onLike: () => void }) {
       {post.images.length > 0 && (
         <div className="no-scrollbar flex snap-x overflow-x-auto">
           {post.images.map((img) => (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img key={img.id} src={img.url ?? ""} alt="" loading="lazy" className="aspect-[4/3] w-full shrink-0 snap-start object-cover" />
+            <figure key={img.id} className="w-full shrink-0 snap-start">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={img.url ?? ""} alt={img.credit?.label ?? ""} loading="lazy" className="aspect-[4/3] w-full object-cover" />
+              {img.credit && <PhotoCredit credit={img.credit} className="px-3 pt-1" />}
+            </figure>
           ))}
         </div>
       )}
@@ -203,14 +221,16 @@ export function SpotDetail() {
       {spot.images.length > 0 ? (
         <div className="no-scrollbar -mx-4 flex snap-x gap-2 overflow-x-auto px-4">
           {spot.images.map((img) => (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              key={img.id}
-              src={img.url ?? ""}
-              alt=""
-              className="h-56 w-auto shrink-0 snap-start rounded-xl object-cover"
-              loading="lazy"
-            />
+            <figure key={img.id} className="shrink-0 snap-start">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={img.url ?? ""}
+                alt={img.credit?.label ?? ""}
+                className="h-56 w-auto rounded-xl object-cover"
+                loading="lazy"
+              />
+              {img.credit && <PhotoCredit credit={img.credit} className="mt-1 max-w-72" />}
+            </figure>
           ))}
         </div>
       ) : (

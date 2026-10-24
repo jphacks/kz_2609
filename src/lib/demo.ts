@@ -12,9 +12,11 @@ export type DemoSpot = {
   postCount: number;
   stay: number;
   hours: number[];
+  city: string;
 };
 
-const RAW: Array<[string, number, number, Category, number, number, number[]]> = [
+// 名前, 緯度, 経度, カテゴリ, 投稿数, 滞在時間, 投稿が多い時刻, 市町（省略時は金沢市）
+const RAW: Array<[string, number, number, Category, number, number, number[], string?]> = [
   ["金沢駅 鼓門", 36.5781, 136.648, "photogenic", 5, 30, [9, 10, 17, 18, 19]],
   ["近江町市場", 36.5716, 136.6566, "gourmet", 6, 60, [10, 11, 11, 12, 12, 13]],
   ["兼六園", 36.5621, 136.6626, "nature", 8, 120, [8, 8, 9, 9, 10, 14, 15, 16]],
@@ -33,9 +35,14 @@ const RAW: Array<[string, number, number, Category, number, number, number[]]> =
   ["妙立寺（忍者寺）", 36.553, 136.6487, "history", 3, 60, [10, 13, 14]],
   ["金沢港クルーズターミナル", 36.6083, 136.604, "photogenic", 3, 60, [16, 17, 17]],
   ["金沢海みらい図書館", 36.5913, 136.62, "photogenic", 2, 60, [11, 14]],
+  // 金沢市外（石川県）。緯度経度はおおよその値
+  ["白米千枚田", 37.3926, 136.9067, "nature", 4, 60, [10, 14, 17, 18], "輪島市"],
+  ["千里浜なぎさドライブウェイ", 36.8838, 136.7629, "nature", 4, 60, [11, 15, 17, 18], "羽咋市"],
+  ["那谷寺", 36.3463, 136.5243, "history", 4, 60, [10, 11, 14, 15], "小松市"],
+  ["鶴仙渓", 36.2436, 136.3755, "nature", 4, 60, [10, 11, 14, 15], "加賀市"],
 ];
 
-export const DEMO_SPOTS: DemoSpot[] = RAW.map(([name, lat, lng, category, postCount, stay, hours], i) => ({
+export const DEMO_SPOTS: DemoSpot[] = RAW.map(([name, lat, lng, category, postCount, stay, hours, city], i) => ({
   id: `00000000-0000-4000-8000-${String(i + 1).padStart(12, "0")}`,
   name,
   lat,
@@ -44,6 +51,7 @@ export const DEMO_SPOTS: DemoSpot[] = RAW.map(([name, lat, lng, category, postCo
   postCount,
   stay,
   hours,
+  city: city ?? "金沢市",
 }));
 
 // 人気度（F-1-5 と同じ考え方：上位10%＝大人気、上位10〜30%＝人気、投稿1件は通常）

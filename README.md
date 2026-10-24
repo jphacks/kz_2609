@@ -68,7 +68,7 @@
 - OpenFreeMap：背景地図
 - OpenStreetMap Nominatim：スポット名から場所を検索
 - Supabase（PostgreSQL・PostGIS・Auth・Storage・pg_cron）
-- 金沢市の28スポットの初期データ（`supabase/seed/kanazawa.sql`）
+- 石川県の32スポットの初期データ（金沢市28・市外4。`supabase/seed/kanazawa.sql`・`ishikawa.sql`）と、Wikimedia Commons のクリエイティブ・コモンズ等の写真40枚（作者・ライセンスは `/credits` と各写真の下に表示。`src/lib/seed-photos.json`）
 
 #### フレームワーク・ライブラリ・モジュール
 
@@ -134,7 +134,8 @@ http://localhost:3000 を開きます。Supabase のキーがなくても、地�
 | `src/lib/planner/` | 経路作成の計算（要件定義書 11章）。画面とサーバーで共通 |
 | `src/lib/external/` | 外部サービス（移動時間・場所検索）と無料枠の管理 |
 | `supabase/migrations/` | DB のテーブル・権限・集計・定期処理 |
-| `supabase/seed/` | テストユーザー（ローカル専用）と金沢の初期データ |
+| `supabase/seed/` | テストユーザー（ローカル専用）と石川県の初期データ・写真の登録 |
+| `public/seed/photos/` | 初期データの写真（`npm run seed:photos -- fetch` で足りない写真を追加） |
 | `.github/workflows/` | バックアップ・毎日の運用処理（Secrets が未登録の間は何もしない） |
 
 ## 開発のルール

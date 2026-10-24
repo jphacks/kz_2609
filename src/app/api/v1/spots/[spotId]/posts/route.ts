@@ -2,6 +2,7 @@ import type { NextRequest } from "next/server";
 import { z } from "zod";
 import { dbError, getUser, handle, parseWith } from "@/lib/api";
 import { isSupabaseConfigured } from "@/lib/env";
+import { photoCredit } from "@/lib/photo-credits";
 import { publicImageUrl } from "@/lib/storage";
 
 const PAGE = 20;
@@ -67,6 +68,7 @@ export async function GET(request: NextRequest, ctx: RouteContext<"/api/v1/spots
               thumbUrl: publicImageUrl(i.thumb_path),
               width: i.width,
               height: i.height,
+              credit: photoCredit(i.full_path),
             })),
         };
       }),

@@ -25,6 +25,14 @@ export default function PrivacyPage() {
         地図の表示（OpenFreeMap）、場所の検索（OpenStreetMap Nominatim）、移動時間の計算（Google Routes
         API）に、スポットの位置情報を送ります。ユーザーを特定できる情報は送りません。
       </p>
+      <h2 className="mt-4 font-bold">初期データの写真</h2>
+      <p>
+        初期データのスポットの写真は Wikimedia Commons のクリエイティブ・コモンズ等の画像です。作者とライセンスは各写真の下と
+        <a href="/credits" className="underline">
+          写真のクレジット
+        </a>
+        に記載しています。
+      </p>
       <h2 className="mt-4 font-bold">退会</h2>
       <p>マイページから退会すると、投稿・写真・いいね・リスト・経路プランをすべて削除します。</p>
     </div>

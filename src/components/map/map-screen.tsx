@@ -1,6 +1,6 @@
 "use client";
 
-import { BookmarkPlus, Camera, Flame, Heart, LocateFixed, Mic, Search, X } from "lucide-react";
+import { Camera, LocateFixed, Mic, Search, X } from "lucide-react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
@@ -8,11 +8,12 @@ import { useAddToList } from "@/components/add-to-list";
 import { useApp } from "@/components/app-context";
 import { CATEGORY_ICONS } from "@/components/category";
 import { SearchScreen, demoSearch, type SearchHit } from "@/components/map/search-screen";
+import { SpotSheet } from "@/components/map/spot-sheet";
 import { locateMe, type MapSpot, type MapViewInfo } from "@/components/map/spot-map";
 import { useCanVoice } from "@/components/map/voice-search";
-import { Badge, Chip, Notice } from "@/components/ui";
+import { Chip, Notice } from "@/components/ui";
 import { api } from "@/lib/client-api";
-import { CATEGORIES, CATEGORY_LABELS, POPULARITY_LABELS, ZOOM_HEATMAP_MAX, type Category } from "@/lib/constants";
+import { CATEGORIES, CATEGORY_LABELS, ZOOM_HEATMAP_MAX, type Category } from "@/lib/constants";
 import type { LatLng } from "@/lib/geo";
 import { addHistory, type SearchHistoryItem } from "@/lib/search-history";
 
@@ -250,75 +251,6 @@ export function MapScreen() {
         />
       )}
       {addToList.dialog}
-    </div>
-  );
-}
-
-// F-1-6：ピンを選んだときのボトムシート
-function SpotSheet({ spot, demo, onClose, onAdd }: { spot: MapSpot; demo: boolean; onClose: () => void; onAdd: () => void }) {
-  const Icon = CATEGORY_ICONS[spot.category];
-  return (
-    <div className="absolute inset-x-0 bottom-0 z-20 p-3 lg:left-3 lg:right-auto lg:w-96">
-      <div className="rounded-2xl border border-border bg-surface p-4 shadow-lg">
-        <div className="flex gap-3">
-          <div className="flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-surface-muted">
-            {spot.coverThumbUrl ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src={spot.coverThumbUrl} alt="" className="h-full w-full object-cover" />
-            ) : (
-              <Icon size={32} strokeWidth={2} className="text-primary" aria-hidden />
-            )}
-          </div>
-          <div className="min-w-0 flex-1">
-            <div className="flex items-start gap-2">
-              <h2 className="min-w-0 flex-1 truncate text-base font-bold">{spot.name}</h2>
-              <button
-                type="button"
-                aria-label="閉じる"
-                onClick={onClose}
-                className="-mr-2 -mt-2 inline-flex h-11 w-11 items-center justify-center rounded-xl hover:bg-surface-muted"
-              >
-                <X size={20} strokeWidth={2} aria-hidden />
-              </button>
-            </div>
-            <div className="mt-1 flex flex-wrap gap-1.5">
-              <Badge icon={Icon}>{CATEGORY_LABELS[spot.category]}</Badge>
-              {spot.popularity !== "normal" && (
-                <Badge icon={spot.popularity === "very_popular" ? Flame : undefined} tone={spot.popularity}>
-                  {POPULARITY_LABELS[spot.popularity]}
-                </Badge>
-              )}
-            </div>
-            <p className="mt-1 flex items-center gap-3 text-sm text-muted">
-              <span className="inline-flex items-center gap-1">
-                <Camera size={16} strokeWidth={2} aria-hidden />
-                投稿 {spot.postCount}件
-              </span>
-              <span className="inline-flex items-center gap-1">
-                <Heart size={16} strokeWidth={2} aria-hidden />
-                {spot.likeCount}
-              </span>
-            </p>
-          </div>
-        </div>
-        <div className="mt-3 grid grid-cols-2 gap-2">
-          <Link
-            href={`/spots/${spot.id}`}
-            className="inline-flex min-h-11 items-center justify-center rounded-xl bg-primary px-4 text-sm font-medium text-primary-foreground"
-          >
-            詳細を見る
-          </Link>
-          <button
-            type="button"
-            onClick={onAdd}
-            disabled={demo}
-            className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-border px-4 text-sm font-medium disabled:opacity-50"
-          >
-            <BookmarkPlus size={20} strokeWidth={2} aria-hidden />
-            リストに追加
-          </button>
-        </div>
-      </div>
     </div>
   );
 }

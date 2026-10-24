@@ -11,11 +11,11 @@ import { Badge, Button, Card, EmptyState, Notice, PageHeader, Spinner, cn } from
 import { api, errorMessage } from "@/lib/client-api";
 import { CATEGORY_LABELS, POPULARITY_LABELS, STAY_LABELS, type Category, type Popularity, type StayDuration } from "@/lib/constants";
 
-type Credit = { artist: string; license: string; page: string; label: string };
+export type Credit = { artist: string; license: string; page: string; label: string };
 type Image = { id: string; url: string | null; thumbUrl: string | null; width: number; height: number; credit?: Credit | null };
 
 // CC BY / CC BY-SA の写真は、作者名・ライセンス・出典を写真の近くに表示する（src/lib/photo-credits.ts）
-function PhotoCredit({ credit, className }: { credit: Credit; className?: string }) {
+export function PhotoCredit({ credit, className }: { credit: Credit; className?: string }) {
   return (
     <figcaption className={cn("text-xs text-muted", className)}>
       写真：{credit.artist}（{credit.license}）

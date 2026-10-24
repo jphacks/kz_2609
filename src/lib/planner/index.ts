@@ -138,12 +138,25 @@ export function simulate(
     lastWithNext = item;
     prev = idx;
 
-    // 昼食休憩：選んだ時間帯（初期値 11:30〜13:30）の開始以降の最初の空き時間に、選んだ長さ（初期値60分）（11.2-6）
+    // 昼食休憩（11.2-6）：選んだ時間帯（初期値 11:30〜13:30）の中に、選んだ長さ（初期値60分）を入れる。
+    // - 時間帯が始まっていれば、このスポットのあとに入れる
+    // - まだ始まっていなくても、次のスポットまで回ると時間帯の中で食べ終われないなら、時間帯の始まりまで待って入れる
     const hasNext = k < order.length - 1;
-    if (!lunchTaken && t >= lunch.from && (hasNext || t <= lunch.until)) {
-      items.push({ type: "lunch", arrive: Math.round(t), stayMin: lunch.min, depart: Math.round(t + lunch.min) });
-      t += lunch.min;
-      lunchTaken = true;
+    if (!lunchTaken) {
+      let start: number | null = null;
+      if (t >= lunch.from) {
+        if (hasNext || t <= lunch.until) start = t;
+      } else if (hasNext) {
+        const nextIdx = order[k + 1];
+        const nextSpot = input.spots[nextIdx - 1];
+        const nextEnd = t + leg(idx, nextIdx).travelMin + (stayOverride?.get(nextSpot.id) ?? nextSpot.stayMin);
+        if (nextEnd > lunch.until - lunch.min) start = lunch.from;
+      }
+      if (start !== null) {
+        items.push({ type: "lunch", arrive: Math.round(start), stayMin: lunch.min, depart: Math.round(start + lunch.min) });
+        t = start + lunch.min;
+        lunchTaken = true;
+      }
     }
   }
 

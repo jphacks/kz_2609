@@ -139,6 +139,14 @@ describe("computeCandidates（11.2-4〜8）", () => {
     expect(item && item.type === "lunch" && item.arrive).toBeGreaterThanOrEqual(13 * 60);
   });
 
+  it("次のスポットまで回ると時間帯の中で食べ終われないときは、時間帯の始まりまで待って昼食を入れる", () => {
+    // a は 11:40 に終わる。次の b まで回ると 12:50 になり、12:00〜13:00 に60分の昼食が入らないので 12:00 に入れる
+    const lunch = { from: 12 * 60, until: 13 * 60, min: 60 };
+    const sim = simulate(input([spot("a", 150), spot("b", 60)], { lunchBreak: true, lunch }), lineMatrix(2), [1, 2]);
+    const item = sim.items.find((i) => i.type === "lunch");
+    expect(item).toMatchObject({ arrive: 12 * 60, stayMin: 60, depart: 13 * 60 });
+  });
+
   it("8か所の全通り（約11万通り）を1秒以内に計算できる", () => {
     const spots = Array.from({ length: 8 }, (_, i) => spot(`s${i}`, 30));
     const t = performance.now();

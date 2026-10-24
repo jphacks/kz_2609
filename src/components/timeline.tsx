@@ -180,6 +180,18 @@ export function Timeline({
       spotPos: item.type === "spot" ? spotCounter++ : -1,
     };
   });
+  // 次のスポットへの移動は、昼食休憩をはさむ場合は昼食のあとに出す（移動を始めるのは昼食が終わってから）
+  const legAt = new Map<number, { leg: Leg; index: number; departMin: number }>();
+  rows.forEach(({ item, legIndex }, idx) => {
+    if ((item.type !== "origin" && item.type !== "spot") || !item.next) return;
+    const after = items[idx + 1];
+    if (after?.type === "lunch") legAt.set(idx + 1, { leg: item.next, index: legIndex, departMin: after.depart });
+    else legAt.set(idx, { leg: item.next, index: legIndex, departMin: item.depart });
+  });
+  const legFor = (idx: number) => {
+    const l = legAt.get(idx);
+    return l ? legRow(l.leg, l.index, l.departMin) : null;
+  };
 
   const legRow = (leg: Leg | null, i: number, departMin: number) =>
     leg && (
@@ -194,7 +206,7 @@ export function Timeline({
 
   return (
     <ol className="flex flex-col">
-      {rows.map(({ item, legIndex, spotPos }, idx) => {
+      {rows.map(({ item, spotPos }, idx) => {
         if (item.type === "origin") {
           return (
             <li key="origin">
@@ -203,16 +215,21 @@ export function Timeline({
                 <span className="w-12 font-bold tabular-nums">{formatClock(item.depart)}</span>
                 <span className="min-w-0 flex-1 truncate">{originLabel} を出発</span>
               </div>
-              {legRow(item.next, legIndex, item.depart)}
+              {legFor(idx)}
             </li>
           );
         }
         if (item.type === "lunch") {
           return (
-            <li key={`lunch-${idx}`} className="my-1 flex items-center gap-3 rounded-xl border border-border bg-surface p-3">
-              <Coffee size={20} strokeWidth={2} className="text-muted" aria-hidden />
-              <span className="w-12 font-bold tabular-nums">{formatClock(item.arrive)}</span>
-              <span className="flex-1">昼食休憩（{item.stayMin}分）</span>
+            <li key={`lunch-${idx}`}>
+              <div className="my-1 flex items-center gap-3 rounded-xl border border-border bg-surface p-3">
+                <Coffee size={20} strokeWidth={2} className="text-muted" aria-hidden />
+                <span className="w-12 font-bold tabular-nums">{formatClock(item.arrive)}</span>
+                <span className="flex-1">
+                  昼食休憩（{item.stayMin}分。{formatClock(item.depart)}まで）
+                </span>
+              </div>
+              {legFor(idx)}
             </li>
           );
         }
@@ -281,7 +298,7 @@ export function Timeline({
                 </div>
               )}
             </div>
-            {legRow(item.next, legIndex, item.depart)}
+            {legFor(idx)}
           </li>
         );
       })}

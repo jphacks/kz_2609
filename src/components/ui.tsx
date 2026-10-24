@@ -76,6 +76,7 @@ const BADGE_TONES = {
   primary: "bg-primary-soft text-primary",
   popular: "bg-[#fdf0e1] text-popular",
   very_popular: "bg-[#fde8dc] text-very-popular",
+  hidden_gem: "bg-hidden-gem-soft text-hidden-gem",
   warning: "bg-warning-soft text-warning",
   danger: "bg-danger-soft text-danger",
 };

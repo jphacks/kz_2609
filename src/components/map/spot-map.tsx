@@ -10,6 +10,7 @@ import { createBaseMarker, createPinMarker, createStackMarker } from "@/componen
 import type { Category, Popularity } from "@/lib/constants";
 import { ZOOM_HEATMAP_MAX, ZOOM_PIN_MIN } from "@/lib/constants";
 import { fetchZoomFor, lngLatToTile } from "@/lib/geo";
+import { isHiddenGem } from "@/lib/hidden-gem";
 
 // MapLibre 6 のワーカーは public/maplibre/ に置いたものを使う（scripts/copy-maplibre-worker.mjs）
 if (typeof window !== "undefined") setWorkerUrl("/maplibre/maplibre-gl-worker.mjs");
@@ -73,8 +74,10 @@ export function SpotMap({
   highlight,
   onViewInfo,
   flyTo,
+  hiddenGemsOnly = false,
 }: {
   categories: Category[];
+  hiddenGemsOnly?: boolean;
   onSelect: (spot: MapSpot) => void;
   highlight?: { spotIds: Set<string>; base: { label: string; lat: number; lng: number } | null } | null;
   onViewInfo?: (info: MapViewInfo) => void;
@@ -176,6 +179,7 @@ export function SpotMap({
                     coverUrl: s.coverThumbUrl,
                     category: s.category,
                     popularity: s.popularity,
+                    hiddenGem: isHiddenGem(s),
                     label: s.name,
                     highlighted: hlOn,
                   })
@@ -220,7 +224,8 @@ export function SpotMap({
     const all = new Map<string, MapSpot>();
     for (const [key, data] of tileCache.current) {
       if (!key.startsWith(`${categoryKey}|`) || data.mode !== "spots") continue;
-      for (const s of data.spots) all.set(s.id, s);
+      // F-1-12：「隠れた名所」の絞り込み中は、隠れた名所だけで束を作る
+      for (const s of data.spots) if (!hiddenGemsOnly || isHiddenGem(s)) all.set(s.id, s);
     }
     const index = new Supercluster<MapSpot, ClusterProps>({
       radius: 70,
@@ -251,7 +256,7 @@ export function SpotMap({
       })),
     );
     indexRef.current = index;
-  }, [categoryKey]);
+  }, [categoryKey, hiddenGemsOnly]);
 
   // ---- 取得（F-1-2）：表示範囲＋外側1画面分の区画のうち、まだ取得していないものだけ ----
   const fetchTiles = useCallback(() => {

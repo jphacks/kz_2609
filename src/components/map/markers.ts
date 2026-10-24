@@ -1,5 +1,5 @@
 // 地図マーカーの DOM（F-1-4・F-1-5）。MapLibre のマーカーは DOM 要素なので、Lucide の素の SVG を使う
-import { Aperture, createElement, Flame, House, Landmark, MapPin, Trees, Utensils, type IconNode } from "lucide";
+import { Aperture, createElement, Flame, Gem, House, Landmark, MapPin, Trees, Utensils, type IconNode } from "lucide";
 import type { Category, Popularity } from "@/lib/constants";
 
 const CATEGORY_ICON: Record<Category, IconNode> = {
@@ -16,13 +16,14 @@ function icon(node: IconNode, size: number) {
   return createElement(node, { width: size, height: size, "stroke-width": 2, "aria-hidden": "true" });
 }
 
-// 写真ピンの枠（リング）。人気度は色だけでなく「人気」「大人気」の文字でも示す（8.2）
-export type PinRing = "normal" | "popular" | "very_popular" | "highlight";
+// 写真ピンの枠（リング）。人気度・隠れた名所は色だけでなく「人気」「大人気」「隠れた名所」の文字でも示す（8.2）
+export type PinRing = "normal" | "popular" | "very_popular" | "hidden_gem" | "highlight";
 
 const RING: Record<PinRing, { background: string; tip: string }> = {
   normal: { background: "#ffffff", tip: "#ffffff" },
   popular: { background: "#d9822b", tip: "#d9822b" },
   very_popular: { background: "conic-gradient(from 200deg, #f59e0b, #e11d48, #c2410c, #f59e0b)", tip: "#e11d48" },
+  hidden_gem: { background: "#6d28d9", tip: "#6d28d9" },
   highlight: { background: PRIMARY, tip: PRIMARY },
 };
 
@@ -154,6 +155,13 @@ export function createPhotoPin(opts: {
     tag.appendChild(document.createTextNode(opts.ring === "very_popular" ? "大人気" : "人気"));
     caption.appendChild(tag);
   }
+  if (opts.ring === "hidden_gem") {
+    const tag = document.createElement("div");
+    Object.assign(tag.style, { display: "inline-flex", alignItems: "center", gap: "2px", color: "#6d28d9", fontSize: "11px" });
+    tag.appendChild(icon(Gem, 12));
+    tag.appendChild(document.createTextNode("隠れた名所"));
+    caption.appendChild(tag);
+  }
   if (opts.sub) {
     const sub = document.createElement("div");
     sub.textContent = opts.sub;
@@ -185,18 +193,20 @@ export function createStackMarker(opts: {
   });
 }
 
-// 写真ピン：代表写真を丸く切り抜いてピンに入れる。人気度でリングの色を変え、人気・大人気は文字も添える（F-1-5）
+// 写真ピン：代表写真を丸く切り抜いてピンに入れる。人気度でリングの色を変え、人気・大人気は文字も添える（F-1-5）。
+// 隠れた名所（F-1-12）は紫のリングと「隠れた名所」の文字
 export function createPinMarker(opts: {
   coverUrl: string | null;
   category: Category;
   popularity: Popularity;
+  hiddenGem?: boolean;
   label: string;
   highlighted?: boolean;
 }) {
   return createPhotoPin({
     coverUrl: opts.coverUrl,
     category: opts.category,
-    ring: opts.highlighted ? "highlight" : opts.popularity,
+    ring: opts.highlighted ? "highlight" : opts.hiddenGem ? "hidden_gem" : opts.popularity,
     name: opts.label,
     label: opts.label,
   });

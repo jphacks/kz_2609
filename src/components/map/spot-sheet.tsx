@@ -1,6 +1,6 @@
 "use client";
 
-import { Bookmark, Camera, Flame, Heart, Info, Share2, X, type LucideIcon } from "lucide-react";
+import { Bookmark, Camera, Flame, Gem, Heart, Info, Share2, X, type LucideIcon } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState, type ReactNode } from "react";
 import type { MapSpot } from "@/components/map/spot-map";
@@ -9,6 +9,7 @@ import { PhotoCredit, type Credit } from "@/components/spot-detail";
 import { cn } from "@/components/ui";
 import { api } from "@/lib/client-api";
 import { CATEGORY_LABELS, POPULARITY_LABELS } from "@/lib/constants";
+import { isHiddenGem } from "@/lib/hidden-gem";
 
 type SheetImage = { id: string; url: string | null; thumbUrl: string | null; credit?: Credit | null };
 type SheetDetail = { address: string | null; stayMinutes: number; images: SheetImage[] };
@@ -116,6 +117,12 @@ export function SpotSheet({ spot, demo, onClose, onAdd }: { spot: MapSpot; demo:
           <p className={cn("inline-flex items-center gap-1 font-medium", spot.popularity === "very_popular" ? "text-very-popular" : "text-popular")}>
             {spot.popularity === "very_popular" && <Flame size={14} strokeWidth={2} aria-hidden />}
             {POPULARITY_LABELS[spot.popularity]}のスポット
+          </p>
+        )}
+        {isHiddenGem(spot) && (
+          <p className="inline-flex items-center gap-1 font-medium text-hidden-gem">
+            <Gem size={14} strokeWidth={2} aria-hidden />
+            隠れた名所（投稿は少ないけれど、いいねの多いスポット）
           </p>
         )}
         {detail?.address && <p className="truncate">{detail.address}</p>}

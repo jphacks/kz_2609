@@ -1,6 +1,6 @@
 "use client";
 
-import { Camera, LocateFixed, Mic, Search, X } from "lucide-react";
+import { Camera, Gem, LocateFixed, Mic, Search, X } from "lucide-react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
@@ -30,6 +30,7 @@ type ListDetail = { id: string; base: { label: string; lat: number; lng: number 
 export function MapScreen() {
   const { me, configured } = useApp();
   const [categories, setCategories] = useState<Category[]>([]);
+  const [hiddenGemsOnly, setHiddenGemsOnly] = useState(false);
   const [selected, setSelected] = useState<MapSpot | null>(null);
   const [info, setInfo] = useState<MapViewInfo>({ zoom: 5, visibleSpots: 0, loading: true, demo: false });
   const [flyTo, setFlyTo] = useState<{ lat: number; lng: number; zoom: number; key: number } | null>(null);
@@ -127,7 +128,7 @@ export function MapScreen() {
   return (
     <div className="relative h-[calc(100dvh-4rem)] lg:h-[calc(100dvh-3.5rem)]">
       <div className="absolute inset-0">
-        <SpotMap categories={categories} onSelect={setSelected} onViewInfo={setInfo} flyTo={flyTo} highlight={highlight} />
+        <SpotMap categories={categories} hiddenGemsOnly={hiddenGemsOnly} onSelect={setSelected} onViewInfo={setInfo} flyTo={flyTo} highlight={highlight} />
       </div>
 
       {/* 上部：検索・カテゴリ（F-1-7・F-1-8） */}
@@ -166,6 +167,10 @@ export function MapScreen() {
         </div>
 
         <div className="no-scrollbar pointer-events-auto flex gap-2 overflow-x-auto pb-1">
+          {/* F-1-12：隠れた名所だけを表示する */}
+          <Chip icon={Gem} selected={hiddenGemsOnly} onClick={() => setHiddenGemsOnly((v) => !v)} className="shrink-0 shadow-sm">
+            隠れた名所
+          </Chip>
           {CATEGORIES.map((c) => (
             <Chip
               key={c}
@@ -207,7 +212,14 @@ export function MapScreen() {
             Supabase に接続していないため、金沢のデモデータを表示しています
           </Notice>
         )}
-        {showEmpty && !selected && (
+        {hiddenGemsOnly && !selected && !info.loading && (info.zoom <= ZOOM_HEATMAP_MAX || info.visibleSpots === 0) && (
+          <Notice tone="info" className="pointer-events-auto">
+            {info.zoom <= ZOOM_HEATMAP_MAX
+              ? "地図を拡大すると、隠れた名所（投稿は少ないけれど、いいねの多いスポット）のピンが表示されます"
+              : "このあたりにはまだ隠れた名所がありません。いいねが集まると表示されます"}
+          </Notice>
+        )}
+        {showEmpty && !hiddenGemsOnly && !selected && (
           <div className="pointer-events-auto flex items-center gap-2 rounded-xl border border-border bg-surface p-3 text-sm shadow-sm">
             <span className="flex-1">このエリアにはまだ投稿がありません</span>
             <Link

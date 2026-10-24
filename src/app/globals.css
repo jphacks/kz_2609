@@ -17,6 +17,8 @@
   --warning-soft: #fff4dc;
   --popular: #d9822b;
   --very-popular: #c2410c;
+  --hidden-gem: #6d28d9;
+  --hidden-gem-soft: #f1eafd;
 }
 
 @theme inline {
@@ -35,6 +37,8 @@
   --color-warning-soft: var(--warning-soft);
   --color-popular: var(--popular);
   --color-very-popular: var(--very-popular);
+  --color-hidden-gem: var(--hidden-gem);
+  --color-hidden-gem-soft: var(--hidden-gem-soft);
   --font-sans: "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Noto Sans JP", "Yu Gothic UI", "Meiryo", sans-serif;
 }
 

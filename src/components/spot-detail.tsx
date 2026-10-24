@@ -1,6 +1,6 @@
 "use client";
 
-import { BookmarkPlus, Camera, Clock, ExternalLink, Flame, Heart, MapPin, Pencil } from "lucide-react";
+import { BookmarkPlus, Camera, Clock, ExternalLink, Flame, Gem, Heart, MapPin, Pencil } from "lucide-react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
@@ -10,6 +10,7 @@ import { useApp } from "@/components/app-context";
 import { CATEGORY_ICONS } from "@/components/category";
 import { Badge, Button, Card, EmptyState, Notice, PageHeader, Spinner, cn } from "@/components/ui";
 import { api, errorMessage } from "@/lib/client-api";
+import { isHiddenGem } from "@/lib/hidden-gem";
 import { CATEGORY_LABELS, POPULARITY_LABELS, STAY_LABELS, type Category, type Popularity, type StayDuration } from "@/lib/constants";
 
 export type Credit = { artist: string; license: string; page: string; label: string };
@@ -253,6 +254,11 @@ export function SpotDetail() {
         {spot.popularity !== "normal" && (
           <Badge icon={spot.popularity === "very_popular" ? Flame : undefined} tone={spot.popularity}>
             {POPULARITY_LABELS[spot.popularity]}
+          </Badge>
+        )}
+        {isHiddenGem(spot) && (
+          <Badge icon={Gem} tone="hidden_gem">
+            隠れた名所
           </Badge>
         )}
       </div>

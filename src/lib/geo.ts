@@ -38,7 +38,7 @@ export function lngLatToTile(lng: number, lat: number, z: number) {
   return { x: Math.min(n - 1, Math.max(0, x)), y: Math.min(n - 1, Math.max(0, y)) };
 }
 
-// 取得用のズーム段階（F-1-2・9.3）。ヒートマップは z5、写真の束は z9、写真ピンは z13 の区画で取得する
+// 取得用のズーム段階（F-1-2・9.3）。日本全体を見ているときは z5、写真の束は z9、写真ピンは z13 の区画で取得する
 export function fetchZoomFor(mapZoom: number): number {
   if (mapZoom < 9) return 5;
   if (mapZoom < 14) return 9;

@@ -109,7 +109,6 @@ export const GPS_MAX_ACCURACY_M = 100;
 export const SAME_SPOT_RADIUS_M = 50;
 
 // 地図のズーム切り替え（F-1-3）
-export const ZOOM_HEATMAP_MAX = 8;
 export const ZOOM_PIN_MIN = 14;
 
 export const STORAGE_BUCKET = "post-images";

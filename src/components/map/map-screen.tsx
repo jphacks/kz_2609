@@ -13,7 +13,7 @@ import { locateMe, type MapSpot, type MapViewInfo } from "@/components/map/spot-
 import { useCanVoice } from "@/components/map/voice-search";
 import { Chip, Notice } from "@/components/ui";
 import { api } from "@/lib/client-api";
-import { CATEGORIES, CATEGORY_LABELS, ZOOM_HEATMAP_MAX, type Category } from "@/lib/constants";
+import { CATEGORIES, CATEGORY_LABELS, type Category } from "@/lib/constants";
 import type { LatLng } from "@/lib/geo";
 import { addHistory, type SearchHistoryItem } from "@/lib/search-history";
 
@@ -123,7 +123,7 @@ export function MapScreen() {
     setSelected(null);
   };
 
-  const showEmpty = !info.loading && info.zoom > ZOOM_HEATMAP_MAX && info.visibleSpots === 0;
+  const showEmpty = !info.loading && info.visibleSpots === 0;
 
   return (
     <div className="relative h-[calc(100dvh-4rem)] lg:h-[calc(100dvh-3.5rem)]">
@@ -212,11 +212,9 @@ export function MapScreen() {
             Supabase に接続していないため、金沢のデモデータを表示しています
           </Notice>
         )}
-        {hiddenGemsOnly && !selected && !info.loading && (info.zoom <= ZOOM_HEATMAP_MAX || info.visibleSpots === 0) && (
+        {hiddenGemsOnly && !selected && !info.loading && info.visibleSpots === 0 && (
           <Notice tone="info" className="pointer-events-auto">
-            {info.zoom <= ZOOM_HEATMAP_MAX
-              ? "地図を拡大すると、隠れた名所（投稿は少ないけれど、いいねの多いスポット）のピンが表示されます"
-              : "このあたりにはまだ隠れた名所がありません。いいねが集まると表示されます"}
+            このあたりにはまだ隠れた名所（投稿は少ないけれど、いいねの多いスポット）がありません。いいねが集まると表示されます
           </Notice>
         )}
         {showEmpty && !hiddenGemsOnly && !selected && (

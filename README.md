@@ -62,7 +62,7 @@
 
 ### 製品説明（具体的な製品の説明）
 
-1. **探す**：地図を開くと、投稿が多いエリアがヒートマップで光り、近づくと写真の束、さらに近づくと写真のピンに切り替わります。投稿は少ないのにいいねが多い場所は「隠れた名所」として目立たせます。
+1. **探す**：地図を開くと、日本全体から写真の束（しずく形のピンの中に代表写真、下に「名前 +その他N件」）が並び、近づくと1スポットずつの写真ピンに切り替わります。投稿は少ないのにいいねが多い場所は「隠れた名所」として目立たせます。
 2. **見る**：ピンを選ぶと、実際に行った人の写真・コメント・投稿が多い時間帯・滞在時間の目安がわかります。
 3. **比べる**：気になった場所を「行きたい場所リスト」に集め、ホテルや駅からの距離で並べ替えたり、2〜3件を見比べたりできます。
 4. **共有する**：リストの共有URLを発行して LINE などで送ると、一緒に旅行する友達がログインなしで閲覧できます（編集はできません）。
@@ -75,7 +75,7 @@
 
 #### 1. あえて全部を自動化しない：「選ぶ楽しさ」はそのままに、「回り方」だけを自動に
 
-行き先は、写真で人気がひと目でわかる地図から自分で選びます。投稿の多さを数字ではなく、広域ではヒートマップ、中域では写真の束の厚み、詳細では写真ピンの枠で表すので、眺めているだけで「ここに行きたい」が見つかります。大変な回り方の計算だけを、ボタン1つで引き受けます。
+行き先は、写真で人気がひと目でわかる地図から自分で選びます。投稿の多さを数字ではなく、写真の束の「+その他N件」と写真ピンの枠の色で表すので、眺めているだけで「ここに行きたい」が見つかります。大変な回り方の計算だけを、ボタン1つで引き受けます。
 
 #### 2. 前の旅行者の投稿が、次の旅行者の計画を助ける
 
@@ -152,7 +152,7 @@
 - **全国112スポットの初期データと写真**：Wikimedia Commons の写真を作者・ライセンス付きで取り込み、地図を写真で埋めました（commit [76842da](https://github.com/jphacks/kz_2609/commit/76842da)、[cf8deb7](https://github.com/jphacks/kz_2609/commit/cf8deb7)、[c9e0357](https://github.com/jphacks/kz_2609/commit/c9e0357)、[563e33f](https://github.com/jphacks/kz_2609/commit/563e33f)）。
 - **回り方の計算**：場所の選び方と訪問順を全通り調べ、時間内に回れる数が最も多い順番の中から観点の違う3案を選びます（[src/lib/planner/index.ts](src/lib/planner/index.ts)、テストは [planner.test.ts](src/lib/planner/planner.test.ts)）。
 - **区間ごとの移動手段の変更と再計算**：変えた区間だけ Google Routes API で取り直し、それ以降の時刻を画面で計算し直します（[src/components/plan-result.tsx](src/components/plan-result.tsx)、[src/lib/external/routing.ts](src/lib/external/routing.ts)）。
-- **ズームに応じてヒートマップ・写真の束・写真ピンを切り替える地図**（[src/components/map/spot-map.tsx](src/components/map/spot-map.tsx)、[markers.ts](src/components/map/markers.ts)）。
+- **ズームに応じて写真の束・写真ピンを切り替える地図**（[src/components/map/spot-map.tsx](src/components/map/spot-map.tsx)、[markers.ts](src/components/map/markers.ts)）。
 - **投稿から人気度・代表写真・滞在時間の中央値・時間帯の分布を集計する DB の関数**と、無料枠の80%で止める仕組み（[supabase/migrations/20261024000000_init.sql](supabase/migrations/20261024000000_init.sql)）。
 
 #### 事前に準備したもの

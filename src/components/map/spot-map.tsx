@@ -1,6 +1,6 @@
 "use client";
 
-import { Map as MlMap, Marker, setWorkerUrl, type GeoJSONSource } from "maplibre-gl";
+import { Map as MlMap, Marker, setWorkerUrl } from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { RefreshCw } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -8,7 +8,7 @@ import Supercluster from "supercluster";
 import { EdgeZoom } from "@/components/map/edge-zoom";
 import { createBaseMarker, createPinMarker, createStackMarker } from "@/components/map/markers";
 import type { Category, Popularity } from "@/lib/constants";
-import { ZOOM_HEATMAP_MAX, ZOOM_PIN_MIN } from "@/lib/constants";
+import { ZOOM_PIN_MIN } from "@/lib/constants";
 import { fetchZoomFor, lngLatToTile } from "@/lib/geo";
 import { isHiddenGem } from "@/lib/hidden-gem";
 
@@ -31,41 +31,11 @@ export type MapSpot = {
   coverThumbUrl: string | null;
 };
 
-type HeatPoint = { id: string; lat: number; lng: number; weight: number };
-type TileData = { mode: "heatmap"; points: HeatPoint[] } | { mode: "spots"; spots: MapSpot[] };
+type TileData = { mode: "spots"; spots: MapSpot[] };
 type ClusterProps = { postCount: number; coverThumbUrl: string | null; category: Category; best: number; name: string };
 type ClusterInfo = { cluster: true; cluster_id: number; point_count: number };
 
 export type MapViewInfo = { zoom: number; visibleSpots: number; loading: boolean; demo: boolean };
-
-const HEAT_LAYER = {
-  id: "heat",
-  type: "heatmap" as const,
-  source: "heat",
-  maxzoom: ZOOM_HEATMAP_MAX + 1,
-  paint: {
-    "heatmap-weight": ["interpolate", ["linear"], ["get", "weight"], 0, 0, 20, 1],
-    "heatmap-intensity": ["interpolate", ["linear"], ["zoom"], 4, 1, 9, 3],
-    "heatmap-radius": ["interpolate", ["linear"], ["zoom"], 4, 12, 9, 30],
-    // ズームに合わせて透明度を連続的に変え、写真の束へ自然に切り替える（F-1-3）
-    "heatmap-opacity": ["interpolate", ["linear"], ["zoom"], ZOOM_HEATMAP_MAX, 0.85, ZOOM_HEATMAP_MAX + 1, 0],
-    "heatmap-color": [
-      "interpolate",
-      ["linear"],
-      ["heatmap-density"],
-      0,
-      "rgba(255,237,160,0)",
-      0.3,
-      "rgb(254,217,118)",
-      0.6,
-      "rgb(253,141,60)",
-      0.85,
-      "rgb(240,59,32)",
-      1,
-      "rgb(189,0,38)",
-    ],
-  },
-};
 
 // F-1：写真付きピンの地図。移動・ズーム中も区画ごとに取得して描画し続ける（F-1-2）
 export function SpotMap({
@@ -115,24 +85,10 @@ export function SpotMap({
     if (!map || !loadedRef.current) return;
     const zoom = map.getZoom();
 
-    // ヒートマップ（ズーム8以下）
-    const heat: HeatPoint[] = [];
-    for (const [key, data] of tileCache.current) {
-      if (key.startsWith(`${categoryKey}|5/`) && data.mode === "heatmap") heat.push(...data.points);
-    }
-    (map.getSource("heat") as GeoJSONSource | undefined)?.setData({
-      type: "FeatureCollection",
-      features: heat.map((p) => ({
-        type: "Feature",
-        properties: { weight: p.weight },
-        geometry: { type: "Point", coordinates: [p.lng, p.lat] },
-      })),
-    });
-
-    // 写真の束・写真ピン（ズーム9以上）
+    // 写真の束・写真ピン（v0.17 でヒートマップをやめ、日本全体を見ているときも写真の束で表す）
     const next = new Map<string, { at: [number, number]; build: () => HTMLElement }>();
     let visible = 0;
-    if (zoom > ZOOM_HEATMAP_MAX && indexRef.current) {
+    if (indexRef.current) {
       const b = map.getBounds();
       const w = (b.getEast() - b.getWest()) * 0.2;
       const h = (b.getNorth() - b.getSouth()) * 0.2;
@@ -322,8 +278,6 @@ export function SpotMap({
     // 地図タイルがそろうのを待たず、スタイルが読めた時点でピンを描き始める
     map.once("style.load", () => {
       loadedRef.current = true;
-      map.addSource("heat", { type: "geojson", data: { type: "FeatureCollection", features: [] } });
-      map.addLayer(HEAT_LAYER as Parameters<MlMap["addLayer"]>[0]);
       fetchRef.current();
       renderRef.current();
     });

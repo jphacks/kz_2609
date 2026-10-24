@@ -26,13 +26,6 @@ function demoResponse(z: number, x: number, y: number) {
   const inside = DEMO_SPOTS.filter(
     (s) => s.lng >= bbox.minLng && s.lng <= bbox.maxLng && s.lat >= bbox.minLat && s.lat <= bbox.maxLat,
   );
-  if (z === 5) {
-    return Response.json({
-      mode: "heatmap",
-      demo: true,
-      points: inside.map((s) => ({ id: s.id, lat: s.lat, lng: s.lng, weight: s.postCount })),
-    });
-  }
   return Response.json({
     mode: "spots",
     demo: true,
@@ -50,7 +43,7 @@ function demoResponse(z: number, x: number, y: number) {
   });
 }
 
-// F-1-2：区画（タイル）内のスポット。z5 はヒートマップ用の点、z9・z13 はスポット
+// F-1-2：区画（タイル）内のスポット。z5（日本全体）・z9・z13 のどれもスポットを返し、画面側で写真の束にまとめる
 export async function GET(request: NextRequest, ctx: RouteContext<"/api/v1/spots/tiles/[z]/[x]/[y]">) {
   const { z, x, y } = await ctx.params;
   const zi = Number(z);
@@ -67,25 +60,18 @@ export async function GET(request: NextRequest, ctx: RouteContext<"/api/v1/spots
       : null;
 
     const bbox = tileToBBox(zi, xi, yi);
-    const heatmap = zi === 5;
     const { data, error } = await getAdminSupabase().rpc("spots_in_bbox", {
       p_min_lng: bbox.minLng,
       p_min_lat: bbox.minLat,
       p_max_lng: bbox.maxLng,
       p_max_lat: bbox.maxLat,
       p_categories: categories && categories.length > 0 ? categories : null,
-      p_limit: heatmap ? 2000 : 500,
+      p_limit: zi === 5 ? 1000 : 500,
     });
     dbError(error);
     const rows = (data ?? []) as Row[];
 
     const headers = { "Cache-Control": "public, max-age=60" };
-    if (heatmap) {
-      return Response.json(
-        { mode: "heatmap", points: rows.map((r) => ({ id: r.id, lat: r.lat, lng: r.lng, weight: r.post_count })) },
-        { headers },
-      );
-    }
     return Response.json(
       {
         mode: "spots",

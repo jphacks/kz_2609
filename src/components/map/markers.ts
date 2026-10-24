@@ -82,8 +82,9 @@ export function createPhotoPin(opts: {
   root.type = "button";
   root.className = "map-marker";
   root.setAttribute("aria-label", opts.label);
+  // position は指定しない。MapLibre のマーカーは maplibregl-marker クラスの position: absolute で
+  // 地図上に置かれるため、ここで relative にすると要素が文章のように横へ並んで実際の場所からずれる
   Object.assign(root.style, {
-    position: "relative",
     width: `${outer}px`,
     height: `${outer + TIP_HEIGHT - 2}px`,
     background: "transparent",

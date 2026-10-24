@@ -32,7 +32,8 @@ export type MapSpot = {
 };
 
 type TileData = { mode: "spots"; spots: MapSpot[] };
-type ClusterProps = { postCount: number; coverThumbUrl: string | null; category: Category; best: number; name: string };
+// lat・lng は束の表紙にしたスポットの位置（束のピンはそのスポットを指す）
+type ClusterProps = { postCount: number; coverThumbUrl: string | null; category: Category; best: number; name: string; lat: number; lng: number };
 type ClusterInfo = { cluster: true; cluster_id: number; point_count: number };
 
 export type MapViewInfo = { zoom: number; visibleSpots: number; loading: boolean; demo: boolean };
@@ -103,8 +104,10 @@ export function SpotMap({
         if ("cluster" in props && props.cluster) {
           const p = props as ClusterInfo & ClusterProps;
           visible += p.point_count;
+          // 束の中心（全スポットの平均）ではなく、名前と写真を出しているスポットの場所を指す。
+          // 平均の位置だと、金沢と東京がまとまったときに群馬に「兼六園」と出てしまう
           next.set(`c:${p.cluster_id}:${p.postCount}`, {
-            at,
+            at: [p.lng, p.lat],
             build: () => {
               const el = createStackMarker({
                 coverUrl: p.coverThumbUrl,
@@ -192,6 +195,8 @@ export function SpotMap({
         category: p.category,
         best: p.coverThumbUrl ? p.postCount : -1,
         name: p.name,
+        lat: p.lat,
+        lng: p.lng,
       }),
       // 束の表紙は、写真がある中で投稿数が最も多いスポットの写真
       reduce: (acc, p) => {
@@ -201,6 +206,8 @@ export function SpotMap({
           acc.coverThumbUrl = p.coverThumbUrl;
           acc.category = p.category;
           acc.name = p.name;
+          acc.lat = p.lat;
+          acc.lng = p.lng;
         }
       },
     });

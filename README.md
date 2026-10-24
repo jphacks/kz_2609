@@ -2,9 +2,7 @@
 
 <!-- TODO：プロダクト名が決まったら、上の見出しと本文中の「本サービス」を置き換える -->
 
-[![IMAGE ALT TEXT HERE](https://jphacks.com/wp-content/uploads/2026/07/IMG_5316.png)](https://www.youtube.com/watch?v=piaNsc6ilBI)
-
-<!-- TODO：デモ動画ができたら、上の画像とリンクを差し替える -->
+[![プロダクト紹介動画（YouTube）](docs/images/demo-video-thumbnail.jpg)](https://youtu.be/t0KEnUDZ0Ag)
 
 > **行きたい場所を選ぶのは楽しく、回り方を決めるのは一瞬で。**
 > 現地の写真が集まる地図で行き先を選び、ボタン1つで1日の回り方を作る、大学生向けの旅行計画サービスです。
@@ -13,8 +11,8 @@
 | --- | --- |
 | チーム | kz_2609　No More Planners（ノー モアー プランナーズ） |
 | テーマ | Travel × Tech |
-| 公開URL | <!-- TODO：本番URLを記入 --> 準備中 |
-| デモ動画 | <!-- TODO：YouTube のURLを記入 --> 準備中 |
+| 公開URL | https://kz-2609.vercel.app/ |
+| デモ動画 | https://youtu.be/t0KEnUDZ0Ag |
 
 ## 目次
 

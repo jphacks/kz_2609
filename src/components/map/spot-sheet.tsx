@@ -4,6 +4,7 @@ import { Bookmark, Camera, Flame, Heart, Info, Share2, X, type LucideIcon } from
 import Link from "next/link";
 import { useEffect, useState, type ReactNode } from "react";
 import type { MapSpot } from "@/components/map/spot-map";
+import { PhotoViewer } from "@/components/photo-viewer";
 import { PhotoCredit, type Credit } from "@/components/spot-detail";
 import { cn } from "@/components/ui";
 import { api } from "@/lib/client-api";
@@ -46,6 +47,7 @@ function ActionChip({ icon: Icon, filled, children }: { icon: LucideIcon; filled
 export function SpotSheet({ spot, demo, onClose, onAdd }: { spot: MapSpot; demo: boolean; onClose: () => void; onAdd: () => void }) {
   const [loaded, setLoaded] = useState<{ id: string; detail: SheetDetail | null } | null>(null);
   const [shareNote, setShareNote] = useState<string | null>(null);
+  const [viewing, setViewing] = useState<number | null>(null);
 
   // 住所・写真はシートを開いてから取得する（地図のタイルには含めない）
   useEffect(() => {
@@ -146,15 +148,17 @@ export function SpotSheet({ spot, demo, onClose, onAdd }: { spot: MapSpot; demo:
         {loading && !spot.coverThumbUrl
           ? [0, 1, 2].map((i) => <div key={i} className="h-36 w-48 shrink-0 animate-pulse rounded-2xl bg-surface-muted" />)
           : images.length > 0
-            ? images.slice(0, 10).map((img) => (
+            ? images.slice(0, 10).map((img, i) => (
                 <figure key={img.id} className="w-48 shrink-0">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={img.thumbUrl ?? img.url ?? ""}
-                    alt={img.credit?.label ?? ""}
-                    loading="lazy"
-                    className="h-36 w-48 rounded-2xl bg-surface-muted object-cover"
-                  />
+                  <button type="button" onClick={() => setViewing(i)} aria-label={`写真${i + 1}を大きく表示`} className="block rounded-2xl">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={img.thumbUrl ?? img.url ?? ""}
+                      alt={img.credit?.label ?? ""}
+                      loading="lazy"
+                      className="h-36 w-48 rounded-2xl bg-surface-muted object-cover"
+                    />
+                  </button>
                   {img.credit && <PhotoCredit credit={img.credit} className="mt-1 line-clamp-2" />}
                 </figure>
               ))
@@ -163,6 +167,7 @@ export function SpotSheet({ spot, demo, onClose, onAdd }: { spot: MapSpot; demo:
                 <img src={spot.coverThumbUrl} alt="" className="h-36 w-48 shrink-0 rounded-2xl bg-surface-muted object-cover" />
               )}
       </div>
+      {viewing !== null && <PhotoViewer images={images.slice(0, 10)} start={viewing} onClose={() => setViewing(null)} />}
     </section>
   );
 }

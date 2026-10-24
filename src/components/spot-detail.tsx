@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { useAddToList } from "@/components/add-to-list";
+import { PhotoViewer } from "@/components/photo-viewer";
 import { useApp } from "@/components/app-context";
 import { CATEGORY_ICONS } from "@/components/category";
 import { Badge, Button, Card, EmptyState, Notice, PageHeader, Spinner, cn } from "@/components/ui";
@@ -100,14 +101,18 @@ function Stat({ icon: Icon, value, label }: { icon: typeof Camera; value: string
 
 // F-3-2：投稿1件
 function PostCard({ post, onLike }: { post: Post; onLike: () => void }) {
+  const [viewing, setViewing] = useState<number | null>(null);
   return (
     <Card className="overflow-hidden">
+      {viewing !== null && <PhotoViewer images={post.images} start={viewing} onClose={() => setViewing(null)} />}
       {post.images.length > 0 && (
         <div className="no-scrollbar flex snap-x overflow-x-auto">
-          {post.images.map((img) => (
+          {post.images.map((img, i) => (
             <figure key={img.id} className="w-full shrink-0 snap-start">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={img.url ?? ""} alt={img.credit?.label ?? ""} loading="lazy" className="aspect-[4/3] w-full object-cover" />
+              <button type="button" onClick={() => setViewing(i)} aria-label={`写真${i + 1}を大きく表示`} className="block w-full">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={img.url ?? ""} alt={img.credit?.label ?? ""} loading="lazy" className="aspect-[4/3] w-full object-cover" />
+              </button>
               {img.credit && <PhotoCredit credit={img.credit} className="px-3 pt-1" />}
             </figure>
           ))}
@@ -155,6 +160,7 @@ export function SpotDetail() {
   const [cursor, setCursor] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loadingMore, setLoadingMore] = useState(false);
+  const [viewing, setViewing] = useState<number | null>(null);
   const addToList = useAddToList();
 
   useEffect(() => {
@@ -217,18 +223,21 @@ export function SpotDetail() {
         </Notice>
       )}
 
-      {/* 写真ギャラリー */}
+      {/* 写真ギャラリー（タップで全画面表示） */}
+      {viewing !== null && <PhotoViewer images={spot.images} start={viewing} onClose={() => setViewing(null)} />}
       {spot.images.length > 0 ? (
         <div className="no-scrollbar -mx-4 flex snap-x gap-2 overflow-x-auto px-4">
-          {spot.images.map((img) => (
+          {spot.images.map((img, i) => (
             <figure key={img.id} className="shrink-0 snap-start">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={img.url ?? ""}
-                alt={img.credit?.label ?? ""}
-                className="h-56 w-auto rounded-xl object-cover"
-                loading="lazy"
-              />
+              <button type="button" onClick={() => setViewing(i)} aria-label={`写真${i + 1}を大きく表示`} className="block rounded-xl">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={img.url ?? ""}
+                  alt={img.credit?.label ?? ""}
+                  className="h-56 w-auto rounded-xl object-cover"
+                  loading="lazy"
+                />
+              </button>
               {img.credit && <PhotoCredit credit={img.credit} className="mt-1 max-w-72" />}
             </figure>
           ))}

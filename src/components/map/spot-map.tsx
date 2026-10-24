@@ -5,6 +5,7 @@ import "maplibre-gl/dist/maplibre-gl.css";
 import { RefreshCw } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import Supercluster from "supercluster";
+import { EdgeZoom } from "@/components/map/edge-zoom";
 import { createBaseMarker, createPinMarker, createStackMarker } from "@/components/map/markers";
 import type { Category, Popularity } from "@/lib/constants";
 import { ZOOM_HEATMAP_MAX, ZOOM_PIN_MIN } from "@/lib/constants";
@@ -385,6 +386,7 @@ export function SpotMap({
   return (
     <div className="relative h-full w-full">
       <div ref={containerRef} className="h-full w-full" />
+      {!failed && <EdgeZoom getMap={() => mapRef.current} />}
       {failed && (
         <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-surface p-6 text-center">
           <p className="font-medium">地図を読み込めませんでした</p>

@@ -20,7 +20,8 @@ export async function GET(request: NextRequest, ctx: RouteContext<"/api/v1/spots
     let query = supabase
       .from("posts")
       .select(
-        "id,user_id,comment,category,stay_duration,like_count,created_at,author:profiles(display_name,avatar_url),post_images(id,full_path,thumb_path,width,height,sort_order)",
+        // posts と profiles は likes・reports 経由でもつながるため、投稿者の外部キーを名前で指定する
+        "id,user_id,comment,category,stay_duration,like_count,created_at,author:profiles!posts_user_id_fkey(display_name,avatar_url),post_images(id,full_path,thumb_path,width,height,sort_order)",
       )
       .eq("spot_id", spotId)
       .eq("status", "public")

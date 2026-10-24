@@ -69,7 +69,7 @@
 - OpenFreeMap：背景地図
 - OpenStreetMap Nominatim：スポット名から場所を検索
 - Supabase（PostgreSQL・PostGIS・Auth・Storage・pg_cron）
-- 石川県の32スポットの初期データ（金沢市28・市外4。`supabase/seed/kanazawa.sql`・`ishikawa.sql`）と、Wikimedia Commons のクリエイティブ・コモンズ等の写真40枚（作者・ライセンスは `/credits` と各写真の下に表示。`src/lib/seed-photos.json`）
+- 62スポットの初期データ（石川県32＝金沢市28・市外4、東京・京都・大阪 各10。`supabase/seed/kanazawa.sql`・`ishikawa.sql`・`cities.sql`）と、Wikimedia Commons のクリエイティブ・コモンズ等の写真（作者・ライセンスは `/credits` と各写真の下に表示。`src/lib/seed-photos.json`）
 
 #### フレームワーク・ライブラリ・モジュール
 

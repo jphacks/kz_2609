@@ -206,7 +206,8 @@ export function Chip({
 
 export function Field({ label, hint, children }: { label: string; hint?: ReactNode; children: ReactNode }) {
   return (
-    <label className="flex flex-col gap-1.5">
+    // min-w-0：grid の中で欄の幅に合わせて縮める（スマホで時刻・日付の入力欄がはみ出さないように）
+    <label className="flex min-w-0 flex-col gap-1.5">
       <span className="text-sm font-medium">{label}</span>
       {children}
       {hint && <span className="text-xs text-muted">{hint}</span>}

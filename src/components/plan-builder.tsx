@@ -321,14 +321,14 @@ export function PlanBuilder() {
             昼食休憩を入れる
           </Chip>
           {lunchBreak && (
-            <div className="grid grid-cols-3 gap-2">
-              <Field label="昼食の時間帯（から）">
+            <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+              <Field label="昼食 から">
                 <input type="time" value={lunchFrom} onChange={(e) => setLunchFrom(e.target.value)} className={inputClass} />
               </Field>
-              <Field label="（まで）">
+              <Field label="まで">
                 <input type="time" value={lunchUntil} onChange={(e) => setLunchUntil(e.target.value)} className={inputClass} />
               </Field>
-              <Field label="長さ">
+              <Field label="昼食の長さ">
                 <select value={lunchMin} onChange={(e) => setLunchMin(Number(e.target.value))} className={inputClass}>
                   {LUNCH_DURATIONS.map((m) => (
                     <option key={m} value={m}>
@@ -341,7 +341,7 @@ export function PlanBuilder() {
           )}
           {lunchBreak && (
             <p className="text-xs text-muted">
-              {lunchFrom}以降で最初に空いた時間に{lunchMin}分入れます。最後のスポットのあとは{lunchUntil}までに空いたときだけ入れます。
+              {lunchFrom}〜{lunchUntil}の間に{lunchMin}分の昼食休憩を入れます（スポットの見学の合間に入れます）。
             </p>
           )}
         </div>

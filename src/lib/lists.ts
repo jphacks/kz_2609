@@ -92,6 +92,22 @@ export async function loadList(supabase: SupabaseClient, listId: string) {
         ? { label: list.base_label as string, lat: list.base_lat as number, lng: list.base_lng as number }
         : null,
     createdAt: list.created_at as string,
+    shareToken: (list.share_token as string | null) ?? null,
     spots,
+  };
+}
+
+// F-4-6：共有URLのリストを読み込む（ログイン不要・閲覧のみ）。
+// リストは本人しか読めない（RLS）ため、管理用クライアントで合言葉が一致した1件だけを読み、
+// 持ち主・経路プラン・合言葉は返さない
+export async function loadSharedList(admin: SupabaseClient, token: string) {
+  const { data, error } = await admin.from("wishlists").select("id").eq("share_token", token).maybeSingle();
+  dbError(error);
+  if (!data) throw new ApiError("NOT_FOUND", "このリストは共有されていないか、共有が停止されました");
+  const list = await loadList(admin, data.id as string);
+  return {
+    name: list.name,
+    base: list.base,
+    spots: list.spots.filter((s) => !s.deleted),
   };
 }

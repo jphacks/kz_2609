@@ -6,12 +6,14 @@ import {
   Check,
   Clock,
   Columns3,
+  Copy,
   Flame,
   House,
   Map as MapIcon,
   Pencil,
   Route,
   Ruler,
+  Share2,
   Star,
   Trash2,
   X,
@@ -140,6 +142,102 @@ function SpotRow({
   );
 }
 
+// F-4-6：共有URL。リストは本人しか見られないが、発行したURLを LINE などで送ると、
+// 受け取った人はログインなしで閲覧だけできる（編集はできない）
+function ShareCard({ listId, token, onChange }: { listId: string; token: string | null; onChange: () => Promise<void> }) {
+  const [busy, setBusy] = useState(false);
+  const [note, setNote] = useState<string | null>(null);
+  const url = token ? `${window.location.origin}/shared/${token}` : null;
+
+  const run = async (fn: () => Promise<unknown>, done: string | null) => {
+    setBusy(true);
+    setNote(null);
+    try {
+      await fn();
+      await onChange();
+      setNote(done);
+    } catch (e) {
+      setNote(errorMessage(e));
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const send = async () => {
+    if (!url) return;
+    try {
+      if (navigator.share) await navigator.share({ title: "行きたい場所リスト", url });
+      else {
+        await navigator.clipboard.writeText(url);
+        setNote("URLをコピーしました");
+      }
+    } catch (e) {
+      if ((e as Error).name !== "AbortError") setNote("共有できませんでした。URLをコピーして送ってください");
+    }
+  };
+
+  return (
+    <Card className="mb-3 p-3">
+      <h2 className="flex items-center gap-2 font-bold">
+        <Share2 size={20} strokeWidth={2} className="text-primary" aria-hidden />
+        友達と共有
+      </h2>
+      {url ? (
+        <>
+          <p className="mt-1 text-sm text-muted">このURLを知っている人は、ログインなしでこのリストを見られます（編集はできません）。</p>
+          <input readOnly value={url} aria-label="共有URL" onFocus={(e) => e.currentTarget.select()} className={cn(inputClass, "mt-2 text-sm")} />
+          <div className="mt-2 flex flex-wrap gap-2">
+            <Button icon={Share2} onClick={send}>
+              LINE などで送る
+            </Button>
+            <Button
+              variant="secondary"
+              icon={Copy}
+              onClick={() =>
+                navigator.clipboard
+                  .writeText(url)
+                  .then(() => setNote("URLをコピーしました"))
+                  .catch(() => setNote("コピーできませんでした。URLを長押ししてコピーしてください"))
+              }
+            >
+              コピー
+            </Button>
+            <Button
+              variant="secondary"
+              disabled={busy}
+              onClick={() => {
+                if (!window.confirm("共有を停止しますか。送ったURLは見られなくなります。")) return;
+                void run(() => api(`/lists/${listId}/share`, { method: "DELETE" }), "共有を停止しました");
+              }}
+            >
+              共有を停止
+            </Button>
+          </div>
+        </>
+      ) : (
+        <>
+          <p className="mt-1 text-sm text-muted">
+            このリストは今はあなただけが見られます。共有URLを発行すると、URLを受け取った人がリスト名・スポット・拠点を閲覧できます。
+          </p>
+          <Button
+            icon={Share2}
+            className="mt-2"
+            disabled={busy}
+            onClick={() => run(() => api(`/lists/${listId}/share`, { method: "POST" }), null)}
+          >
+            共有URLを発行
+          </Button>
+        </>
+      )}
+      {note && (
+        <p role="status" className="mt-2 text-sm text-muted">
+          {note}
+        </p>
+      )}
+    </Card>
+  );
+}
+
 // S-07 リスト詳細（F-4）
 export function ListDetail() {
   const { listId } = useParams<{ listId: string }>();
@@ -256,6 +354,7 @@ export function ListDetail() {
       )}
 
       <BaseCard base={list.base} onSave={patch} />
+      <ShareCard listId={list.id} token={list.shareToken} onChange={reload} />
 
       {/* 合計滞在時間の目安（F-4-11） */}
       {active.length > 0 && (

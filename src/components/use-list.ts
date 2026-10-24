@@ -28,6 +28,7 @@ export type ListData = {
   id: string;
   name: string;
   base: { label: string; lat: number; lng: number } | null;
+  shareToken: string | null;
   spots: ListSpot[];
   plans: { id: string; label: string; spotCount: number; totalTravelMin: number; createdAt: string }[];
 };

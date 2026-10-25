@@ -1,6 +1,6 @@
 # ADR（Architecture Decision Record）
 
-プロダクト：仮　旅行どこいこう
+プロダクト：TravelSeek（旧称：仮　旅行どこいこう）
 関連資料：PDR_v3.md
 
 ## 運用ルール

@@ -74,7 +74,7 @@ export function AppShell({ children }: { children: ReactNode }) {
       </Suspense>
       <header className="sticky top-0 z-30 hidden h-14 items-center gap-6 border-b border-border bg-surface px-6 lg:flex">
         <Link href="/" className="text-base font-bold">
-          旅行どこいこう
+          TravelSeek
         </Link>
         <Suspense>
           <HeaderNav />

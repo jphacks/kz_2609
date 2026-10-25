@@ -6,7 +6,7 @@ export default function TermsPage() {
     <div className="mx-auto w-full max-w-2xl px-4 pb-8 text-sm leading-7">
       <PageHeader title="利用規約" backHref="/" />
       <p>
-        本サービス「旅行どこいこう」（以下「本サービス」）は、旅行先のスポットを写真で共有し、回り方を計画するためのサービスです。
+        本サービス「TravelSeek」（以下「本サービス」）は、旅行先のスポットを写真で共有し、回り方を計画するためのサービスです。
       </p>
       <h2 className="mt-4 font-bold">投稿について</h2>
       <ul className="list-disc pl-5">

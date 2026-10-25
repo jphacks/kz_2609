@@ -3,7 +3,7 @@ import { AppShell } from "@/components/app-shell";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "旅行どこいこう",
+  title: "TravelSeek",
   description: "現地の写真で行き先を探し、行きたい場所から1日の回り方を自動で作る旅行計画サービス",
 };
 

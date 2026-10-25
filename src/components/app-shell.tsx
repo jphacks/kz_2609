@@ -1,6 +1,7 @@
 "use client";
 
 import { Bookmark, Camera, Map as MapIcon, User, type LucideIcon } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Suspense, type ReactNode } from "react";
@@ -73,8 +74,9 @@ export function AppShell({ children }: { children: ReactNode }) {
         <OnboardingRedirect />
       </Suspense>
       <header className="sticky top-0 z-30 hidden h-14 items-center gap-6 border-b border-border bg-surface px-6 lg:flex">
-        <Link href="/" className="text-base font-bold">
-          旅行どこいこう
+        {/* ロゴ（public/logo.png。高さ44pxで表示し、高解像度の画面向けに3倍の大きさで用意） */}
+        <Link href="/" className="flex shrink-0 items-center" aria-label="TravelSeek ホームへ">
+          <Image src="/logo.png" alt="TravelSeek" width={148} height={44} priority unoptimized />
         </Link>
         <Suspense>
           <HeaderNav />

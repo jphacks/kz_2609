@@ -178,9 +178,11 @@ export function PlanResult({
     }
   };
 
+  // 注意書きは上に1回だけ出す（経路案を作ったときと、区間を取り直したときで同じ文が重なるため）
+  const noteList = [...new Set([...result.notes, ...(chosen ? legNotes : [])])];
   const notices = (
     <>
-      {result.notes.map((note) => (
+      {noteList.map((note) => (
         <Notice key={note} tone="info" className="mb-2">
           {note}
         </Notice>
@@ -259,11 +261,6 @@ export function PlanResult({
             legBusy={legBusy}
           />
           {legBusy && <Spinner label="所要時間と乗り換えを確認中" />}
-          {legNotes.map((note) => (
-            <Notice key={note} tone="info" className="mt-2">
-              {note}
-            </Notice>
-          ))}
           <div className="mt-2 flex flex-wrap items-center gap-2 text-xs text-muted">
             <span>所要時間：{status?.mockExternalApis ? "直線距離からの概算（開発用）" : "Google マップ（Routes API）"}</span>
             {hasTransit && (

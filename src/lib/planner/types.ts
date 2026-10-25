@@ -40,6 +40,7 @@ export type PlanInput = {
 
 // steps：公共交通の区間の手順（徒歩 → 乗り場 → 乗車 → 降り場 → 徒歩。ADR-0026）。区間を取り直したあとに入る
 // carSuggested：公共交通では歩く時間が1時間以上になるため、車（タクシーなど）の時間にした区間（ADR-0027）
+// walkSuggested：公共交通を選んだが、乗り物より歩いた方が早いため徒歩にした区間
 export type Leg = {
   mode: TravelMode;
   travelMin: number;
@@ -47,6 +48,7 @@ export type Leg = {
   estimated: boolean;
   steps?: TransitStep[];
   carSuggested?: boolean;
+  walkSuggested?: boolean;
 };
 
 // 区間ごとに取り直した所要時間（F-5-10）。歩く距離も持つ

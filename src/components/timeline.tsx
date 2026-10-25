@@ -27,9 +27,7 @@ const STAY_OPTIONS = [15, 30, 45, 60, 90, 120, 180, 240];
 
 // 公共交通の区間の手順（ADR-0026）：徒歩 → 乗り場 → 乗車 → 降り場 → 徒歩。時刻は出発時刻から足した目安
 function TransitSteps({ steps, departMin }: { steps: TransitStep[]; departMin: number }) {
-  if (!steps.some((s) => s.kind === "ride")) {
-    return <p className="ml-4 pb-1 pl-12 text-xs text-muted">乗り物より歩いた方が早いため、徒歩で移動します</p>;
-  }
+  if (!steps.some((s) => s.kind === "ride")) return null;
   // 手順 i の始まる時刻（出発時刻に、それまでの手順の時間を足す）
   const startOf = (i: number) =>
     steps.slice(0, i).reduce((t, s) => t + (s.kind === "walk" ? s.min : s.waitMin + s.rideMin), departMin);
@@ -137,6 +135,9 @@ function LegRow({
         )}
       </div>
       {leg.mode === "transit" && leg.steps && !unreachable && <TransitSteps steps={leg.steps} departMin={departMin} />}
+      {leg.walkSuggested && (
+        <p className="ml-4 pb-1 pl-12 text-xs text-muted">乗り物より歩いた方が早いため、徒歩で移動します</p>
+      )}
       {leg.carSuggested && (
         <p className="ml-4 pb-1 pl-12 text-xs text-muted">
           公共交通では歩く時間が1時間以上になるため、車（タクシーなど）をおすすめします

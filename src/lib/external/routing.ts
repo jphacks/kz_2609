@@ -50,8 +50,6 @@ const driveEstimate = (a: Pt, b: Pt) => {
   return { min: (road / 1000 / DRIVE_KMH) * 60 + 5, distM: road };
 };
 
-const walkSteps = (min: number, distM: number): TransitStep[] => [{ kind: "walk", min: Math.max(1, Math.round(min)), distM: Math.round(distM), to: null }];
-
 // 表示する手順の分数を整数にし、区間の合計を手順の合計にそろえる
 function roundSteps(steps: TransitStep[]) {
   const out = steps.map((s): TransitStep =>
@@ -76,15 +74,9 @@ function transitLegOf(
     const { steps, total } = roundSteps(route.steps);
     return { mode: "transit", travelMin: total, distM: route.distM, walkM: route.walkM, estimated: true, steps };
   }
+  // 乗り物より歩いた方が早いので、区間の移動手段を徒歩にする（タイムラインでも徒歩が選ばれた状態になる）
   if (decision === "walk") {
-    return {
-      mode: "transit",
-      travelMin: walk.min,
-      distM: Math.round(walk.distM),
-      walkM: walk.distM,
-      estimated,
-      steps: walkSteps(walk.min, walk.distM),
-    };
+    return { mode: "walking", travelMin: walk.min, distM: Math.round(walk.distM), walkM: walk.distM, estimated, walkSuggested: true };
   }
   // 公共交通では歩く時間が1時間以上になるため、車（タクシーなど）の時間にする
   return { mode: "driving", travelMin: car.min, distM: Math.round(car.distM), walkM: 0, estimated, carSuggested: true };

@@ -71,6 +71,22 @@ function TransitSteps({ steps, departMin }: { steps: TransitStep[]; departMin: n
   );
 }
 
+// 公共交通を選んだ区間を自動で徒歩・車にした理由と、ユーザーが公共交通を選んだが長く歩く区間の注意
+function legNote(leg: Leg): string | null {
+  if (leg.walkSuggested) {
+    return leg.noTransitRoute
+      ? "近くに公共交通の経路がないため、徒歩で移動します"
+      : "乗り物より歩いた方が早いため、徒歩で移動します（公共交通も選べます）";
+  }
+  if (leg.carSuggested) {
+    return leg.noTransitRoute
+      ? "公共交通の経路が見つからないため、車（タクシーなど）をおすすめします"
+      : "公共交通では歩く時間が1時間以上になるため、車（タクシーなど）をおすすめします（公共交通も選べます）";
+  }
+  if (leg.longWalk) return "歩く時間が合わせて1時間以上あります。車（タクシーなど）もご検討ください";
+  return null;
+}
+
 // 区間の行：移動手段と所要時間。編集中は移動手段を切り替えられ（F-5-10）、保存後は「ナビ開始」を出す（F-5-12）
 function LegRow({
   leg,
@@ -103,16 +119,20 @@ function LegRow({
           >
             {LEG_MODES.map((m) => {
               const MIcon = MODE_ICON[m];
+              // 近くに公共交通の経路がない区間は、公共交通を選べない（薄く・取り消し線で表示する）
+              const unavailable = m === "transit" && leg.noTransitRoute;
               return (
                 <button
                   key={m}
                   type="button"
                   aria-pressed={leg.mode === m}
-                  disabled={busy}
+                  disabled={busy || unavailable}
+                  title={unavailable ? "この区間は公共交通の経路が見つかりません" : undefined}
                   onClick={() => m !== leg.mode && onMode(m)}
                   className={cn(
                     "inline-flex min-h-9 items-center gap-1 rounded-lg px-2 text-xs",
                     leg.mode === m ? "bg-primary-soft text-primary" : "text-muted",
+                    unavailable && "cursor-not-allowed line-through opacity-40",
                   )}
                 >
                   <MIcon size={14} strokeWidth={2} aria-hidden />
@@ -135,14 +155,7 @@ function LegRow({
         )}
       </div>
       {leg.mode === "transit" && leg.steps && !unreachable && <TransitSteps steps={leg.steps} departMin={departMin} />}
-      {leg.walkSuggested && (
-        <p className="ml-4 pb-1 pl-12 text-xs text-muted">乗り物より歩いた方が早いため、徒歩で移動します</p>
-      )}
-      {leg.carSuggested && (
-        <p className="ml-4 pb-1 pl-12 text-xs text-muted">
-          公共交通では歩く時間が1時間以上になるため、車（タクシーなど）をおすすめします
-        </p>
-      )}
+      {legNote(leg) && <p className="ml-4 pb-1 pl-12 text-xs text-muted">{legNote(leg)}</p>}
     </div>
   );
 }

@@ -9,6 +9,7 @@ import type { LegOverride, TravelMatrix } from "@/lib/planner/types";
 import { consumeQuota } from "@/lib/quota";
 import { quotas } from "@/lib/external/quotas";
 import {
+  MAX_WALK_MIN,
   NETWORK,
   busRideFromDriveSec,
   estimateRideTimes,
@@ -63,33 +64,54 @@ function roundSteps(steps: TransitStep[]) {
 
 type Minutes = { min: number; distM: number };
 
-function transitLegOf(
-  decision: "transit" | "walk" | "car",
-  route: TransitRoute | null,
-  walk: Minutes,
-  car: Minutes,
-  estimated: boolean,
-): LegOverride {
-  if (decision === "transit" && route) {
-    const { steps, total } = roundSteps(route.steps);
-    return { mode: "transit", travelMin: total, distM: route.distM, walkM: route.walkM, estimated: true, steps };
-  }
-  // 乗り物より歩いた方が早いので、区間の移動手段を徒歩にする（タイムラインでも徒歩が選ばれた状態になる）
-  if (decision === "walk") {
-    return { mode: "walking", travelMin: walk.min, distM: Math.round(walk.distM), walkM: walk.distM, estimated, walkSuggested: true };
-  }
-  // 公共交通では歩く時間が1時間以上になるため、車（タクシーなど）の時間にする
-  return { mode: "driving", travelMin: car.min, distM: Math.round(car.distM), walkM: 0, estimated, carSuggested: true };
+type Decision = "transit" | "walk" | "car";
+
+// ユーザーが区間の移動手段で「公共交通」を選んだときは、乗り物の経路があれば、徒歩より遅くても歩く時間が長くても使う。
+// 経路がなければ、自動のときと同じく徒歩か車にする（公共交通は選べない区間として返す）
+function decideForced(route: TransitRoute | null, walk: Minutes): Decision {
+  if (route) return "transit";
+  return walk.min < MAX_WALK_MIN ? "walk" : "car";
 }
 
-// 直線距離からの概算（開発用のモックと、Google を使えないときの代わり）
-export function estimateLeg(a: Pt, b: Pt, mode: TravelMode, rides: RideTimes = estimateRideTimes()): LegOverride {
+function transitLegOf(decision: Decision, route: TransitRoute | null, walk: Minutes, car: Minutes, estimated: boolean): LegOverride {
+  if (decision === "transit" && route) {
+    const { steps, total } = roundSteps(route.steps);
+    return {
+      mode: "transit",
+      travelMin: total,
+      distM: route.distM,
+      walkM: route.walkM,
+      estimated: true,
+      steps,
+      ...(route.walkMin >= MAX_WALK_MIN ? { longWalk: true } : {}),
+    };
+  }
+  // 公共交通の経路がない区間は、タイムラインで「公共交通」を選べないようにする
+  const noRoute = route === null ? { noTransitRoute: true } : {};
+  // 乗り物より歩いた方が早いので、区間の移動手段を徒歩にする（タイムラインでも徒歩が選ばれた状態になる）
+  if (decision === "walk") {
+    return {
+      mode: "walking",
+      travelMin: walk.min,
+      distM: Math.round(walk.distM),
+      walkM: walk.distM,
+      estimated,
+      walkSuggested: true,
+      ...noRoute,
+    };
+  }
+  // 公共交通では歩く時間が1時間以上になるため、車（タクシーなど）の時間にする
+  return { mode: "driving", travelMin: car.min, distM: Math.round(car.distM), walkM: 0, estimated, carSuggested: true, ...noRoute };
+}
+
+// 直線距離からの概算（開発用のモックと、Google を使えないときの代わり）。force はユーザーが公共交通を選んだとき
+export function estimateLeg(a: Pt, b: Pt, mode: TravelMode, rides: RideTimes = estimateRideTimes(), force = false): LegOverride {
   const walk = walkEstimate(a, b);
   if (mode === "walking") return { mode, travelMin: walk.min, distM: Math.round(walk.distM), walkM: walk.distM, estimated: true };
   const car = driveEstimate(a, b);
   if (mode === "driving") return { mode, travelMin: car.min, distM: Math.round(car.distM), walkM: 0, estimated: true };
   const route = findTransitRoute(a, b, rides);
-  return transitLegOf(decideTransit(route, walk), route, walk, car, true);
+  return transitLegOf((force ? decideForced : decideTransit)(route, walk), route, walk, car, true);
 }
 
 const walkFor = (mode: TravelMode, distM: number) => (mode === "walking" ? distM : 0);
@@ -286,7 +308,8 @@ export async function getTravelMatrix(
   return { minutes, distances, walk, estimated, notes };
 }
 
-export type LegRequest = { from: Pt; to: Pt; mode: TravelMode; departAt: string };
+// force：ユーザーが区間の移動手段を自分で選んだ（公共交通なら、乗り物の経路を優先して使う）
+export type LegRequest = { from: Pt; to: Pt; mode: TravelMode; departAt: string; force?: boolean };
 
 // 公共交通の区間を、Google の徒歩（全部歩く・乗り場まで・降り場から）と、路線バスの車の所要時間で直して決める。
 // 呼ぶ回数は、徒歩の3回＋路線バスの乗車ごとに1回＋車をすすめる場合に1回
@@ -333,7 +356,7 @@ async function transitLeg(l: LegRequest, rides: RideTimes, apiKey: string): Prom
       walkMin: sum((s) => (s.kind === "walk" ? s.min : 0)),
     };
   }
-  const decision = decideTransit(fixed, walk);
+  const decision = (l.force ? decideForced : decideTransit)(fixed, walk);
   let car = driveEstimate(l.from, l.to);
   if (decision === "car" && (await consumeQuota(quotas().googleRoutes, 1))) car = (await routeOf(l.from, l.to, "driving")) ?? car;
   return transitLegOf(decision, fixed, walk, car, false);
@@ -342,7 +365,7 @@ async function transitLeg(l: LegRequest, rides: RideTimes, apiKey: string): Prom
 // 区間ごとの所要時間（F-5-10：移動手段の変更、公共交通の区間の取り直し）
 export async function getLegs(legs: LegRequest[]): Promise<{ legs: LegOverride[]; notes: string[] }> {
   if (isMockMode()) {
-    return { legs: legs.map((l) => estimateLeg(l.from, l.to, l.mode)), notes: [MOCK_NOTE] };
+    return { legs: legs.map((l) => estimateLeg(l.from, l.to, l.mode, undefined, l.force)), notes: [MOCK_NOTE] };
   }
   // 公共交通の区間は、全部歩く・乗り場まで・降り場からの3回
   const units = legs.reduce((t, l) => t + (l.mode === "transit" ? 3 : 1), 0);

@@ -159,6 +159,8 @@ export const legsSchema = z.object({
         to: z.object({ lat, lng }),
         mode: z.enum(TRAVEL_MODES),
         departAt: z.string().datetime({ offset: true }),
+        // ユーザーが区間の移動手段を自分で選んだ（公共交通なら乗り物の経路を優先する）
+        force: z.boolean().optional(),
       }),
     )
     .min(1)

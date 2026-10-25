@@ -28,12 +28,20 @@ function staysOf(c: PlanCandidate) {
   return new Map(c.items.flatMap((it) => (it.type === "spot" ? [[it.spotId, it.stayMin] as [string, number]] : [])));
 }
 
-// 区間 k の移動手段と出発時刻（= 次の到着時刻 − 所要時間）
+// 区間 k の移動手段と出発時刻（= 次の到着時刻 − 所要時間）。
+// suggested：公共交通を選んだ区間を、自動で徒歩・車にしたもの（計算し直すときに、もう一度自動で決め直す）
 function legDepartures(c: PlanCandidate) {
   const legs = c.items.flatMap((it) => ((it.type === "origin" || it.type === "spot") && it.next ? [it.next] : []));
   const arrivals = c.items.flatMap((it) => (it.type === "spot" || it.type === "destination" ? [it.arrive] : []));
-  return legs.map((l, k) => ({ mode: l.mode, depart: arrivals[k] - l.travelMin }));
+  return legs.map((l, k) => ({
+    mode: l.mode,
+    depart: arrivals[k] - l.travelMin,
+    suggested: Boolean(l.walkSuggested || l.carSuggested),
+  }));
 }
+
+// 「公共交通の乗り換えを計算し直す」を続けて押せない時間（ミリ秒）
+const REFINE_COOLDOWN_MS = 10_000;
 
 function CandidateCard({ candidate, recommended, onChoose }: { candidate: PlanCandidate; recommended: boolean; onChoose: () => void }) {
   const s = candidate.stats;
@@ -92,6 +100,9 @@ export function PlanResult({
   const [legNotes, setLegNotes] = useState<string[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+  // ユーザーが自分で公共交通を選んだ区間（legKey）。計算し直しても、乗り物の経路を優先する
+  const [forced, setForced] = useState<Set<string>>(new Set());
+  const [cooldown, setCooldown] = useState(false);
 
   const { origin, destination, date } = request;
   // 行列の添字：0 = 出発地、1..n = スポット、n+1 = 到着地
@@ -110,7 +121,11 @@ export function PlanResult({
     recomputeCandidate(result.input, result.matrix, c, order, stays, legs);
 
   // 指定した区間だけ Google Routes API で取り直し、時刻を計算し直す（ADR-0019）
-  const refetchLegs = async (c: PlanCandidate, targets: { k: number; mode: TravelMode }[], base: LegOverrides) => {
+  const refetchLegs = async (
+    c: PlanCandidate,
+    targets: { k: number; mode: TravelMode; force?: boolean }[],
+    base: LegOverrides,
+  ) => {
     if (targets.length === 0) return;
     setLegBusy(true);
     setError(null);
@@ -120,11 +135,12 @@ export function PlanResult({
       const r = await api<{ legs: LegOverride[]; notes: string[] }>("/plans/legs", {
         method: "POST",
         json: {
-          legs: targets.map(({ k, mode }) => ({
+          legs: targets.map(({ k, mode, force }) => ({
             from: pointOf(pairs[k][0]),
             to: pointOf(pairs[k][1]),
             mode,
             departAt: isoAt(departs[k]?.depart ?? result.input.startMin),
+            ...(force ? { force } : {}),
           })),
         },
       });
@@ -140,21 +156,46 @@ export function PlanResult({
     }
   };
 
-  // 公共交通の区間の乗り換え（乗り場・路線）を計算し、乗り場までの徒歩を Google で取り直す（ADR-0026）
-  const refineTransit = (c: PlanCandidate, base: LegOverrides) =>
-    refetchLegs(
+  // 公共交通の区間の乗り換え（乗り場・路線）を計算し、乗り場までの徒歩を Google で取り直す（ADR-0026）。
+  // 自動で徒歩・車にした区間も決め直す。ユーザーが自分で公共交通を選んだ区間は、乗り物の経路を優先する
+  const refineTransit = (c: PlanCandidate, base: LegOverrides, forcedKeys: Set<string> = forced) => {
+    const pairs = legPairs(c);
+    return refetchLegs(
       c,
-      legDepartures(c).flatMap((l, k) => (l.mode === "transit" ? [{ k, mode: l.mode }] : [])),
+      legDepartures(c).flatMap((l, k) =>
+        l.mode === "transit" || l.suggested
+          ? [{ k, mode: "transit" as const, force: forcedKeys.has(legKey(pairs[k][0], pairs[k][1])) }]
+          : [],
+      ),
       base,
     );
+  };
+
+  // 区間の移動手段をユーザーが変えた（公共交通を選んだら、乗り物の経路を優先する）
+  const changeLegMode = (c: PlanCandidate, k: number, mode: TravelMode) => {
+    const [from, to] = legPairs(c)[k];
+    const key = legKey(from, to);
+    const next = new Set(forced);
+    if (mode === "transit") next.add(key);
+    else next.delete(key);
+    setForced(next);
+    void refetchLegs(c, [{ k, mode, force: mode === "transit" }], overrides);
+  };
+
+  const refineAgain = (c: PlanCandidate) => {
+    setCooldown(true);
+    setTimeout(() => setCooldown(false), REFINE_COOLDOWN_MS);
+    void refineTransit(c, overrides);
+  };
 
   // 案を選んだら、公共交通の区間だけ乗り換えの手順を計算する
   const choose = (c: PlanCandidate) => {
     const empty: LegOverrides = new Map();
     setOverrides(empty);
     setLegNotes([]);
+    setForced(new Set());
     setChosen(c);
-    void refineTransit(c, empty);
+    void refineTransit(c, empty, new Set());
   };
 
   const save = async (c: PlanCandidate) => {
@@ -217,7 +258,9 @@ export function PlanResult({
   const current = chosen;
   const ordered = current.order.map((id) => result.spots.find((s) => s.id === id)!);
   const routePoints: Pt[] = [origin, ...ordered, ...(destination ? [destination] : [])];
-  const hasTransit = current.items.some((it) => (it.type === "origin" || it.type === "spot") && it.next?.mode === "transit");
+  const hasTransit = current.items.some(
+    (it) => (it.type === "origin" || it.type === "spot") && (it.next?.mode === "transit" || it.next?.walkSuggested || it.next?.carSuggested),
+  );
 
   const move = (spotId: string, dir: -1 | 1) => {
     const order = [...current.order];
@@ -257,7 +300,7 @@ export function PlanResult({
             editable
             onMove={move}
             onStay={changeStay}
-            onLegMode={(k, mode) => void refetchLegs(current, [{ k, mode }], overrides)}
+            onLegMode={(k, mode) => changeLegMode(current, k, mode)}
             legBusy={legBusy}
           />
           {legBusy && <Spinner label="所要時間と乗り換えを確認中" />}
@@ -267,10 +310,11 @@ export function PlanResult({
               <Button
                 variant="secondary"
                 className="min-h-9 px-3 text-xs"
-                onClick={() => refineTransit(current, overrides)}
+                onClick={() => refineAgain(current)}
                 loading={legBusy}
+                disabled={cooldown}
               >
-                公共交通の乗り換えを計算し直す
+                {cooldown ? "少し待ってから押せます" : "公共交通の乗り換えを計算し直す"}
               </Button>
             )}
           </div>

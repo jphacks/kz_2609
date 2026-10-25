@@ -63,7 +63,7 @@ function TransitSteps({ steps, departMin }: { steps: TransitStep[]; departMin: n
               {s.from} → {s.to}
               <br />
               <span className="text-xs text-muted">
-                待ち 約{s.waitMin}分・乗車 約{s.rideMin}分（{s.stops}つ先）
+                待ち 約{s.waitMin}分・乗車 約{s.rideMin}分{s.stops !== null && `（${s.stops}つ先）`}
               </span>
             </span>
           </li>
@@ -137,6 +137,11 @@ function LegRow({
         )}
       </div>
       {leg.mode === "transit" && leg.steps && !unreachable && <TransitSteps steps={leg.steps} departMin={departMin} />}
+      {leg.carSuggested && (
+        <p className="ml-4 pb-1 pl-12 text-xs text-muted">
+          公共交通では歩く時間が1時間以上になるため、車（タクシーなど）をおすすめします
+        </p>
+      )}
     </div>
   );
 }

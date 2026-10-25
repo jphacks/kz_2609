@@ -105,6 +105,7 @@ export function simulate(
     distM: l.distM,
     estimated: l.estimated,
     ...(l.steps ? { steps: l.steps } : {}),
+    ...(l.carSuggested ? { carSuggested: true } : {}),
   });
 
   const windows = new Map((input.timeWindows ?? []).map((w) => [w.spotId, w]));

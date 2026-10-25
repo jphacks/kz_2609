@@ -13,18 +13,19 @@ import {
   busRideFromDriveSec,
   estimateRideTimes,
   getStop,
-  prefersTransit,
+  routeBusRideFromDrive,
   type RideTimes,
 } from "@/lib/transit/network";
-import { findTransitRoute, type TransitRoute, type TransitStep } from "@/lib/transit/route";
+import { decideTransit, findTransitRoute, type TransitRoute, type TransitStep } from "@/lib/transit/route";
 
 // 移動時間は Google Routes API（Essentials）で取得する（ADR-0019）。
 // - 計画（順番と時刻）にだけ使い、経路の形は取得しない。地図には訪問順を結んだ線を描く
 // - Essentials に収めるため、車は渋滞を考えない計算（TRAFFIC_UNAWARE）にし、返してもらう項目は所要時間・距離・状態だけにする
 // - Google の利用規約に合わせ、取得した結果はその計画の間だけ使い、DB に保存しない
-// 公共交通（ADR-0026）：Routes API は日本の電車・バスを返さないため、国土数値情報の停留所・駅と路線から
+// 公共交通（ADR-0026・ADR-0027）：Routes API は日本の電車・バスを返さないため、国土数値情報の停留所・駅と路線から
 // 「徒歩 → 乗り場 → 乗車 → 降り場 → 徒歩」を自分で探す（src/lib/transit）。徒歩は Google、バスの乗車時間は
-// Google の車の所要時間から、鉄道は平均の速さから計算し、待ち時間は目安を使う
+// Google の車の所要時間から、鉄道は線路の道のりと平均の速さから計算し、待ち時間は目安を使う。
+// 歩く時間が1時間以上になる区間は、公共交通では難しいとして車（タクシーなど）の時間にする
 
 export type MatrixPoint = { key: string; lat: number; lng: number };
 type Pt = { lat: number; lng: number };
@@ -32,11 +33,6 @@ type Pt = { lat: number; lng: number };
 const DETOUR = 1.3; // 直線距離から道のりへの換算
 const WALK_KMH = 4.8;
 const DRIVE_KMH = 30;
-const TRANSIT_KMH = 15; // 対応する路線がない区間の概算（金沢は路線バス中心）
-const TRANSIT_WAIT_MIN = 10;
-const TRANSIT_ACCESS_WALK_M = 400; // 概算の公共交通に含まれる徒歩（駅・バス停まで）の目安
-// 対応する路線がない区間で、これより短ければ徒歩にする（分）
-const WALK_INSTEAD_MAX_MIN = 45;
 
 const MODE: Record<TravelMode, "WALK" | "DRIVE" | "TRANSIT"> = {
   walking: "WALK",
@@ -49,17 +45,10 @@ const walkEstimate = (a: Pt, b: Pt) => {
   return { min: (road / 1000 / WALK_KMH) * 60, distM: road };
 };
 
-// 対応する路線がない区間の公共交通の概算（旧 ADR-0018 の考え方）
-function roughTransit(a: Pt, b: Pt): LegOverride {
-  const straight = distanceM(a, b);
-  return {
-    mode: "transit",
-    travelMin: (straight / 1000 / TRANSIT_KMH) * 60 + TRANSIT_WAIT_MIN,
-    distM: Math.round(straight * DETOUR),
-    walkM: TRANSIT_ACCESS_WALK_M,
-    estimated: true,
-  };
-}
+const driveEstimate = (a: Pt, b: Pt) => {
+  const road = distanceM(a, b) * DETOUR;
+  return { min: (road / 1000 / DRIVE_KMH) * 60 + 5, distM: road };
+};
 
 const walkSteps = (min: number, distM: number): TransitStep[] => [{ kind: "walk", min: Math.max(1, Math.round(min)), distM: Math.round(distM), to: null }];
 
@@ -74,26 +63,41 @@ function roundSteps(steps: TransitStep[]) {
   return { steps: out, total };
 }
 
-// 公共交通の区間を1つ決める：乗り物を使う経路と、全部歩く場合を比べて早い方。どちらも無理なら概算
-function chooseTransit(a: Pt, b: Pt, route: TransitRoute | null, walk: { min: number; distM: number }, rough: boolean): LegOverride {
-  if (route && prefersTransit(route.totalMin, walk.min)) {
+type Minutes = { min: number; distM: number };
+
+function transitLegOf(
+  decision: "transit" | "walk" | "car",
+  route: TransitRoute | null,
+  walk: Minutes,
+  car: Minutes,
+  estimated: boolean,
+): LegOverride {
+  if (decision === "transit" && route) {
     const { steps, total } = roundSteps(route.steps);
     return { mode: "transit", travelMin: total, distM: route.distM, walkM: route.walkM, estimated: true, steps };
   }
-  if (route || walk.min <= WALK_INSTEAD_MAX_MIN) {
-    return { mode: "transit", travelMin: walk.min, distM: Math.round(walk.distM), walkM: walk.distM, estimated: rough, steps: walkSteps(walk.min, walk.distM) };
+  if (decision === "walk") {
+    return {
+      mode: "transit",
+      travelMin: walk.min,
+      distM: Math.round(walk.distM),
+      walkM: walk.distM,
+      estimated,
+      steps: walkSteps(walk.min, walk.distM),
+    };
   }
-  return roughTransit(a, b);
+  // 公共交通では歩く時間が1時間以上になるため、車（タクシーなど）の時間にする
+  return { mode: "driving", travelMin: car.min, distM: Math.round(car.distM), walkM: 0, estimated, carSuggested: true };
 }
 
 // 直線距離からの概算（開発用のモックと、Google を使えないときの代わり）
 export function estimateLeg(a: Pt, b: Pt, mode: TravelMode, rides: RideTimes = estimateRideTimes()): LegOverride {
   const walk = walkEstimate(a, b);
   if (mode === "walking") return { mode, travelMin: walk.min, distM: Math.round(walk.distM), walkM: walk.distM, estimated: true };
-  if (mode === "driving") {
-    return { mode, travelMin: (walk.distM / 1000 / DRIVE_KMH) * 60 + 5, distM: Math.round(walk.distM), walkM: 0, estimated: true };
-  }
-  return chooseTransit(a, b, findTransitRoute(a, b, rides), walk, true);
+  const car = driveEstimate(a, b);
+  if (mode === "driving") return { mode, travelMin: car.min, distM: Math.round(car.distM), walkM: 0, estimated: true };
+  const route = findTransitRoute(a, b, rides);
+  return transitLegOf(decideTransit(route, walk), route, walk, car, true);
 }
 
 const walkFor = (mode: TravelMode, distM: number) => (mode === "walking" ? distM : 0);
@@ -226,8 +230,8 @@ export function isMockMode(): boolean {
 
 const MOCK_NOTE = "移動時間は直線距離からの概算（開発用）です";
 const TRANSIT_NOTE =
-  "公共交通は、城下まち金沢周遊バスと石川県の鉄道で計算しています。乗り場までの徒歩は Google マップの時間、待ち時間と乗車時間は時刻表を使わない目安です";
-const TRANSIT_ROUGH_NOTE = "対応する路線がない区間は、直線距離からの概算で計算しています";
+  "公共交通は、石川県のバス（周遊バス・路線バス）と鉄道で計算しています。乗り場までの徒歩は Google マップの時間、待ち時間と乗車時間は時刻表を使わない目安です";
+const CAR_NOTE = "公共交通では歩く時間が1時間以上になる区間は、車（タクシーなど）の時間で計算しています";
 
 // 計画用の移動時間の行列（経路作成1回につき1回。F-5-3・F-5-4）。
 // 公共交通は、全部歩く時間（Google の徒歩の行列）と、乗り物を使う経路（ADR-0026）の早い方
@@ -260,7 +264,7 @@ export async function getTravelMatrix(
   }
   const rides = mode === "transit" ? await rideTimes() : null;
 
-  let rough = 0;
+  let car = 0;
   for (let i = 0; i < n; i++) {
     for (let j = 0; j < n; j++) {
       if (i === j) continue;
@@ -268,7 +272,8 @@ export async function getTravelMatrix(
       let leg: LegOverride;
       if (mode === "transit") {
         const w = hit ? { min: hit.sec / 60, distM: hit.distM } : walkEstimate(points[i], points[j]);
-        leg = chooseTransit(points[i], points[j], findTransitRoute(points[i], points[j], rides!), w, !hit);
+        const route = findTransitRoute(points[i], points[j], rides!);
+        leg = transitLegOf(decideTransit(route, w), route, w, driveEstimate(points[i], points[j]), !hit);
       } else if (hit) {
         leg = { mode, travelMin: hit.sec / 60, distM: hit.distM, walkM: walkFor(mode, hit.distM), estimated: false };
       } else if (fetched) {
@@ -281,45 +286,65 @@ export async function getTravelMatrix(
       distances[i][j] = leg.distM;
       walk[i][j] = leg.walkM;
       estimated[i][j] = leg.estimated;
-      if (mode === "transit" && !leg.steps) rough++;
+      if (leg.carSuggested) car++;
     }
   }
   if (mode === "transit" && !isMockMode()) notes.push(TRANSIT_NOTE);
-  if (rough > 0 && !isMockMode()) notes.push(TRANSIT_ROUGH_NOTE);
+  if (car > 0) notes.push(CAR_NOTE);
   return { minutes, distances, walk, estimated, notes };
 }
 
 export type LegRequest = { from: Pt; to: Pt; mode: TravelMode; departAt: string };
 
-// 公共交通の区間を、Google の徒歩（全部歩く・乗り場まで・降り場から）で直して決める
+// 公共交通の区間を、Google の徒歩（全部歩く・乗り場まで・降り場から）と、路線バスの車の所要時間で直して決める。
+// 呼ぶ回数は、徒歩の3回＋路線バスの乗車ごとに1回＋車をすすめる場合に1回
 async function transitLeg(l: LegRequest, rides: RideTimes, apiKey: string): Promise<LegOverride> {
   const route = findTransitRoute(l.from, l.to, rides);
-  // 徒歩を取れなかったときは直線距離からの目安で続ける
-  const walkOf = async (a: Pt, b: Pt) => {
+  // Google で取れなかったときは直線距離からの目安で続ける
+  const routeOf = async (a: Pt, b: Pt, mode: "walking" | "driving"): Promise<Minutes | null> => {
     try {
-      const r = await googleRoute([a, b], "walking", apiKey);
+      const r = await googleRoute([a, b], mode, apiKey);
       if (r) return { min: r.sec / 60, distM: r.distM };
     } catch (e) {
       console.error(e);
     }
-    return walkEstimate(a, b);
+    return null;
   };
-  const [direct, access, egress] = await Promise.all([
-    walkOf(l.from, l.to),
-    route ? walkOf(l.from, route.firstStop) : null,
-    route ? walkOf(route.lastStop, l.to) : null,
+  const busRideCount = route?.routeBusRides.length ?? 0;
+  const canFixBus = busRideCount > 0 && (await consumeQuota(quotas().googleRoutes, busRideCount));
+  const [direct, access, egress, ...busDrives] = await Promise.all([
+    routeOf(l.from, l.to, "walking"),
+    route ? routeOf(l.from, route.firstStop, "walking") : null,
+    route ? routeOf(route.lastStop, l.to, "walking") : null,
+    ...(route && canFixBus ? route.routeBusRides.map((r) => routeOf(r.from, r.to, "driving")) : []),
   ]);
-  if (route && access && egress) {
+  const walk = direct ?? walkEstimate(l.from, l.to);
+
+  let fixed: TransitRoute | null = null;
+  if (route) {
     const steps = route.steps.map((s) => ({ ...s }));
     const first = steps[0];
     const last = steps[steps.length - 1];
-    if (first.kind === "walk") Object.assign(first, access);
-    if (last.kind === "walk") Object.assign(last, egress);
-    const totalMin = steps.reduce((t, s) => t + (s.kind === "walk" ? s.min : s.waitMin + s.rideMin), 0);
-    const walkM = steps.reduce((t, s) => t + (s.kind === "walk" ? s.distM : 0), 0);
-    return chooseTransit(l.from, l.to, { ...route, steps, totalMin, walkM }, direct, false);
+    if (first.kind === "walk" && access) Object.assign(first, access);
+    if (last.kind === "walk" && egress) Object.assign(last, egress);
+    route.routeBusRides.forEach((r, i) => {
+      const step = steps[r.stepIndex];
+      const drive = busDrives[i];
+      if (step.kind === "ride" && drive) step.rideMin = routeBusRideFromDrive(drive.min * 60, drive.distM);
+    });
+    const sum = (f: (s: TransitStep) => number) => steps.reduce((t, s) => t + f(s), 0);
+    fixed = {
+      ...route,
+      steps,
+      totalMin: sum((s) => (s.kind === "walk" ? s.min : s.waitMin + s.rideMin)),
+      walkM: sum((s) => (s.kind === "walk" ? s.distM : 0)),
+      walkMin: sum((s) => (s.kind === "walk" ? s.min : 0)),
+    };
   }
-  return chooseTransit(l.from, l.to, null, direct, false);
+  const decision = decideTransit(fixed, walk);
+  let car = driveEstimate(l.from, l.to);
+  if (decision === "car" && (await consumeQuota(quotas().googleRoutes, 1))) car = (await routeOf(l.from, l.to, "driving")) ?? car;
+  return transitLegOf(decision, fixed, walk, car, false);
 }
 
 // 区間ごとの所要時間（F-5-10：移動手段の変更、公共交通の区間の取り直し）
@@ -345,7 +370,7 @@ export async function getLegs(legs: LegRequest[]): Promise<{ legs: LegOverride[]
     );
     const notes: string[] = [];
     if (out.some((l) => l.mode === "transit" && l.steps?.some((s) => s.kind === "ride"))) notes.push(TRANSIT_NOTE);
-    if (out.some((l) => l.mode === "transit" && !l.steps)) notes.push(TRANSIT_ROUGH_NOTE);
+    if (out.some((l) => l.carSuggested)) notes.push(CAR_NOTE);
     return { legs: out, notes };
   } catch (e) {
     console.error(e);

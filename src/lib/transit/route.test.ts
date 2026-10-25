@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { NETWORK, estimateRideTimes, prefersTransit } from "./network";
-import { findTransitRoute, type TransitStep } from "./route";
+import { decideTransit, findTransitRoute, type TransitRoute, type TransitStep } from "./route";
 
 // 初期データのスポット（supabase/seed/kanazawa.sql）
 const P = {
@@ -10,6 +10,8 @@ const P = {
   higashi: { lat: 36.5725, lng: 136.6667 },
   nishi: { lat: 36.5535, lng: 136.6505 },
   komatsuStation: { lat: 36.403, lng: 136.4535 },
+  port: { lat: 36.6083, lng: 136.604 },
+  tsurugi: { lat: 36.444, lng: 136.629 },
 };
 const rides = estimateRideTimes();
 const ridesOf = (steps: TransitStep[]) => steps.filter((s) => s.kind === "ride");
@@ -45,7 +47,8 @@ describe("公共交通の経路探索（ADR-0026）", () => {
     ]) {
       const r = findTransitRoute(a, b, rides);
       for (const s of ridesOf(r?.steps ?? [])) {
-        expect(s.kind === "ride" && s.stops).toBeGreaterThan(0);
+        // 路線バスは停まる順番のデータがないため stops は null
+        if (s.kind === "ride" && s.stops !== null) expect(s.stops).toBeGreaterThan(0);
         expect(s.kind === "ride" && s.from !== s.to).toBe(true);
       }
     }
@@ -73,5 +76,29 @@ describe("公共交通の経路探索（ADR-0026）", () => {
     expect(prefersTransit(8, 12)).toBe(true);
     expect(prefersTransit(27, 29)).toBe(true);
     expect(prefersTransit(30, 29)).toBe(false);
+  });
+
+  it("周遊バスや駅から遠いスポット（金沢港）は、路線バスの系統で行く（ADR-0027）", () => {
+    const r = findTransitRoute(P.kanazawaStation, P.port, rides)!;
+    const [ride] = ridesOf(r.steps);
+    // 路線バスは停まる順番のデータがないため、いくつ先かと方面は出さない
+    expect(ride).toMatchObject({ vehicle: "bus", toward: null, stops: null });
+    expect(r.routeBusRides).toHaveLength(1);
+  });
+
+  it("鉄道どうしの乗り換えもできる（金沢駅 → 鶴来は IR から北陸鉄道 石川線）", () => {
+    const r = findTransitRoute(P.kanazawaStation, P.tsurugi, rides)!;
+    const lines = ridesOf(r.steps).map((s) => s.kind === "ride" && s.line);
+    expect(lines.at(-1)).toBe("北陸鉄道 石川線");
+    expect(lines.length).toBeLessThanOrEqual(2);
+  });
+
+  it("歩く時間が1時間以上になるなら車をすすめ、1時間未満なら乗り物か徒歩の早い方", () => {
+    const route = (totalMin: number, walkMin: number) => ({ totalMin, walkMin }) as TransitRoute;
+    expect(decideTransit(null, { min: 70 })).toBe("car");
+    expect(decideTransit(route(80, 65), { min: 90 })).toBe("car");
+    expect(decideTransit(route(80, 20), { min: 90 })).toBe("transit");
+    expect(decideTransit(route(30, 10), { min: 25 })).toBe("walk");
+    expect(decideTransit(null, { min: 40 })).toBe("walk");
   });
 });

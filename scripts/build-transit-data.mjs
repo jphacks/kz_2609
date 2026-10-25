@@ -2,16 +2,20 @@
 // 入力は国土数値情報（国土交通省、CC BY 4.0）の2つのファイル：
 //   バス停留所データ P11-22_17（石川県）  https://nlftp.mlit.go.jp/ksj/gml/datalist/KsjTmplt-P11-2022.html
 //   鉄道データ N02-24（全国）            https://nlftp.mlit.go.jp/ksj/gml/datalist/KsjTmplt-N02-2024.html
-// 使い方：node scripts/build-transit-data.mjs <P11-22_17.geojson> <N02-24_Station.geojson>
-// 出力：src/lib/transit/data.json（停留所・駅の位置と、路線ごとの停まる順番。時刻表は含めない）
+// 使い方：node scripts/build-transit-data.mjs <P11-22_17.geojson> <N02-24_Station.geojson> <N02-24_RailroadSection.geojson>
+// 出力：src/lib/transit/data.json（時刻表は含めない）
+//   lines：停まる順番がわかる路線（周遊バス・鉄道）。鉄道は駅間の線路の道のり（m）も持つ
+//   routes：石川県の路線バスの系統（停まる順番はデータにないため、止まる停留所の集まりとして持つ。ADR-0027）
 import { readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
-const [p11Path, n02Path] = process.argv.slice(2);
-if (!p11Path || !n02Path) {
-  console.error("使い方：node scripts/build-transit-data.mjs <P11-22_17.geojson> <N02-24_Station.geojson>");
+const [p11Path, n02Path, n02SectionPath] = process.argv.slice(2);
+if (!p11Path || !n02Path || !n02SectionPath) {
+  console.error(
+    "使い方：node scripts/build-transit-data.mjs <P11-22_17.geojson> <N02-24_Station.geojson> <N02-24_RailroadSection.geojson>",
+  );
   process.exit(1);
 }
 const round = (v) => Math.round(v * 1e5) / 1e5;
@@ -102,11 +106,62 @@ const RAIL_LINES = [
 const inIshikawa = ({ lat, lng }) => lat > 36.05 && lat < 37.6 && lng > 136.2 && lng < 137.4;
 
 const n02 = JSON.parse(readFileSync(n02Path, "utf8"));
+const n02Sections = JSON.parse(readFileSync(n02SectionPath, "utf8"));
 const center = (coords) => {
   const mid = coords[Math.floor(coords.length / 2)];
   return { lng: mid[0], lat: mid[1] };
 };
 const dist = (a, b) => Math.hypot((a.lat - b.lat) * 111, (a.lng - b.lng) * 91);
+// 2点間の距離（m）
+const meters = (a, b) => {
+  const r = (d) => (d * Math.PI) / 180;
+  const h = Math.sin(r(b.lat - a.lat) / 2) ** 2 + Math.cos(r(a.lat)) * Math.cos(r(b.lat)) * Math.sin(r(b.lng - a.lng) / 2) ** 2;
+  return 2 * 6371000 * Math.asin(Math.sqrt(h));
+};
+
+// 線路の道のり：路線の区間（線）をつないだグラフで、駅に最も近い点どうしの最短距離を求める
+function trackGraph(rl) {
+  const nodes = new Map();
+  const node = ([lng, lat]) => {
+    const key = `${lng.toFixed(6)},${lat.toFixed(6)}`;
+    if (!nodes.has(key)) nodes.set(key, { lat, lng, edges: [] });
+    return nodes.get(key);
+  };
+  for (const f of n02Sections.features) {
+    const p = f.properties;
+    if (p.N02_004 !== rl.operator || p.N02_003 !== rl.line) continue;
+    const cs = f.geometry.coordinates;
+    for (let i = 1; i < cs.length; i++) {
+      const a = node(cs[i - 1]);
+      const b = node(cs[i]);
+      const m = meters(a, b);
+      a.edges.push([b, m]);
+      b.edges.push([a, m]);
+    }
+  }
+  return [...nodes.values()];
+}
+function trackMeters(graph, from, to) {
+  const nearest = (p) => graph.reduce((best, n) => (meters(n, p) < meters(best, p) ? n : best));
+  const start = nearest(from);
+  const goal = nearest(to);
+  const d = new Map([[start, 0]]);
+  const open = new Set([start]);
+  while (open.size > 0) {
+    let cur = null;
+    for (const n of open) if (!cur || d.get(n) < d.get(cur)) cur = n;
+    open.delete(cur);
+    if (cur === goal) return d.get(cur);
+    for (const [nb, m] of cur.edges) {
+      const nd = d.get(cur) + m;
+      if (nd < (d.get(nb) ?? Infinity)) {
+        d.set(nb, nd);
+        open.add(nb);
+      }
+    }
+  }
+  return null;
+}
 
 for (const rl of RAIL_LINES) {
   const byName = new Map();
@@ -137,16 +192,47 @@ for (const rl of RAIL_LINES) {
     stops.set(id, { id, name: `${s.name}駅`, kind: "rail", lat: round(s.lat), lng: round(s.lng) });
     return id;
   });
-  lines.push({ id: rl.id, name: rl.name, kind: "rail", railKind: rl.kind, stopIds: ids, bidirectional: true });
-  console.log(`${rl.name}：${ordered.map((s) => s.name).join(" - ")}`);
+  // 駅間の線路の道のり。線路のデータでつながらない区間は直線距離の1.1倍
+  const graph = trackGraph(rl);
+  const trackM = ordered.slice(1).map((b, i) => {
+    const m = graph.length > 0 ? trackMeters(graph, ordered[i], b) : null;
+    return Math.round(m ?? meters(ordered[i], b) * 1.1);
+  });
+  lines.push({ id: rl.id, name: rl.name, kind: "rail", railKind: rl.kind, stopIds: ids, bidirectional: true, trackM });
+  console.log(
+    `${rl.name}：${ordered.map((s, i) => (i === 0 ? s.name : `-(${(trackM[i - 1] / 1000).toFixed(1)}km)- ${s.name}`)).join(" ")}`,
+  );
 }
+
+// --- 路線バス：石川県のすべての系統（周遊バスは上の lines で扱う） ---
+const routes = new Map();
+p11.features.forEach((f, i) => {
+  const p = f.properties;
+  const [lng, lat] = f.geometry.coordinates;
+  const id = `stop:${i}`;
+  let used = false;
+  for (const name of routesOf(p)) {
+    if (name === LOOP_ROUTE) continue;
+    const key = `${p.P11_002}|${name}`;
+    if (!routes.has(key)) routes.set(key, { id: `route:${routes.size}`, name, operator: p.P11_002, stopIds: [] });
+    routes.get(key).stopIds.push(id);
+    used = true;
+  }
+  if (used) stops.set(id, { id, name: p.P11_001, kind: "bus", lat: round(lat), lng: round(lng) });
+});
+// 停留所が1つだけの系統は乗り降りできないので除く
+const busRoutes = [...routes.values()].filter((r) => r.stopIds.length >= 2);
 
 const out = {
   source:
     "国土数値情報（バス停留所データ 2022年、鉄道データ 2024年）（国土交通省）を加工して作成。周遊バスの停まる順番は2026年4月の路線",
   stops: [...stops.values()],
   lines,
+  routes: busRoutes,
 };
 const dest = join(root, "src", "lib", "transit", "data.json");
-writeFileSync(dest, `${JSON.stringify(out, null, 1)}\n`);
-console.log(`停留所・駅 ${out.stops.length} か所、路線 ${out.lines.length} 本を ${dest} に書き出しました`);
+writeFileSync(dest, `${JSON.stringify(out)}
+`);
+console.log(
+  `停留所・駅 ${out.stops.length} か所、順番のわかる路線 ${out.lines.length} 本、路線バスの系統 ${busRoutes.length} 本を ${dest} に書き出しました`,
+);
